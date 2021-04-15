@@ -16,6 +16,7 @@
 * Improve example programs `datasource-health-*`
 * Add example program `datasource-query.py`
 * Add example program `grafanalib-upload-dashboard.py`
+* Fix endless-loop bug in the `search_teams` function. Thanks, @changdingfang!
 
 
 ## 2.3.0 (2022-05-26)

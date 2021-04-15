@@ -102,6 +102,20 @@ class TeamsTestCase(unittest.TestCase):
         self.assertEqual(len(teams), 1)
 
     @requests_mock.Mocker()
+    def test_search_teams_perpage(self, m):
+        m.get(
+            "http://localhost/api/teams/search?query=my%20team&page=1&perpage=5",
+            json={"page": 1, "totalCount": 7, "teams": [{"name": "FirstTeam"}, {"name": "SecondTeam"}], "perPage": 5},
+        )
+        m.get(
+            "http://localhost/api/teams/search?query=my%20team&page=2&perpage=5",
+            json={"page": 2, "totalCount": 7, "teams": [], "perPage": 5},
+        )
+        teams = self.grafana.teams.search_teams("my team", perpage=5)
+        self.assertEqual(len(teams), 2)
+
+
+    @requests_mock.Mocker()
     def test_get_team_by_name(self, m):
         m.get(
             "http://localhost/api/teams/search?name=my%20team",
