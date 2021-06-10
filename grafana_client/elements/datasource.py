@@ -186,6 +186,21 @@ class Datasource(Base):
         r = self.client.GET(get_datasource_path)
         return r
 
+    def query_range(self, datasource_id, query, start, end, step, access="proxy"):
+        """
+
+        :param datasource_id:
+        :param query:
+        :param start:
+        :param end:
+        :param step:
+        :param access:
+        :return:
+        """
+        post_query_range_path = "/datasources/%s/%s/api/v1/query_range" % (access, datasource_id)
+        r = self.client.POST(post_query_range_path, data={"query": query, "start": start, "end": end, "step": step})
+        return r
+
     def smartquery(self, datasource: Union[DatasourceIdentifier, Dict], expression: str, store: Optional[str] = None):
         """
         Send a query to the designated data source and return its response.
