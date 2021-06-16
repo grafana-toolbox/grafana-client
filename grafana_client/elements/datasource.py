@@ -201,6 +201,20 @@ class Datasource(Base):
         r = self.client.POST(post_query_range_path, data={"query": query, "start": start, "end": end, "step": step})
         return r
 
+    def series(self, datasource_id, match, start, end, access="proxy"):
+        """
+
+        :param datasource_id:
+        :param match:
+        :param start:
+        :param end:
+        :param access:
+        :return:
+        """
+        post_series_path = "/datasources/%s/%s/api/v1/series" % (access, datasource_id)
+        r = self.client.POST(post_series_path, data={"match[]": match, "start": start, "end": end})
+        return r
+
     def smartquery(self, datasource: Union[DatasourceIdentifier, Dict], expression: str, store: Optional[str] = None):
         """
         Send a query to the designated data source and return its response.
