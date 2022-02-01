@@ -10,6 +10,11 @@ Yet another Grafana API library for Python. Support Python 3 only.
 
 You need Python 3 and only the `requests` library installed.
 
+## History
+
+The library was originally conceived by Andrew Prokhorenkov at https://github.com/m0nhawk/grafana_api.
+Thank you very much for your efforts!
+
 ## Quick start
 
 Install the pip package:
@@ -97,6 +102,22 @@ Work on API implementation still in progress.
 | Snapshot | + |
 | Teams | + |
 | User | + |
+
+
+## Software tests
+
+```shell
+pip install pytest
+pytest test
+```
+
+## Release
+
+```shell
+pip install pep517 twine
+python -m pep517.build --source --binary --out-dir dist/ .
+twine upload --repository=testpypi dist/*
+```
 
 ## Issue tracker
 
