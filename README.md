@@ -1,6 +1,6 @@
-# grafana-client [![Github Actions Test](https://github.com/m0nhawk/grafana_api/workflows/Test/badge.svg)](https://github.com/m0nhawk/grafana_api/actions?query=workflow%3ATest) [![GitHub license](https://img.shields.io/github/license/m0nhawk/grafana_api.svg?style=flat-square)](https://github.com/m0nhawk/grafana_api/blob/master/LICENSE)  [![Codecov](https://img.shields.io/codecov/c/gh/m0nhawk/grafana_api.svg?style=flat-square)](https://codecov.io/gh/m0nhawk/grafana_api/)
+# grafana-client [![Github Actions Test](https://github.com/panodata/grafana-client/workflows/Test/badge.svg)](https://github.com/panodata/grafana-client/actions?query=workflow%3ATest) [![GitHub license](https://img.shields.io/github/license/panodata/grafana-client.svg?style=flat-square)](https://github.com/panodata/grafana-client/blob/master/LICENSE)  [![Codecov](https://img.shields.io/codecov/c/gh/panodata/grafana-client.svg?style=flat-square)](https://codecov.io/gh/panodata/grafana-client/)
 
-[![PyPI](https://img.shields.io/pypi/v/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-api/) [![Conda](https://img.shields.io/conda/v/m0nhawk/grafana_api.svg?style=flat-square)](https://anaconda.org/m0nhawk/grafana_api)
+[![PyPI](https://img.shields.io/pypi/v/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-api/) [![Conda](https://img.shields.io/conda/v/panodata/grafana-client.svg?style=flat-square)](https://anaconda.org/panodata/grafana-client)
 
 ## What is this library for?
 
@@ -102,7 +102,7 @@ Work on API implementation still in progress.
 
 Please report any bugs and enhancement ideas using the `grafana-client` issue tracker:
 
-  https://github.com/m0nhawk/grafana_api/issues
+  https://github.com/panodata/grafana-client/issues
 
 Feel free to also ask questions on the tracker.
 
