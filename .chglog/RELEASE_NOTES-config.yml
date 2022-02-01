@@ -2,7 +2,7 @@ style: github
 template: RELEASE_NOTES.tpl.md
 info:
   title: CHANGELOG
-  repository_url: https://github.com/m0nhawk/grafana_api
+  repository_url: https://github.com/panodata/grafana-client
 options:
   commits:
     filters:
