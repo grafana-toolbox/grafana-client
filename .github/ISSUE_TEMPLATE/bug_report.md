@@ -18,7 +18,7 @@ A clear and concise description of what you expected to happen.
 
 **Versions**
 - Grafana: [ ]
-- `grafana_api`: [ ]
+- `grafana-client`: [ ]
 - Authentication: [Basic] or [Token]
 
 **Additional context**

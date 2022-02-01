@@ -30,6 +30,6 @@ jobs:
         shell: bash
       - name: Run tests
         run: |
-          coverage run --source grafana_api -m xmlrunner discover -o test-reports
+          coverage run --source grafana_client -m xmlrunner discover -o test-reports
           codecov
         shell: bash

@@ -2,7 +2,7 @@
 {% set version = data.get('version') %}
 
 package:
-  name: grafana_api
+  name: grafana-client
   version: {{ version }}
 
 source:
@@ -23,8 +23,8 @@ requirements:
 
 test:
   imports:
-    - grafana_api
-    - grafana_api.api
+    - grafana_client
+    - grafana_client.api
 
 about:
   home: https://m0nhawk.github.io/grafana_api/

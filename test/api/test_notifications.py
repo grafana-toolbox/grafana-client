@@ -2,13 +2,13 @@ import unittest
 
 import requests_mock
 
-from grafana_api.grafana_api import (
+from grafana_client.grafana_api import (
     GrafanaBadInputError,
     GrafanaClientError,
     GrafanaServerError,
     GrafanaUnauthorizedError,
 )
-from grafana_api.grafana_face import GrafanaFace
+from grafana_client.grafana_face import GrafanaFace
 
 
 class NotificationsTestCase(unittest.TestCase):
