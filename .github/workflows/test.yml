@@ -32,5 +32,11 @@ jobs:
       - name: Run tests
         run: |
           coverage run --source grafana_client -m xmlrunner discover -o test-reports
-          codecov
+          coverage xml
         shell: bash
+
+      # https://github.com/codecov/codecov-action
+      - name: Upload coverage results to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          fail_ci_if_error: true
