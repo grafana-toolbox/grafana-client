@@ -35,6 +35,6 @@ about:
   doc_url: https://panodata.github.io/grafana-client/
   dev_url: https://panodata.github.io/grafana-client/
 
-extra:
-  recipe-maintainers:
-    - m0nhawk
+#extra:
+#  recipe-maintainers:
+#    - m0nhawk
