@@ -1,18 +1,11 @@
-<!-- Change a name for Pull Request -->
-# Pull Request Template
-
 ## Description
 <!-- Please include a summary of the change or which issue is fixed (fixes #(issue)). -->
 
-## Have you written tests?
 
-- [ ] Yes
-- [ ] No
+## Checklist
 
-## Checklist:
-
-- [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
+- [ ] The patch has appropriate test coverage
+- [ ] The patch follows the style guidelines of this project
+- [ ] The patch has appropriate comments, particularly in hard-to-understand areas
+- [ ] The documentation was updated corresponding to the patch
+- [ ] I have performed a self-review of this patch
