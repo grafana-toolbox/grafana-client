@@ -1,5 +1,5 @@
 from setuptools import setup
-from grafana_api.version import version
+from grafana_client.version import version
 setup(
     version=version,
 )

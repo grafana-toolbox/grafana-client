@@ -5,6 +5,6 @@ setup(
     use_scm_version={
         "local_scheme": "no-local-version",
         "version_scheme": "python-simplified-semver",
-        "write_to": "grafana_api/version.py",
+        "write_to": "grafana_client/version.py",
     },
 )

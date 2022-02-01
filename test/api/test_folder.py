@@ -2,8 +2,8 @@ import unittest
 
 import requests_mock
 
-from grafana_api.grafana_face import GrafanaFace
-from grafana_api.grafana_api import GrafanaBadInputError
+from grafana_client.grafana_face import GrafanaFace
+from grafana_client.grafana_api import GrafanaBadInputError
 
 
 class FolderTestCase(unittest.TestCase):
