@@ -39,7 +39,7 @@ Connect to your Grafana API endpoint using the `GrafanaApi` class.
 ```python
 from grafana_client import GrafanaApi
 
-grafana = GrafanaApi(auth='abcde....', host='grafana.example.org')
+grafana = GrafanaApi(auth='eyJrIjoiWHg...dGJpZCI6MX0=', host='grafana.example.org')
 
 # Create user
 user = grafana.admin.create_user(
@@ -52,7 +52,7 @@ user = grafana.admin.change_user_password(2, "newpassword")
 grafana.search.search_dashboards(tag='applications')
 
 # Find a user by email
-user = grafana.users.find_user('test@test.com')
+user = grafana.users.find_user('test@example.org')
 
 # Add user to team 2
 grafana.teams.add_team_member(2, user["id"])

@@ -144,14 +144,14 @@ class TeamsTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_add_team(self, m):
         m.post("http://localhost/api/teams", json={"message": "Team created", "teamId": 2})
-        team = {"name": "MySecondTestTeam", "email": "email@test.com"}
+        team = {"name": "MySecondTestTeam", "email": "email@example.org"}
         new_team = self.grafana.teams.add_team(team)
         self.assertEqual(new_team["teamId"], 2)
 
     @requests_mock.Mocker()
     def test_update_team(self, m):
         m.put("http://localhost/api/teams/3", json={"message": "Team updated"})
-        team = {"name": "MyThirdTestTeam", "email": "email@test.com"}
+        team = {"name": "MyThirdTestTeam", "email": "email@example.org"}
         response = self.grafana.teams.update_team(3, team)
         self.assertEqual(response["message"], "Team updated")
 

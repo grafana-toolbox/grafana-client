@@ -34,7 +34,7 @@ class TestGrafanaClient(unittest.TestCase):
   "isGrafanaAdmin": true
 }"""
         grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="https")
-        grafana.users.find_user("test@test.com")
+        grafana.users.find_user("test@example.org")
 
     def test_grafana_client_no_verify(self):
         grafana = GrafanaApi(
@@ -58,9 +58,9 @@ class TestGrafanaClient(unittest.TestCase):
         )
 
         basic_auth = requests.auth.HTTPBasicAuth("admin", "admin")
-        grafana.users.find_user("test@test.com")
+        grafana.users.find_user("test@example.org")
         grafana.client.s.get.assert_called_once_with(
-            "https://localhost/api/users/lookup?loginOrEmail=test@test.com",
+            "https://localhost/api/users/lookup?loginOrEmail=test@example.org",
             auth=basic_auth,
             headers=None,
             json=None,
