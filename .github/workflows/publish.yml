@@ -3,14 +3,14 @@ name: Publish
 on: push
 
 jobs:
-  build-n-push:
+  publish:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Set up Python 3.7
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: 3.7
 
@@ -20,17 +20,19 @@ jobs:
       run: python -m build
 
     - name: Publish distribution 📦 to Test PyPI
-      uses: pypa/gh-action-pypi-publish@v1.3.1
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         skip_existing: true
         password: ${{ secrets.TEST_PYPI_TOKEN }}
         repository_url: https://test.pypi.org/legacy/
+
     - name: Publish distribution 📦 to PyPI
       if: startsWith(github.ref, 'refs/tags')
-      uses: pypa/gh-action-pypi-publish@v1.3.1
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         skip_existing: true
         password: ${{ secrets.PYPI_TOKEN }}
+
     #- name: publish-to-conda
     #  if: startsWith(github.ref, 'refs/tags')
     #  uses: m0nhawk/conda-package-publish-action@master
