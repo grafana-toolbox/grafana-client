@@ -2,12 +2,12 @@ import unittest
 
 import requests_mock
 
-from grafana_client.grafana_face import GrafanaFace
+from grafana_client import GrafanaApi
 
 
 class DashboardTestCase(unittest.TestCase):
     def setUp(self):
-        self.cli = GrafanaFace(
+        self.grafana = GrafanaApi(
             ("admin", "admin"), host="localhost", url_path_prefix="", protocol="http"
         )
 
@@ -32,7 +32,7 @@ class DashboardTestCase(unittest.TestCase):
                 }
             }
         )
-        dashboard = self.cli.dashboard.get_dashboard("cIBgcSjkk")
+        dashboard = self.grafana.dashboard.get_dashboard("cIBgcSjkk")
         self.assertEqual(dashboard["dashboard"]["uid"], "cIBgcSjkk")
 
     @requests_mock.Mocker()
@@ -48,7 +48,7 @@ class DashboardTestCase(unittest.TestCase):
                 "slug": "production-overview"
             }
         )
-        dashboard = self.cli.dashboard.update_dashboard({
+        dashboard = self.grafana.dashboard.update_dashboard({
             "dashboard": {
                 "id": 1,
                 "uid": 'cIBgcSjkk',
@@ -102,13 +102,13 @@ class DashboardTestCase(unittest.TestCase):
                 }
             }
         )
-        dashboard = self.cli.dashboard.get_home_dashboard()
+        dashboard = self.grafana.dashboard.get_home_dashboard()
         self.assertEqual(dashboard["meta"]["isHome"], "true")
 
     @requests_mock.Mocker()
     def test_delete_dashboard(self, m):
         m.delete("http://localhost/api/dashboards/uid/cIBgcSjkk", json={"title": "Production Overview"})
-        response = self.cli.dashboard.delete_dashboard("cIBgcSjkk")
+        response = self.grafana.dashboard.delete_dashboard("cIBgcSjkk")
         self.assertEqual(response['title'], "Production Overview")
 
     @requests_mock.Mocker()
@@ -126,7 +126,7 @@ class DashboardTestCase(unittest.TestCase):
                 }
             ]
         )
-        tags = self.cli.dashboard.get_dashboards_tags()
+        tags = self.grafana.dashboard.get_dashboards_tags()
         self.assertEqual(len(tags), 2)
         self.assertEqual(tags[0]["term"], "tag1")
 
@@ -175,7 +175,7 @@ class DashboardTestCase(unittest.TestCase):
                 }
             ]
         )
-        permissions = self.cli.dashboard.get_dashboard_permissions(1)
+        permissions = self.grafana.dashboard.get_dashboard_permissions(1)
         self.assertEqual(len(permissions), 2)
         self.assertEqual(permissions[0]["dashboardId"], 1)
 
@@ -185,7 +185,7 @@ class DashboardTestCase(unittest.TestCase):
             "http://localhost/api/dashboards/id/1/permissions",
             json={"message": "Dashboard permissions updated"}
         )
-        permissions = self.cli.dashboard.update_dashboard_permissions(1,{
+        permissions = self.grafana.dashboard.update_dashboard_permissions(1,{
             "items": [
                 {
                     "role": "Viewer",

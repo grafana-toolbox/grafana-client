@@ -2,9 +2,9 @@ from .base import Base
 
 
 class Annotations(Base):
-    def __init__(self, api):
-        super(Annotations, self).__init__(api)
-        self.api = api
+    def __init__(self, client):
+        super(Annotations, self).__init__(client)
+        self.client = client
 
     def get_annotation(
         self,
@@ -67,7 +67,7 @@ class Annotations(Base):
         list_annotations_path += "?"
         list_annotations_path += "&".join(params)
 
-        r = self.api.GET(list_annotations_path)
+        r = self.client.GET(list_annotations_path)
 
         return r
 
@@ -103,7 +103,7 @@ class Annotations(Base):
             "text": text,
         }
 
-        r = self.api.POST(annotations_path, json=payload)
+        r = self.client.POST(annotations_path, json=payload)
 
         return r
 
@@ -132,7 +132,7 @@ class Annotations(Base):
             "data": data
         }
 
-        r = self.api.POST(annotations_path, json=payload)
+        r = self.client.POST(annotations_path, json=payload)
 
         return r
 
@@ -161,7 +161,7 @@ class Annotations(Base):
             "text": text
         }
 
-        r = self.api.PUT(annotations_path, json=payload)
+        r = self.client.PUT(annotations_path, json=payload)
 
         return r
 
@@ -193,7 +193,7 @@ class Annotations(Base):
             "text": text
         }
 
-        r = self.api.PATCH(annotations_path, json=payload)
+        r = self.client.PATCH(annotations_path, json=payload)
 
         return r
 
@@ -209,6 +209,6 @@ class Annotations(Base):
         :return:
         """
         annotations_path = "/annotations/{}".format(annotations_id)
-        r = self.api.DELETE(annotations_path)
+        r = self.client.DELETE(annotations_path)
 
         return r

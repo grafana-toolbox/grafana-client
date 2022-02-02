@@ -34,15 +34,16 @@ Install the package from PyPI.
 pip install grafana-client --upgrade
 ```
 
-Connect to your Grafana API endpoint using the `GrafanaFace` interface.
+Connect to your Grafana API endpoint using the `GrafanaApi` class.
 
 ```python
-from grafana_client.grafana_face import GrafanaFace
+from grafana_client import GrafanaApi
 
-grafana = GrafanaFace(auth='abcde....', host='grafana.example.org')
+grafana = GrafanaApi(auth='abcde....', host='grafana.example.org')
 
 # Create user
-user = grafana.admin.create_user({"name": "User", "email": "user@example.org", "login": "user", "password": "userpassword", "OrgId": 1})
+user = grafana.admin.create_user(
+    {"name": "User", "email": "user@example.org", "login": "user", "password": "userpassword", "OrgId": 1})
 
 # Change user password
 user = grafana.admin.change_user_password(2, "newpassword")
@@ -63,7 +64,7 @@ grafana.dashboard.update_dashboard(dashboard={'dashboard': {...}, 'folderId': 0,
 grafana.dashboard.delete_dashboard(dashboard_uid='abcdefgh')
 
 # Create organization
-grafana.organization.create_organization({"name":"new_organization"})
+grafana.organization.create_organization({"name": "new_organization"})
 ```
 
 
@@ -75,18 +76,17 @@ or HTTP basic auth.
 To use the admin API, you need to use HTTP basic auth, as stated at the
 [Grafana Admin API documentation].
 
-
 ```python
-from grafana_client.grafana_face import GrafanaFace
+from grafana_client import GrafanaApi
 
 # Use HTTP basic authentication
-grafana = GrafanaFace(
+grafana = GrafanaApi(
     auth=("username", "password"),
     host='grafana.example.org'
 )
 
 # Use Grafana API token
-grafana = GrafanaFace(
+grafana = GrafanaApi(
     auth='eyJrIjoiWHg...dGJpZCI6MX0=',
     host='grafana.example.org'
 )

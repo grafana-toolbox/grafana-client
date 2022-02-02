@@ -2,12 +2,12 @@ import unittest
 
 import requests_mock
 
-from grafana_client.grafana_face import GrafanaFace
+from grafana_client import GrafanaApi
 
 
 class SnapshotTestCase(unittest.TestCase):
     def setUp(self):
-        self.cli = GrafanaFace(
+        self.grafana = GrafanaApi(
             ("admin", "admin"), host="localhost", url_path_prefix="", protocol="http"
         )
 
@@ -22,7 +22,7 @@ class SnapshotTestCase(unittest.TestCase):
                 "url": "myurl/dashboard/snapshot/YYYYYYY"
             },
         )
-        snapshot = self.cli.snapshots.create_new_snapshot(dashboard={
+        snapshot = self.grafana.snapshots.create_new_snapshot(dashboard={
             "editable": "false",
             "hideControls": "true",
             "nav": [
@@ -61,7 +61,7 @@ class SnapshotTestCase(unittest.TestCase):
                 "url": "myurl/dashboard/snapshot/YYYYYYY"
             },
         )
-        snapshot = self.cli.snapshots.create_new_snapshot(dashboard={
+        snapshot = self.grafana.snapshots.create_new_snapshot(dashboard={
             "editable": "false",
             "hideControls": "true",
             "nav": [
@@ -108,7 +108,7 @@ class SnapshotTestCase(unittest.TestCase):
                 }
             ]
         )
-        dashboards = self.cli.snapshots.get_dashboard_snapshots()
+        dashboards = self.grafana.snapshots.get_dashboard_snapshots()
         self.assertEqual(len(dashboards), 1)
 
     @requests_mock.Mocker()
@@ -130,7 +130,7 @@ class SnapshotTestCase(unittest.TestCase):
                 }
             ]
         )
-        dashboards = self.cli.snapshots.get_snapshot_by_key(key="YYYYYYY")
+        dashboards = self.grafana.snapshots.get_snapshot_by_key(key="YYYYYYY")
         self.assertEqual(len(dashboards), 1)
 
     @requests_mock.Mocker()
@@ -138,7 +138,7 @@ class SnapshotTestCase(unittest.TestCase):
         m.delete('http://localhost/api/snapshots/YYYYYYY', json={"message": "Snapshot deleted. It might take an hour "
                                                                             "before it's cleared from any CDN "
                                                                             "caches."})
-        annotation = self.cli.snapshots.delete_snapshot_by_key(snapshot_id="YYYYYYY")
+        annotation = self.grafana.snapshots.delete_snapshot_by_key(snapshot_id="YYYYYYY")
         self.assertEqual(annotation['message'], "Snapshot deleted. It might take an hour before it's cleared from any "
                                                 "CDN caches.")
 
@@ -147,7 +147,7 @@ class SnapshotTestCase(unittest.TestCase):
         m.get('http://localhost/api/snapshots-delete/XXXXXXX', json={"message": "Snapshot deleted. It might take an hour "
                                                                             "before it's cleared from any CDN "
                                                                             "caches."})
-        annotation = self.cli.snapshots.delete_snapshot_by_delete_key(snapshot_delete_key="XXXXXXX")
+        annotation = self.grafana.snapshots.delete_snapshot_by_delete_key(snapshot_delete_key="XXXXXXX")
         self.assertEqual(annotation['message'], "Snapshot deleted. It might take an hour before it's cleared from any "
                                                 "CDN caches.")
 

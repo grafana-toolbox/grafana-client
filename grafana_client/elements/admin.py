@@ -2,9 +2,9 @@ from .base import Base
 
 
 class Admin(Base):
-    def __init__(self, api):
-        super(Admin, self).__init__(api)
-        self.api = api
+    def __init__(self, client):
+        super(Admin, self).__init__(client)
+        self.client = client
 
     def settings(self):
         """
@@ -12,7 +12,7 @@ class Admin(Base):
         :return:
         """
         path = "/admin/settings"
-        r = self.api.GET(path)
+        r = self.client.GET(path)
         return r
 
     def stats(self):
@@ -21,7 +21,7 @@ class Admin(Base):
         :return:
         """
         path = "/admin/stats"
-        r = self.api.GET(path)
+        r = self.client.GET(path)
         return r
 
     def create_user(self, user):
@@ -31,7 +31,7 @@ class Admin(Base):
         :return:
         """
         create_user_path = "/admin/users"
-        r = self.api.POST(create_user_path, json=user)
+        r = self.client.POST(create_user_path, json=user)
         return r
 
     def change_user_password(self, user_id, password):
@@ -42,7 +42,7 @@ class Admin(Base):
         :return:
         """
         change_user_password_path = "/admin/users/%s/password" % user_id
-        r = self.api.PUT(change_user_password_path, json={"password": password})
+        r = self.client.PUT(change_user_password_path, json={"password": password})
         return r
 
     def change_user_permissions(self, user_id, is_grafana_admin):
@@ -53,7 +53,7 @@ class Admin(Base):
         :return:
         """
         change_user_permissions = "/admin/users/%s/permissions" % user_id
-        r = self.api.PUT(
+        r = self.client.PUT(
             change_user_permissions, json={"isGrafanaAdmin": is_grafana_admin}
         )
         return r
@@ -65,7 +65,7 @@ class Admin(Base):
         :return:
         """
         delete_user_path = "/admin/users/%s" % user_id
-        r = self.api.DELETE(delete_user_path)
+        r = self.client.DELETE(delete_user_path)
         return r
 
     def pause_all_alerts(self, pause):
@@ -75,5 +75,5 @@ class Admin(Base):
         :return:
         """
         change_user_permissions = "/admin/pause-all-alerts"
-        r = self.api.POST(change_user_permissions, json={"paused": pause})
+        r = self.client.POST(change_user_permissions, json={"paused": pause})
         return r

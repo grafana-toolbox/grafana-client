@@ -2,19 +2,19 @@ import unittest
 
 import requests_mock
 
-from grafana_client.grafana_face import GrafanaFace
+from grafana_client import GrafanaApi
 
 
 class OrganizationTestCase(unittest.TestCase):
     def setUp(self):
-        self.cli = GrafanaFace(
+        self.grafana = GrafanaApi(
             ("admin", "admin"), host="localhost", url_path_prefix="", protocol="http"
         )
 
     @requests_mock.Mocker()
     def test_delete_snapshot_by_key(self, m):
         m.delete('http://localhost/api/orgs/1/users/2', json={"message": "User removed from organization"})
-        annotation = self.cli.organizations.organization_user_delete(organization_id=1, user_id=2)
+        annotation = self.grafana.organizations.organization_user_delete(organization_id=1, user_id=2)
         self.assertEqual(annotation['message'], "User removed from organization")
 
     @requests_mock.Mocker()
@@ -24,7 +24,7 @@ class OrganizationTestCase(unittest.TestCase):
             json={"theme": "", "homeDashboardId": 0, "timezone": ""}
         )
 
-        result = self.cli.organizations.organization_preference_get()
+        result = self.grafana.organizations.organization_preference_get()
         self.assertEqual(result["homeDashboardId"], 0)
 
     @requests_mock.Mocker()
@@ -33,7 +33,7 @@ class OrganizationTestCase(unittest.TestCase):
             "http://localhost/api/org/preferences",
             json={"message": "Preferences updated"}
         )
-        preference = self.cli.organizations.organization_preference_update(theme="", home_dashboard_id=0,
+        preference = self.grafana.organizations.organization_preference_update(theme="", home_dashboard_id=0,
                                                                            timezone="utc")
         self.assertEqual(preference["message"], "Preferences updated")
 
@@ -43,7 +43,7 @@ class OrganizationTestCase(unittest.TestCase):
             "http://localhost/api/orgs/1/users/2",
             json={"message": "Organization user updated"}
         )
-        preference = self.cli.organizations.organization_user_update(organization_id=1, user_id=2, user_role="Admin")
+        preference = self.grafana.organizations.organization_user_update(organization_id=1, user_id=2, user_role="Admin")
         self.assertEqual(preference["message"], "Organization user updated")
 
     @requests_mock.Mocker()
@@ -52,7 +52,7 @@ class OrganizationTestCase(unittest.TestCase):
             "http://localhost/api/orgs/1/users",
             json={"message": "User added to organization"}
         )
-        preference = self.cli.organizations.organization_user_add(organization_id=1, user={
+        preference = self.grafana.organizations.organization_user_add(organization_id=1, user={
             "loginOrEmail": "user",
             "role": "Viewer"
         })
@@ -72,7 +72,7 @@ class OrganizationTestCase(unittest.TestCase):
                 }
             ]
         )
-        users = self.cli.organizations.organization_user_list(organization_id=1)
+        users = self.grafana.organizations.organization_user_list(organization_id=1)
         self.assertEqual(len(users), 1)
 
     @requests_mock.Mocker()
@@ -89,7 +89,7 @@ class OrganizationTestCase(unittest.TestCase):
                 }
             ]
         )
-        users = self.cli.organizations.list_organization()
+        users = self.grafana.organizations.list_organization()
         self.assertEqual(len(users), 1)
 
     @requests_mock.Mocker()
@@ -101,7 +101,7 @@ class OrganizationTestCase(unittest.TestCase):
                 "name": "Main Org."
             }
         )
-        orgs = self.cli.organization.get_current_organization()
+        orgs = self.grafana.organization.get_current_organization()
         self.assertEqual(orgs['name'], "Main Org.")
 
     @requests_mock.Mocker()
@@ -110,7 +110,7 @@ class OrganizationTestCase(unittest.TestCase):
             "http://localhost/api/org",
             json={"message": "Organization updated"}
         )
-        org = self.cli.organization.update_current_organization(organization={
+        org = self.grafana.organization.update_current_organization(organization={
             "name": "Main Org."
         })
         self.assertEqual(org['message'], "Organization updated")
@@ -121,7 +121,7 @@ class OrganizationTestCase(unittest.TestCase):
             "http://localhost/api/orgs/1",
             json={"message": "Organization updated"}
         )
-        preference = self.cli.organizations.update_organization(organization_id=1, organization={
+        preference = self.grafana.organizations.update_organization(organization_id=1, organization={
             "name": "Main Org 2."
         })
         self.assertEqual(preference["message"], "Organization updated")
@@ -132,7 +132,7 @@ class OrganizationTestCase(unittest.TestCase):
             "http://localhost/api/orgs/1",
             json={"message": "Organization deleted"}
         )
-        preference = self.cli.organizations.delete_organization(organization_id=1)
+        preference = self.grafana.organizations.delete_organization(organization_id=1)
         self.assertEqual(preference["message"], "Organization deleted")
 
     @requests_mock.Mocker()
@@ -144,7 +144,7 @@ class OrganizationTestCase(unittest.TestCase):
                 "message": "Organization created"
             }
         )
-        preference = self.cli.organization.create_organization(organization={
+        preference = self.grafana.organization.create_organization(organization={
             "name": "New Org."
         })
         self.assertEqual(preference["message"], "Organization created")
@@ -155,7 +155,7 @@ class OrganizationTestCase(unittest.TestCase):
             "http://localhost/api/org/users/1",
             json={"message": "User removed from organization"}
         )
-        preference = self.cli.organization.delete_user_current_organization(user_id=1)
+        preference = self.grafana.organization.delete_user_current_organization(user_id=1)
         self.assertEqual(preference["message"], "User removed from organization")
 
     @requests_mock.Mocker()
@@ -164,7 +164,7 @@ class OrganizationTestCase(unittest.TestCase):
             "http://localhost/api/org/users",
             json={"message": "User added to organization"}
         )
-        preference = self.cli.organization.add_user_current_organization({
+        preference = self.grafana.organization.add_user_current_organization({
             "role": "Admin",
             "loginOrEmail": "admin"
         })
@@ -176,7 +176,7 @@ class OrganizationTestCase(unittest.TestCase):
             "http://localhost/api/org/users/1",
             json={"message": "Organization user updated"}
         )
-        preference = self.cli.organization.update_user_current_organization(user_id=1, user={
+        preference = self.grafana.organization.update_user_current_organization(user_id=1, user={
             "role": "Viewer",
         })
         self.assertEqual(preference["message"], "Organization user updated")
@@ -195,7 +195,7 @@ class OrganizationTestCase(unittest.TestCase):
                 }
             ]
         )
-        org = self.cli.organization.get_current_organization_users()
+        org = self.grafana.organization.get_current_organization_users()
         self.assertEqual(len(org), 1)
 
     @requests_mock.Mocker()
@@ -216,7 +216,7 @@ class OrganizationTestCase(unittest.TestCase):
                 }
             }
         )
-        org = self.cli.organization.find_organization(org_name="Main")
+        org = self.grafana.organization.find_organization(org_name="Main")
         self.assertEqual(org['id'], 1)
 
     @requests_mock.Mocker()
@@ -225,7 +225,7 @@ class OrganizationTestCase(unittest.TestCase):
             "http://localhost/api/user/using/2",
             json={"message":"Active organization changed"}
         )
-        preference = self.cli.organizations.switch_organization(organization_id=2)
+        preference = self.grafana.organizations.switch_organization(organization_id=2)
         self.assertEqual(preference["message"], "Active organization changed")
 
 

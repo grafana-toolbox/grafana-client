@@ -2,18 +2,18 @@ import unittest
 
 import requests_mock
 
-from grafana_client.grafana_api import (
+from grafana_client.client import (
     GrafanaBadInputError,
     GrafanaClientError,
     GrafanaServerError,
     GrafanaUnauthorizedError,
 )
-from grafana_client.grafana_face import GrafanaFace
+from grafana_client import GrafanaApi
 
 
 class NotificationsTestCase(unittest.TestCase):
     def setUp(self):
-        self.cli = GrafanaFace(
+        self.grafana = GrafanaApi(
             ("admin", "admin"), host="localhost", url_path_prefix="", protocol="http"
         )
 
@@ -36,7 +36,7 @@ class NotificationsTestCase(unittest.TestCase):
                 }
             ],
         )
-        notification_channels = self.cli.notifications.get_channels()
+        notification_channels = self.grafana.notifications.get_channels()
         self.assertEqual(len(notification_channels), 1)
 
         channel = notification_channels[0]
@@ -72,7 +72,7 @@ class NotificationsTestCase(unittest.TestCase):
                 },
             ],
         )
-        notification_channels = self.cli.notifications.lookup_channels()
+        notification_channels = self.grafana.notifications.lookup_channels()
         self.assertEqual(len(notification_channels), 2)
 
         channel_1 = notification_channels[0]
@@ -107,7 +107,7 @@ class NotificationsTestCase(unittest.TestCase):
             },
         )
 
-        channel = self.cli.notifications.get_channel_by_uid("team-a-email-notifier")
+        channel = self.grafana.notifications.get_channel_by_uid("team-a-email-notifier")
         self.assertEqual(channel["id"], 1)
         self.assertEqual(channel["uid"], "team-a-email-notifier")
         self.assertEqual(channel["name"], "Team A")
@@ -137,7 +137,7 @@ class NotificationsTestCase(unittest.TestCase):
             },
         )
 
-        channel = self.cli.notifications.get_channel_by_id(1)
+        channel = self.grafana.notifications.get_channel_by_id(1)
         self.assertEqual(channel["id"], 1)
         self.assertEqual(channel["uid"], "team-a-email-notifier")
         self.assertEqual(channel["name"], "Team A")
@@ -176,7 +176,7 @@ class NotificationsTestCase(unittest.TestCase):
             "settings": {"addresses": "dev@grafana.com"},
         }
 
-        created_channel = self.cli.notifications.create_channel(payload)
+        created_channel = self.grafana.notifications.create_channel(payload)
         self.assertEqual(created_channel["id"], 2)
         self.assertEqual(created_channel["uid"], "new-alert-notification")
         self.assertEqual(created_channel["name"], "new alert notification")
@@ -216,7 +216,7 @@ class NotificationsTestCase(unittest.TestCase):
             "settings": {"addresses": "dev@grafana.com"},
         }
 
-        updated_channel = self.cli.notifications.update_channel_by_uid("new-alert-notification", payload)
+        updated_channel = self.grafana.notifications.update_channel_by_uid("new-alert-notification", payload)
         self.assertEqual(updated_channel["id"], 1)
         self.assertEqual(updated_channel["uid"], "new-alert-notification")
         self.assertEqual(updated_channel["name"], "new alert notification")
@@ -256,7 +256,7 @@ class NotificationsTestCase(unittest.TestCase):
             "settings": {"addresses": "dev@grafana.com"},
         }
 
-        updated_channel = self.cli.notifications.update_channel_by_id(1, payload)
+        updated_channel = self.grafana.notifications.update_channel_by_id(1, payload)
         self.assertEqual(updated_channel["id"], 1)
         self.assertEqual(updated_channel["uid"], "new-alert-notification")
         self.assertEqual(updated_channel["name"], "new alert notification")
@@ -277,7 +277,7 @@ class NotificationsTestCase(unittest.TestCase):
             },
         )
 
-        delete_response = self.cli.notifications.delete_notification_by_uid("new-alert-notification")
+        delete_response = self.grafana.notifications.delete_notification_by_uid("new-alert-notification")
         self.assertEqual(delete_response["message"], "Notification deleted")
 
     @requests_mock.Mocker()
@@ -289,5 +289,5 @@ class NotificationsTestCase(unittest.TestCase):
             },
         )
 
-        delete_response = self.cli.notifications.delete_notification_by_id(1)
+        delete_response = self.grafana.notifications.delete_notification_by_id(1)
         self.assertEqual(delete_response["message"], "Notification deleted")

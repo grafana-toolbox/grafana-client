@@ -2,9 +2,9 @@ from .base import Base
 
 
 class Search(Base):
-    def __init__(self, api):
-        super(Search, self).__init__(api)
-        self.api = api
+    def __init__(self, client):
+        super(Search, self).__init__(client)
+        self.client = client
 
     def search_dashboards(
         self,
@@ -54,5 +54,5 @@ class Search(Base):
         list_dashboard_path += "?"
         list_dashboard_path += "&".join(params)
 
-        r = self.api.GET(list_dashboard_path)
+        r = self.client.GET(list_dashboard_path)
         return r

@@ -2,9 +2,9 @@ from .base import Base
 
 
 class Dashboard(Base):
-    def __init__(self, api):
-        super(Dashboard, self).__init__(api)
-        self.api = api
+    def __init__(self, client):
+        super(Dashboard, self).__init__(client)
+        self.client = client
 
     def get_dashboard(self, dashboard_uid):
         """
@@ -13,7 +13,7 @@ class Dashboard(Base):
         :return:
         """
         get_dashboard_path = "/dashboards/uid/%s" % dashboard_uid
-        r = self.api.GET(get_dashboard_path)
+        r = self.client.GET(get_dashboard_path)
         return r
 
     def update_dashboard(self, dashboard):
@@ -23,7 +23,7 @@ class Dashboard(Base):
         :return:
         """
         put_dashboard_path = "/dashboards/db"
-        r = self.api.POST(put_dashboard_path, json=dashboard)
+        r = self.client.POST(put_dashboard_path, json=dashboard)
         return r
 
     def delete_dashboard(self, dashboard_uid):
@@ -33,7 +33,7 @@ class Dashboard(Base):
         :return:
         """
         delete_dashboard_path = "/dashboards/uid/%s" % dashboard_uid
-        r = self.api.DELETE(delete_dashboard_path)
+        r = self.client.DELETE(delete_dashboard_path)
         return r
 
     def get_home_dashboard(self):
@@ -42,7 +42,7 @@ class Dashboard(Base):
         :return:
         """
         get_home_dashboard_path = "/dashboards/home"
-        r = self.api.GET(get_home_dashboard_path)
+        r = self.client.GET(get_home_dashboard_path)
         return r
 
     def get_dashboards_tags(self):
@@ -51,7 +51,7 @@ class Dashboard(Base):
         :return:
         """
         get_dashboards_tags_path = "/dashboards/tags"
-        r = self.api.GET(get_dashboards_tags_path)
+        r = self.client.GET(get_dashboards_tags_path)
         return r
 
     def get_dashboard_permissions(self, dashboard_id):
@@ -61,7 +61,7 @@ class Dashboard(Base):
         :return:
         """
         get_dashboard_permissions_path = "/dashboards/id/%s/permissions" % dashboard_id
-        r = self.api.GET(get_dashboard_permissions_path)
+        r = self.client.GET(get_dashboard_permissions_path)
         return r
 
     def update_dashboard_permissions(self, dashboard_id, items):
@@ -74,5 +74,5 @@ class Dashboard(Base):
         update_dashboard_permissions_path = (
             "/dashboards/id/%s/permissions" % dashboard_id
         )
-        r = self.api.POST(update_dashboard_permissions_path, json=items)
+        r = self.client.POST(update_dashboard_permissions_path, json=items)
         return r

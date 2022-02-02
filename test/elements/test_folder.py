@@ -2,13 +2,13 @@ import unittest
 
 import requests_mock
 
-from grafana_client.grafana_face import GrafanaFace
-from grafana_client.grafana_api import GrafanaBadInputError
+from grafana_client import GrafanaApi
+from grafana_client.client import GrafanaBadInputError
 
 
 class FolderTestCase(unittest.TestCase):
     def setUp(self):
-        self.cli = GrafanaFace(
+        self.grafana = GrafanaApi(
             ("admin", "admin"), host="localhost", url_path_prefix="", protocol="http"
         )
 
@@ -34,7 +34,7 @@ class FolderTestCase(unittest.TestCase):
                 }
             ]
         )
-        folders = self.cli.folder.get_all_folders()
+        folders = self.grafana.folder.get_all_folders()
         self.assertEqual(folders[0]["id"], 1)
         self.assertEqual(len(folders), 1)
 
@@ -58,7 +58,7 @@ class FolderTestCase(unittest.TestCase):
                 "version": 1
             }
         )
-        folders = self.cli.folder.get_folder(uid="nErXDvCkzzh")
+        folders = self.grafana.folder.get_folder(uid="nErXDvCkzzh")
         self.assertEqual(folders["uid"], "nErXDvCkzzh")
 
     @requests_mock.Mocker()
@@ -81,7 +81,7 @@ class FolderTestCase(unittest.TestCase):
                 "version": 1
             }
         )
-        folder = self.cli.folder.create_folder(title="Departmenet ABC", uid="nErXDvCkzz")
+        folder = self.grafana.folder.create_folder(title="Departmenet ABC", uid="nErXDvCkzz")
         self.assertEqual(folder["uid"], "nErXDvCkzz")
 
     @requests_mock.Mocker()
@@ -93,7 +93,7 @@ class FolderTestCase(unittest.TestCase):
             }, status_code=400
         )
         with self.assertRaises(GrafanaBadInputError):
-            folder = self.cli.folder.create_folder(title="Departmenet ABC")
+            folder = self.grafana.folder.create_folder(title="Departmenet ABC")
 
     @requests_mock.Mocker()
     def test_update_folder(self, m):
@@ -115,7 +115,7 @@ class FolderTestCase(unittest.TestCase):
                 "version": 1
             }
         )
-        folder = self.cli.folder.update_folder(title="Departmenet DEF", uid="nErXDvCkzz", version=1, overwrite=True)
+        folder = self.grafana.folder.update_folder(title="Departmenet DEF", uid="nErXDvCkzz", version=1, overwrite=True)
         self.assertEqual(folder["title"], "Departmenet DEF")
 
     @requests_mock.Mocker()
@@ -138,7 +138,7 @@ class FolderTestCase(unittest.TestCase):
                 "version": 1
             }
         )
-        folder = self.cli.folder.update_folder(title="Departmenet DEF", uid="nErXDvCkzz")
+        folder = self.grafana.folder.update_folder(title="Departmenet DEF", uid="nErXDvCkzz")
         self.assertEqual(folder["title"], "Departmenet DEF")
 
     @requests_mock.Mocker()
@@ -161,7 +161,7 @@ class FolderTestCase(unittest.TestCase):
                 "version": 1
             }
         )
-        folder = self.cli.folder.get_folder_by_id(folder_id=1)
+        folder = self.grafana.folder.get_folder_by_id(folder_id=1)
         self.assertEqual(folder["id"], 1)
 
     @requests_mock.Mocker()
@@ -209,7 +209,7 @@ class FolderTestCase(unittest.TestCase):
                 }
             ]
         )
-        folder_permissions = self.cli.folder.get_folder_permissions(uid="nErXDvCkzz")
+        folder_permissions = self.grafana.folder.get_folder_permissions(uid="nErXDvCkzz")
         self.assertEqual(folder_permissions[0]["permissionName"], "View")
 
     @requests_mock.Mocker()
@@ -218,7 +218,7 @@ class FolderTestCase(unittest.TestCase):
             "http://localhost/api/folders/nErXDvCkzz/permissions",
             json={"message": "Folder permissions updated"}
         )
-        folder = self.cli.folder.update_folder_permissions(uid="nErXDvCkzz", items=[
+        folder = self.grafana.folder.update_folder_permissions(uid="nErXDvCkzz", items=[
             {
                 "role": "Viewer",
                 "permission": 1
@@ -241,5 +241,5 @@ class FolderTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_delete_folder(self, m):
         m.delete("http://localhost/api/folders/nErXDvCkzz", json={"message": "Folder deleted"})
-        folder = self.cli.folder.delete_folder(uid="nErXDvCkzz")
+        folder = self.grafana.folder.delete_folder(uid="nErXDvCkzz")
         self.assertEqual(folder['message'], "Folder deleted")

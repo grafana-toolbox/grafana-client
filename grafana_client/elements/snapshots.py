@@ -2,9 +2,9 @@ from .base import Base
 
 
 class Snapshots(Base):
-    def __init__(self, api):
-        super(Snapshots, self).__init__(api)
-        self.api = api
+    def __init__(self, client):
+        super(Snapshots, self).__init__(client)
+        self.client = client
 
     def create_new_snapshot(
         self,
@@ -41,7 +41,7 @@ class Snapshots(Base):
         if delete_key:
             post_json["deleteKey"] = delete_key
 
-        r = self.api.POST(path, json=post_json)
+        r = self.client.POST(path, json=post_json)
         return r
 
     def get_dashboard_snapshots(self):
@@ -50,7 +50,7 @@ class Snapshots(Base):
         :return:
         """
         path = "/dashboard/snapshots"
-        r = self.api.GET(path)
+        r = self.client.GET(path)
         return r
 
     def get_snapshot_by_key(self, key):
@@ -60,7 +60,7 @@ class Snapshots(Base):
         :return:
         """
         path = "/snapshots/%s" % key
-        r = self.api.GET(path)
+        r = self.client.GET(path)
         return r
 
     def delete_snapshot_by_key(
@@ -73,7 +73,7 @@ class Snapshots(Base):
         :return:
         """
         path = "/snapshots/{}".format(snapshot_id)
-        r = self.api.DELETE(path)
+        r = self.client.DELETE(path)
 
         return r
 
@@ -87,6 +87,6 @@ class Snapshots(Base):
         :return:
         """
         path = "/snapshots-delete/{}".format(snapshot_delete_key)
-        r = self.api.GET(path)
+        r = self.client.GET(path)
 
         return r
