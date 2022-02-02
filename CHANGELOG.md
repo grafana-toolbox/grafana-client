@@ -20,6 +20,7 @@
 * Format code with `black` and `isort`
 * Improve inline documentation
 * Add `MANIFEST.in` to exclude specific files from `sdist` package
+* CI: Update from `pep517.build` to `build`
 
 
 <a name="1.0.3"></a>
