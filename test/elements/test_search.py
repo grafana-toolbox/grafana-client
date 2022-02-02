@@ -2,14 +2,14 @@ import unittest
 
 import requests_mock
 
-from grafana_client.grafana_face import GrafanaFace
-from grafana_client.grafana_api import GrafanaServerError, GrafanaClientError, GrafanaUnauthorizedError, \
+from grafana_client import GrafanaApi
+from grafana_client.client import GrafanaServerError, GrafanaClientError, GrafanaUnauthorizedError, \
     GrafanaBadInputError
 
 
 class AnnotationsTestCase(unittest.TestCase):
     def setUp(self):
-        self.cli = GrafanaFace(
+        self.grafana = GrafanaApi(
             ("admin", "admin"), host="localhost", url_path_prefix="", protocol="http"
         )
 
@@ -32,7 +32,7 @@ class AnnotationsTestCase(unittest.TestCase):
             ]
         )
 
-        result = self.cli.search.search_dashboards(query="str_e", folder_ids=11, starred="false", tag="test_tag",
+        result = self.grafana.search.search_dashboards(query="str_e", folder_ids=11, starred="false", tag="test_tag",
                                                    type_="dash-folder", dashboard_ids=163, limit=10)
         self.assertEqual(result[0]["id"], 163)
         self.assertEqual(len(result), 1)
@@ -47,4 +47,4 @@ class AnnotationsTestCase(unittest.TestCase):
         )
 
         with self.assertRaises(GrafanaBadInputError):
-            result = self.cli.search.search_dashboards()
+            result = self.grafana.search.search_dashboards()

@@ -1,1 +1,1 @@
-from .grafana_face import GrafanaFace
+from .api import GrafanaApi

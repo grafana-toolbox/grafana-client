@@ -24,7 +24,7 @@ requirements:
 test:
   imports:
     - grafana_client
-    - grafana_client.api
+    - grafana_client.elements
 
 about:
   home: https://panodata.github.io/grafana-client/

@@ -56,7 +56,7 @@ class TokenAuth(requests.auth.AuthBase):
         return request
 
 
-class GrafanaAPI:
+class GrafanaClient:
     def __init__(
         self,
         auth,

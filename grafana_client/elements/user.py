@@ -2,9 +2,9 @@ from .base import Base
 
 
 class Users(Base):
-    def __init__(self, api):
-        super(Users, self).__init__(api)
-        self.api = api
+    def __init__(self, client):
+        super(Users, self).__init__(client)
+        self.client = client
 
     def search_users(self, query=None, page=None, perpage=None):
         """
@@ -35,13 +35,13 @@ class Users(Base):
 
         if iterate:
             while True:
-                users_on_page = self.api.GET(show_users_path % page)
+                users_on_page = self.client.GET(show_users_path % page)
                 if not users_on_page:
                     break
                 list_of_users += users_on_page
                 page += 1
         else:
-            users_on_page = self.api.GET(show_users_path)
+            users_on_page = self.client.GET(show_users_path)
             list_of_users += users_on_page
 
         return list_of_users
@@ -53,7 +53,7 @@ class Users(Base):
         :return:
         """
         get_user_path = "/users/%s" % user_id
-        r = self.api.GET(get_user_path)
+        r = self.client.GET(get_user_path)
         return r
 
     def find_user(self, login_or_email):
@@ -63,7 +63,7 @@ class Users(Base):
         :return:
         """
         search_user_path = "/users/lookup?loginOrEmail=%s" % login_or_email
-        r = self.api.GET(search_user_path)
+        r = self.client.GET(search_user_path)
         return r
 
     def update_user(self, user_id, user):
@@ -74,7 +74,7 @@ class Users(Base):
         :return:
         """
         update_user_path = "/users/%s" % user_id
-        r = self.api.PUT(update_user_path, json=user)
+        r = self.client.PUT(update_user_path, json=user)
         return r
 
     def get_user_organisations(self, user_id):
@@ -84,14 +84,14 @@ class Users(Base):
         :return:
         """
         get_user_organisations_path = "/users/%s/orgs" % user_id
-        r = self.api.GET(get_user_organisations_path)
+        r = self.client.GET(get_user_organisations_path)
         return r
 
 
 class User(Base):
-    def __init__(self, api):
-        super(User, self).__init__(api)
-        self.api = api
+    def __init__(self, client):
+        super(User, self).__init__(client)
+        self.client = client
         self.path = "/user"
 
     def get_actual_user(self):
@@ -100,7 +100,7 @@ class User(Base):
         :return:
         """
         get_actual_user_path = "/user"
-        r = self.api.GET(get_actual_user_path)
+        r = self.client.GET(get_actual_user_path)
         return r
 
     def change_actual_user_password(self, old_password, new_password):
@@ -116,7 +116,7 @@ class User(Base):
             "newPassword": new_password,
             "confirmNew": new_password,
         }
-        r = self.api.PUT(
+        r = self.client.PUT(
             change_actual_user_password_path, json=change_actual_user_password_json
         )
         return r
@@ -132,7 +132,7 @@ class User(Base):
             user_id,
             organisation_id,
         )
-        r = self.api.POST(switch_user_organisation_path)
+        r = self.client.POST(switch_user_organisation_path)
         return r
 
     def switch_actual_user_organisation(self, organisation_id):
@@ -142,7 +142,7 @@ class User(Base):
         :return:
         """
         switch_actual_user_organisation_path = "/user/using/%s" % organisation_id
-        r = self.api.POST(switch_actual_user_organisation_path)
+        r = self.client.POST(switch_actual_user_organisation_path)
         return r
 
     def get_actual_user_organisations(self):
@@ -151,7 +151,7 @@ class User(Base):
         :return:
         """
         get_actual_user_organisations_path = "/user/orgs"
-        r = self.api.GET(get_actual_user_organisations_path)
+        r = self.client.GET(get_actual_user_organisations_path)
         return r
 
     def star_actual_user_dashboard(self, dashboard_id):
@@ -161,7 +161,7 @@ class User(Base):
         :return:
         """
         star_dashboard = "/user/stars/dashboard/%s" % dashboard_id
-        r = self.api.POST(star_dashboard)
+        r = self.client.POST(star_dashboard)
         return r
 
     def unstar_actual_user_dashboard(self, dashboard_id):
@@ -171,5 +171,5 @@ class User(Base):
         :return:
         """
         unstar_dashboard = "/user/stars/dashboard/%s" % dashboard_id
-        r = self.api.DELETE(unstar_dashboard)
+        r = self.client.DELETE(unstar_dashboard)
         return r

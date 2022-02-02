@@ -8,8 +8,8 @@ else:
 
 import requests
 
-from grafana_client.grafana_face import GrafanaFace
-from grafana_client.grafana_api import TokenAuth
+from grafana_client.api import GrafanaApi
+from grafana_client.client import TokenAuth
 
 
 class MockResponse:
@@ -21,8 +21,8 @@ class MockResponse:
         return self.json_data
 
 
-class TestGrafanaAPI(unittest.TestCase):
-    @patch("grafana_client.grafana_api.GrafanaAPI.__getattr__")
+class TestGrafanaClient(unittest.TestCase):
+    @patch("grafana_client.client.GrafanaClient.__getattr__")
     def test_grafana_client(self, mock_get):
         mock_get.return_value = Mock()
         mock_get.return_value.return_value = """{
@@ -33,21 +33,21 @@ class TestGrafanaAPI(unittest.TestCase):
   "orgId": 1,
   "isGrafanaAdmin": true
 }"""
-        cli = GrafanaFace(
+        grafana = GrafanaApi(
             ("admin", "admin"), host="localhost", url_path_prefix="", protocol="https"
         )
-        cli.users.find_user("test@test.com")
+        grafana.users.find_user("test@test.com")
 
     def test_grafana_client_no_verify(self):
-        cli = GrafanaFace(
+        grafana = GrafanaApi(
             ("admin", "admin"),
             host="localhost",
             url_path_prefix="",
             protocol="https",
             verify=False,
         )
-        cli.api.s.get = Mock(name="get")
-        cli.api.s.get.return_value = MockResponse(
+        grafana.client.s.get = Mock(name="get")
+        grafana.client.s.get.return_value = MockResponse(
             {
                 "email": "user@mygraf.com",
                 "name": "admin",
@@ -60,8 +60,8 @@ class TestGrafanaAPI(unittest.TestCase):
         )
 
         basic_auth = requests.auth.HTTPBasicAuth("admin", "admin")
-        cli.users.find_user("test@test.com")
-        cli.api.s.get.assert_called_once_with(
+        grafana.users.find_user("test@test.com")
+        grafana.client.s.get.assert_called_once_with(
             "https://localhost/api/users/lookup?loginOrEmail=test@test.com",
             auth=basic_auth,
             headers=None,
@@ -71,7 +71,7 @@ class TestGrafanaAPI(unittest.TestCase):
         )
 
     def test_grafana_client_timeout(self):
-        cli = GrafanaFace(
+        grafana = GrafanaApi(
             ("admin", "admin"),
             host="play.grafana.org",
             url_path_prefix="",
@@ -81,22 +81,22 @@ class TestGrafanaAPI(unittest.TestCase):
         )
 
         with self.assertRaises(requests.exceptions.Timeout):
-            cli.folder.get_all_folders()
+            grafana.folder.get_all_folders()
 
     def test_grafana_client_basic_auth(self):
-        cli = GrafanaFace(
+        grafana = GrafanaApi(
             ("admin", "admin"), host="localhost", url_path_prefix="", protocol="https",port="3000"
         )
-        self.assertTrue(isinstance(cli.api.auth, requests.auth.HTTPBasicAuth))
+        self.assertTrue(isinstance(grafana.client.auth, requests.auth.HTTPBasicAuth))
 
     def test_grafana_client_token_auth(self):
-        cli = GrafanaFace(
+        grafana = GrafanaApi(
             "alongtoken012345etc",
             host="localhost",
             url_path_prefix="",
             protocol="https",
         )
-        self.assertTrue(isinstance(cli.api.auth, TokenAuth))
+        self.assertTrue(isinstance(grafana.client.auth, TokenAuth))
 
 
 if __name__ == "__main__":
