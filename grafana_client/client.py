@@ -33,9 +33,7 @@ class GrafanaBadInputError(GrafanaClientError):
     """
 
     def __init__(self, response):
-        super(GrafanaBadInputError, self).__init__(
-            400, response, "Bad Input: `{0}`".format(response)
-        )
+        super(GrafanaBadInputError, self).__init__(400, response, "Bad Input: `{0}`".format(response))
 
 
 class GrafanaUnauthorizedError(GrafanaClientError):

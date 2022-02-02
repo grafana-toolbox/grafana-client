@@ -116,9 +116,7 @@ class User(Base):
             "newPassword": new_password,
             "confirmNew": new_password,
         }
-        r = self.client.PUT(
-            change_actual_user_password_path, json=change_actual_user_password_json
-        )
+        r = self.client.PUT(change_actual_user_password_path, json=change_actual_user_password_json)
         return r
 
     def switch_user_organisation(self, user_id, organisation_id):

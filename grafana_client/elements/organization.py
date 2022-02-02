@@ -184,9 +184,7 @@ class Organizations(Base):
         r = self.client.GET(update_preference)
         return r
 
-    def organization_preference_update(
-        self, theme="", home_dashboard_id=0, timezone="utc"
-    ):
+    def organization_preference_update(self, theme="", home_dashboard_id=0, timezone="utc"):
         """
 
         :param theme:

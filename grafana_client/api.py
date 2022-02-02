@@ -1,18 +1,18 @@
 from .client import GrafanaClient
 from .elements import (
     Admin,
+    Annotations,
     Dashboard,
     Datasource,
     Folder,
+    Notifications,
     Organization,
     Organizations,
     Search,
+    Snapshots,
+    Teams,
     User,
     Users,
-    Teams,
-    Snapshots,
-    Annotations,
-    Notifications
 )
 
 

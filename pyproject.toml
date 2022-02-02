@@ -6,3 +6,11 @@ requires = [
     "wheel"
 ]
 build-backend = "setuptools.build_meta"
+
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3

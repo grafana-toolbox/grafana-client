@@ -7,9 +7,7 @@ from grafana_client import GrafanaApi
 
 class TeamsTestCase(unittest.TestCase):
     def setUp(self):
-        self.grafana = GrafanaApi(
-            ("admin", "admin"), host="localhost", url_path_prefix="", protocol="http"
-        )
+        self.grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="http")
 
     @requests_mock.Mocker()
     def test_search_teams_url_encodes_query(self, m):
@@ -74,7 +72,7 @@ class TeamsTestCase(unittest.TestCase):
                 "perPage": 1,
             },
         )
-        teams = self.grafana.teams.search_teams("team",perpage=1)
+        teams = self.grafana.teams.search_teams("team", perpage=1)
         self.assertEqual(teams[0]["name"], "MyTestTeam")
         self.assertEqual(teams[1]["name"], "SecondTeam")
         self.assertEqual(len(teams), 2)
@@ -145,9 +143,7 @@ class TeamsTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_add_team(self, m):
-        m.post(
-            "http://localhost/api/teams", json={"message": "Team created", "teamId": 2}
-        )
+        m.post("http://localhost/api/teams", json={"message": "Team created", "teamId": 2})
         team = {"name": "MySecondTestTeam", "email": "email@test.com"}
         new_team = self.grafana.teams.add_team(team)
         self.assertEqual(new_team["teamId"], 2)
