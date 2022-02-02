@@ -1,5 +1,26 @@
 # CHANGELOG
 
+## in progress
+* CI: Make release job grab the complete repository history. Thanks, Andrew!
+* CI: Fix path to `conda/setup.py`
+* Improve README: Add examples for creating a user and an organization.
+  Thanks, Anton!
+* Fork the repository to https://github.com/panodata/grafana-client.
+  Discussion: https://github.com/m0nhawk/grafana_api/issues/88.
+* Rename Python package from `grafana_api` to `grafana-client` and
+  update the repository location.
+* CI: Fix tests on PyPy by installing `libxml2-dev` and `libxslt-dev`
+* CI: Fix Codecov uploader by using GitHub Action recipe
+* CI: Remove CodeQL analysis
+* Adjust documentation to project fork
+* CI: Expand test matrix by Python 3.9 and 3.10
+* Add `CHANGELOG.md`, generated with `chglog`
+* CI: Remove automatic changelog generation with `chglog`
+* Refactoring: Rename module names and references
+* Format code with `black` and `isort`
+* Improve inline documentation
+
+
 <a name="1.0.3"></a>
 ## [1.0.3](https://github.com/panodata/grafana-client/compare/1.0.2...1.0.3) (2020-08-16)
 
