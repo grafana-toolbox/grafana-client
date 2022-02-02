@@ -71,8 +71,6 @@ class Dashboard(Base):
         :param items:
         :return:
         """
-        update_dashboard_permissions_path = (
-            "/dashboards/id/%s/permissions" % dashboard_id
-        )
+        update_dashboard_permissions_path = "/dashboards/id/%s/permissions" % dashboard_id
         r = self.client.POST(update_dashboard_permissions_path, json=items)
         return r

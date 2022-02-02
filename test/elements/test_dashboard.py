@@ -7,9 +7,7 @@ from grafana_client import GrafanaApi
 
 class DashboardTestCase(unittest.TestCase):
     def setUp(self):
-        self.grafana = GrafanaApi(
-            ("admin", "admin"), host="localhost", url_path_prefix="", protocol="http"
-        )
+        self.grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="http")
 
     @requests_mock.Mocker()
     def test_get_dashboard(self, m):
@@ -23,14 +21,14 @@ class DashboardTestCase(unittest.TestCase):
                     "tags": ["templated"],
                     "timezone": "browser",
                     "schemaVersion": 16,
-                    "version": 0
+                    "version": 0,
                 },
                 "meta": {
-                    "isStarred": 'false',
+                    "isStarred": "false",
                     "url": "/d/cIBgcSjkk/production-overview",
-                    "slug": "production-overview"
-                }
-            }
+                    "slug": "production-overview",
+                },
+            },
         )
         dashboard = self.grafana.dashboard.get_dashboard("cIBgcSjkk")
         self.assertEqual(dashboard["dashboard"]["uid"], "cIBgcSjkk")
@@ -45,22 +43,24 @@ class DashboardTestCase(unittest.TestCase):
                 "url": "/d/cIBgcSjkk/production-overview",
                 "status": "success",
                 "version": 1,
-                "slug": "production-overview"
+                "slug": "production-overview",
+            },
+        )
+        dashboard = self.grafana.dashboard.update_dashboard(
+            {
+                "dashboard": {
+                    "id": 1,
+                    "uid": "cIBgcSjkk",
+                    "title": "Production Overview",
+                    "tags": ["templated"],
+                    "timezone": "browser",
+                    "schemaVersion": 16,
+                    "version": 0,
+                },
+                "folderId": 0,
+                "overwrite": "false",
             }
         )
-        dashboard = self.grafana.dashboard.update_dashboard({
-            "dashboard": {
-                "id": 1,
-                "uid": 'cIBgcSjkk',
-                "title": "Production Overview",
-                "tags": ["templated"],
-                "timezone": "browser",
-                "schemaVersion": 16,
-                "version": 0
-            },
-            "folderId": 0,
-            "overwrite": 'false'
-        })
 
         self.assertEqual(dashboard["uid"], "cIBgcSjkk")
         self.assertEqual(dashboard["status"], "success")
@@ -71,36 +71,27 @@ class DashboardTestCase(unittest.TestCase):
             "http://localhost/api/dashboards/home",
             json={
                 "dashboard": {
-                    "editable": 'false',
-                    "hideControls": 'true',
-                    "nav": [
-                        {
-                            "enable": 'false',
-                            "type": "timepicker"
-                        }
-                    ],
+                    "editable": "false",
+                    "hideControls": "true",
+                    "nav": [{"enable": "false", "type": "timepicker"}],
                     "style": "dark",
                     "tags": [],
-                    "templating": {
-                        "list": [
-                        ]
-                    },
-                    "time": {
-                    },
+                    "templating": {"list": []},
+                    "time": {},
                     "timezone": "browser",
                     "title": "Home",
-                    "version": 5
+                    "version": 5,
                 },
                 "meta": {
-                    "isHome": 'true',
-                    "canSave": 'false',
-                    "canEdit": 'false',
-                    "canStar": 'false',
+                    "isHome": "true",
+                    "canSave": "false",
+                    "canEdit": "false",
+                    "canStar": "false",
                     "url": "",
                     "expires": "0001-01-01T00:00:00Z",
-                    "created": "0001-01-01T00:00:00Z"
-                }
-            }
+                    "created": "0001-01-01T00:00:00Z",
+                },
+            },
         )
         dashboard = self.grafana.dashboard.get_home_dashboard()
         self.assertEqual(dashboard["meta"]["isHome"], "true")
@@ -109,23 +100,11 @@ class DashboardTestCase(unittest.TestCase):
     def test_delete_dashboard(self, m):
         m.delete("http://localhost/api/dashboards/uid/cIBgcSjkk", json={"title": "Production Overview"})
         response = self.grafana.dashboard.delete_dashboard("cIBgcSjkk")
-        self.assertEqual(response['title'], "Production Overview")
+        self.assertEqual(response["title"], "Production Overview")
 
     @requests_mock.Mocker()
     def test_get_dashboards_tags(self, m):
-        m.get(
-            "http://localhost/api/dashboards/tags",
-            json=[
-                {
-                    "term": "tag1",
-                    "count": 1
-                },
-                {
-                    "term": "tag2",
-                    "count": 4
-                }
-            ]
-        )
+        m.get("http://localhost/api/dashboards/tags", json=[{"term": "tag1", "count": 1}, {"term": "tag2", "count": 4}])
         tags = self.grafana.dashboard.get_dashboards_tags()
         self.assertEqual(len(tags), 2)
         self.assertEqual(tags[0]["term"], "tag1")
@@ -151,8 +130,8 @@ class DashboardTestCase(unittest.TestCase):
                     "uid": "",
                     "title": "",
                     "slug": "",
-                    "isFolder": 'false',
-                    "url": ""
+                    "isFolder": "false",
+                    "url": "",
                 },
                 {
                     "id": 2,
@@ -170,10 +149,10 @@ class DashboardTestCase(unittest.TestCase):
                     "uid": "",
                     "title": "",
                     "slug": "",
-                    "isFolder": 'false',
-                    "url": ""
-                }
-            ]
+                    "isFolder": "false",
+                    "url": "",
+                },
+            ],
         )
         permissions = self.grafana.dashboard.get_dashboard_permissions(1)
         self.assertEqual(len(permissions), 2)
@@ -181,28 +160,16 @@ class DashboardTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_update_dashboard_permissions(self, m):
-        m.post(
-            "http://localhost/api/dashboards/id/1/permissions",
-            json={"message": "Dashboard permissions updated"}
+        m.post("http://localhost/api/dashboards/id/1/permissions", json={"message": "Dashboard permissions updated"})
+        permissions = self.grafana.dashboard.update_dashboard_permissions(
+            1,
+            {
+                "items": [
+                    {"role": "Viewer", "permission": 1},
+                    {"role": "Editor", "permission": 2},
+                    {"teamId": 1, "permission": 1},
+                    {"userId": 11, "permission": 4},
+                ]
+            },
         )
-        permissions = self.grafana.dashboard.update_dashboard_permissions(1,{
-            "items": [
-                {
-                    "role": "Viewer",
-                    "permission": 1
-                },
-                {
-                    "role": "Editor",
-                    "permission": 2
-                },
-                {
-                    "teamId": 1,
-                    "permission": 1
-                },
-                {
-                    "userId": 11,
-                    "permission": 4
-                }
-            ]
-        })
-        self.assertEqual(permissions['message'], "Dashboard permissions updated")
+        self.assertEqual(permissions["message"], "Dashboard permissions updated")

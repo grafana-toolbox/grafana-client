@@ -53,9 +53,7 @@ class Admin(Base):
         :return:
         """
         change_user_permissions = "/admin/users/%s/permissions" % user_id
-        r = self.client.PUT(
-            change_user_permissions, json={"isGrafanaAdmin": is_grafana_admin}
-        )
+        r = self.client.PUT(change_user_permissions, json={"isGrafanaAdmin": is_grafana_admin})
         return r
 
     def delete_user(self, user_id):

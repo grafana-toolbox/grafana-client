@@ -48,9 +48,9 @@ class Folder(Base):
         """
         body = {"title": title}
         if version is not None:
-            body['version'] = version
+            body["version"] = version
         if overwrite:
-            body['overwrite'] = True
+            body["overwrite"] = True
 
         path = "/folders/%s" % uid
         r = self.client.PUT(path, json=body)
@@ -76,7 +76,7 @@ class Folder(Base):
         r = self.client.GET(path)
         return r
 
-    def get_folder_permissions(self,uid):
+    def get_folder_permissions(self, uid):
         """
 
         :return:

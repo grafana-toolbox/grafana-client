@@ -1,8 +1,8 @@
-import unittest
 import sys
+import unittest
 
 if sys.version_info > (3, 0):
-    from unittest.mock import patch, Mock
+    from unittest.mock import Mock, patch
 else:
     from mock import patch, Mock
 
@@ -33,9 +33,7 @@ class TestGrafanaClient(unittest.TestCase):
   "orgId": 1,
   "isGrafanaAdmin": true
 }"""
-        grafana = GrafanaApi(
-            ("admin", "admin"), host="localhost", url_path_prefix="", protocol="https"
-        )
+        grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="https")
         grafana.users.find_user("test@test.com")
 
     def test_grafana_client_no_verify(self):
@@ -77,16 +75,14 @@ class TestGrafanaClient(unittest.TestCase):
             url_path_prefix="",
             protocol="https",
             verify=False,
-            timeout=0.0001
+            timeout=0.0001,
         )
 
         with self.assertRaises(requests.exceptions.Timeout):
             grafana.folder.get_all_folders()
 
     def test_grafana_client_basic_auth(self):
-        grafana = GrafanaApi(
-            ("admin", "admin"), host="localhost", url_path_prefix="", protocol="https",port="3000"
-        )
+        grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="https", port="3000")
         self.assertTrue(isinstance(grafana.client.auth, requests.auth.HTTPBasicAuth))
 
     def test_grafana_client_token_auth(self):

@@ -27,9 +27,7 @@ class Snapshots(Base):
         """
 
         path = "/snapshots"
-        post_json = {
-            "dashboard": dashboard
-        }
+        post_json = {"dashboard": dashboard}
         if name:
             post_json["name"] = name
         if expires:
@@ -63,10 +61,7 @@ class Snapshots(Base):
         r = self.client.GET(path)
         return r
 
-    def delete_snapshot_by_key(
-            self,
-            snapshot_id=None
-    ):
+    def delete_snapshot_by_key(self, snapshot_id=None):
         """
 
         :param snapshot_id:
@@ -77,10 +72,7 @@ class Snapshots(Base):
 
         return r
 
-    def delete_snapshot_by_delete_key(
-            self,
-            snapshot_delete_key=None
-    ):
+    def delete_snapshot_by_delete_key(self, snapshot_delete_key=None):
         """
 
         :param snapshot_delete_key:

@@ -2,20 +2,18 @@ import unittest
 
 import requests_mock
 
+from grafana_client import GrafanaApi
 from grafana_client.client import (
     GrafanaBadInputError,
     GrafanaClientError,
     GrafanaServerError,
     GrafanaUnauthorizedError,
 )
-from grafana_client import GrafanaApi
 
 
 class NotificationsTestCase(unittest.TestCase):
     def setUp(self):
-        self.grafana = GrafanaApi(
-            ("admin", "admin"), host="localhost", url_path_prefix="", protocol="http"
-        )
+        self.grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="http")
 
     @requests_mock.Mocker()
     def test_get_channels(self, mock):
@@ -272,9 +270,7 @@ class NotificationsTestCase(unittest.TestCase):
     def test_delete_notification_by_uid(self, mock):
         mock.delete(
             "http://localhost/api/alert-notifications/uid/new-alert-notification",
-            json={
-                "message": "Notification deleted"
-            },
+            json={"message": "Notification deleted"},
         )
 
         delete_response = self.grafana.notifications.delete_notification_by_uid("new-alert-notification")
@@ -284,9 +280,7 @@ class NotificationsTestCase(unittest.TestCase):
     def test_delete_notification_by_id(self, mock):
         mock.delete(
             "http://localhost/api/alert-notifications/1",
-            json={
-                "message": "Notification deleted"
-            },
+            json={"message": "Notification deleted"},
         )
 
         delete_response = self.grafana.notifications.delete_notification_by_id(1)

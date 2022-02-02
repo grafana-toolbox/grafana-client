@@ -72,13 +72,13 @@ class Annotations(Base):
         return r
 
     def add_annotation(
-            self,
-            dashboard_id=None,
-            panel_id=None,
-            time_from=None,
-            time_to=None,
-            tags=[],
-            text=None,
+        self,
+        dashboard_id=None,
+        panel_id=None,
+        time_from=None,
+        time_to=None,
+        tags=[],
+        text=None,
     ):
 
         """
@@ -108,11 +108,11 @@ class Annotations(Base):
         return r
 
     def add_annotation_graphite(
-            self,
-            what=None,
-            tags=[],
-            when=None,
-            data=None,
+        self,
+        what=None,
+        tags=[],
+        when=None,
+        data=None,
     ):
         """
         https://grafana.com/docs/grafana/latest/http_api/annotations/#create-annotation-in-graphite-format
@@ -125,24 +125,19 @@ class Annotations(Base):
         """
 
         annotations_path = "/annotations/graphite"
-        payload = {
-            "what": what,
-            "tags": tags,
-            "when": when,
-            "data": data
-        }
+        payload = {"what": what, "tags": tags, "when": when, "data": data}
 
         r = self.client.POST(annotations_path, json=payload)
 
         return r
 
     def update_annotation(
-            self,
-            annotations_id,
-            time_from=None,
-            time_to=None,
-            tags=[],
-            text=None,
+        self,
+        annotations_id,
+        time_from=None,
+        time_to=None,
+        tags=[],
+        text=None,
     ):
         """
         https://grafana.com/docs/grafana/latest/http_api/annotations/#update-annotation
@@ -154,24 +149,19 @@ class Annotations(Base):
         :return:
         """
         annotations_path = "/annotations/{}".format(annotations_id)
-        payload = {
-            "time": time_from,
-            "timeEnd": time_to,
-            "tags": tags,
-            "text": text
-        }
+        payload = {"time": time_from, "timeEnd": time_to, "tags": tags, "text": text}
 
         r = self.client.PUT(annotations_path, json=payload)
 
         return r
 
     def partial_update_annotation(
-            self,
-            annotations_id,
-            time_from=None,
-            time_to=None,
-            tags=[],
-            text=None,
+        self,
+        annotations_id,
+        time_from=None,
+        time_to=None,
+        tags=[],
+        text=None,
     ):
         """
         https://grafana.com/docs/grafana/latest/http_api/annotations/#patch-annotation
@@ -186,21 +176,13 @@ class Annotations(Base):
         annotations_path = "/annotations/{}".format(annotations_id)
         payload = {}
 
-        payload = {
-            "time": time_from,
-            "timeEnd": time_to,
-            "tags": tags,
-            "text": text
-        }
+        payload = {"time": time_from, "timeEnd": time_to, "tags": tags, "text": text}
 
         r = self.client.PATCH(annotations_path, json=payload)
 
         return r
 
-    def delete_annotations_by_id(
-            self,
-            annotations_id=None
-    ):
+    def delete_annotations_by_id(self, annotations_id=None):
 
         """
         https://grafana.com/docs/grafana/latest/http_api/annotations/#delete-annotation-by-id
