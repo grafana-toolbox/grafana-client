@@ -1,0 +1,4 @@
+# `setuptools_scm` already includes all files tracked by Git.
+# This explicitly excludes specific committed files not needed in the sdist package.
+exclude .gitattributes .gitignore Makefile CODEOWNERS
+prune .github
