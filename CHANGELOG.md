@@ -19,6 +19,7 @@
 * Refactoring: Rename module names and references
 * Format code with `black` and `isort`
 * Improve inline documentation
+* Add `MANIFEST.in` to exclude specific files from `sdist` package
 
 
 <a name="1.0.3"></a>
