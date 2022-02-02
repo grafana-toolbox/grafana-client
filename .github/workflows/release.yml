@@ -30,5 +30,4 @@ jobs:
           --user panodata \
           --repo grafana-client \
           --tag ${{ steps.version.outputs.VERSION }} \
-          --name ${{ steps.version.outputs.VERSION }} \
-          --description "$(cat $GITHUB_WORKSPACE/CHANGELOG.md)"
+          --name ${{ steps.version.outputs.VERSION }}
