@@ -1,10 +1,13 @@
 # CHANGELOG
 
 ## in progress
-* CI: Make release job grab the complete repository history. Thanks, Andrew!
-* CI: Fix path to `conda/setup.py`
+
+## [2.0.0](https://github.com/panodata/grafana-client/compare/1.0.3...2.0.0) (2022-02-03)
+
+* CI: Make release job grab the complete repository history. Thanks, @m0nhawk!
+* CI: Fix path to `conda/setup.py`. Thanks, @m0nhawk!
 * Improve README: Add examples for creating a user and an organization.
-  Thanks, Anton!
+  Thanks, @patsevanton!
 * Fork the repository to https://github.com/panodata/grafana-client.
   Discussion: https://github.com/m0nhawk/grafana_api/issues/88.
 * Rename Python package from `grafana_api` to `grafana-client` and
