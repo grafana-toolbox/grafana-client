@@ -22,6 +22,7 @@
 * Add `MANIFEST.in` to exclude specific files from `sdist` package
 * CI: Update from `pep517.build` to `build`
 * CI: Modernize package versions
+* CI: Don't fail run when upload to Codecov fails
 
 
 <a name="1.0.3"></a>
