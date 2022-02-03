@@ -3,9 +3,14 @@
 ## in progress
 
 
+## 2.0.2 (2022-02-03)
+
+* Another release fixup, because GHA still wants to build 2.0.0.
+
+
 ## 2.0.1 (2022-02-03)
 
-* Just a fixup release, because 2.0.0 has accidentally been published during testing already.
+* Just a release fixup, because 2.0.0 has accidentally been published during testing already.
 
 
 ## [2.0.0](https://github.com/panodata/grafana-client/compare/1.0.3...2.0.0) (2022-02-03)
