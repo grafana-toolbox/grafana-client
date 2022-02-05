@@ -113,6 +113,7 @@ This table outlines which parts of Grafana's HTTP API are covered by
 | Folder | + |
 | Folder Permissions | + |
 | Folder/Dashboard Search | +- |
+| Health | + |
 | Organisation | + |
 | Other | + |
 | Preferences | + |
