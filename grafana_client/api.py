@@ -5,6 +5,7 @@ from .elements import (
     Dashboard,
     Datasource,
     Folder,
+    Health,
     Notifications,
     Organization,
     Organizations,
@@ -40,6 +41,7 @@ class GrafanaApi:
         self.dashboard = Dashboard(self.client)
         self.datasource = Datasource(self.client)
         self.folder = Folder(self.client)
+        self.health = Health(self.client)
         self.organization = Organization(self.client)
         self.organizations = Organizations(self.client)
         self.search = Search(self.client)
