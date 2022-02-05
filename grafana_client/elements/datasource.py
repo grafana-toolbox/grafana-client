@@ -95,3 +95,31 @@ class Datasource(Base):
         delete_datasource = "/datasources/name/%s" % datasource_name
         r = self.client.DELETE(delete_datasource)
         return r
+
+    def get_datasource_proxy_data(self, datasource_id
+        , query_type='query'
+        , version='v1'
+        , expr=None
+        , time=None
+        , start=None
+        , end=None
+        , step=None
+        ):
+        """
+
+        :param datasource_id:
+        :param version: api_version currently v1
+        :param query_type: query_range |query
+        :param expr: expr to query
+
+        :return: r (dict)
+        """
+        get_datasource_path = "/datasources/proxy/{}" \
+		'/api/{}/{}?query={}'.format( datasource_id, version, query_type, expr)
+        if query_type == 'query_range':
+           get_datasource_path = get_datasource_path + '&start={}&end={}&step={}'.format(
+		start, end, step)
+        else:
+           get_datasource_path = get_datasource_path + '&time={}'.format(time)
+        r = self.api.GET(get_datasource_path)
+        return r
