@@ -35,6 +35,9 @@ class DashboardTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_update_dashboard(self, m):
+        """
+        Verify a general dashboard update.
+        """
         m.post(
             "http://localhost/api/dashboards/db",
             json={
@@ -64,6 +67,47 @@ class DashboardTestCase(unittest.TestCase):
 
         self.assertEqual(dashboard["uid"], "cIBgcSjkk")
         self.assertEqual(dashboard["status"], "success")
+
+    @requests_mock.Mocker()
+    def test_update_dashboard_roundtrip_folder_1(self, m):
+        """
+        Verify that a dashboard update will use the "folderId"
+        from the nested "meta" object.
+        This is important when roundtripping dashboard payloads.
+        """
+        m.post("http://localhost/api/dashboards/db", json={})
+        self.grafana.dashboard.update_dashboard(
+            {
+                "meta": {
+                    "folderId": 123,
+                },
+                "dashboard": {},
+            }
+        )
+
+        self.assertEqual(m.last_request.json()["folderId"], 123)
+
+    @requests_mock.Mocker()
+    def test_update_dashboard_roundtrip_folder_2(self, m):
+        """
+        Verify that a dashboard update will use the "folderId"
+        from the toplevel dashboard payload, even if it is present
+        within the nested "meta" object.
+        This is important when roundtripping dashboard payloads and
+        intentionally wanting to move the dashboard to a different folder.
+        """
+        m.post("http://localhost/api/dashboards/db", json={})
+        self.grafana.dashboard.update_dashboard(
+            {
+                "meta": {
+                    "folderId": 123,
+                },
+                "dashboard": {},
+                "folderId": 456,
+            }
+        )
+
+        self.assertEqual(m.last_request.json()["folderId"], 456)
 
     @requests_mock.Mocker()
     def test_get_home_dashboard(self, m):
