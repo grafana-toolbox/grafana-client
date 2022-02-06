@@ -1,6 +1,9 @@
 # CHANGELOG
 
 ## in progress
+* Add handler for health API. Thanks, @peekjef72!
+* Add support for datasource proxying. Thanks, @peekjef72!
+* Fix compatibility between `actions/checkout@v2` and `setuptools_scm`
 
 
 ## 2.0.2 (2022-02-03)
