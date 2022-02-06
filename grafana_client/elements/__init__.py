@@ -3,8 +3,8 @@ from .annotations import Annotations
 from .base import Base
 from .dashboard import Dashboard
 from .datasource import Datasource
-from .health import Health
 from .folder import Folder
+from .health import Health
 from .notifications import Notifications
 from .organization import Organization, Organizations
 from .search import Search
