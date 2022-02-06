@@ -114,12 +114,12 @@ class Datasource(Base):
 
         :return: r (dict)
         """
-        get_datasource_path = "/datasources/proxy/{}" \
-		'/api/{}/{}?query={}'.format( datasource_id, version, query_type, expr)
+        get_datasource_path = "/datasources/proxy/{0}" \
+		    '/api/{1}/{2}?query={3}'.format( datasource_id, version, query_type, expr)
         if query_type == 'query_range':
-           get_datasource_path = get_datasource_path + '&start={}&end={}&step={}'.format(
-		start, end, step)
+            get_datasource_path = get_datasource_path + '&start={0}&end={1}&step={2}'.format(
+		        start, end, step)
         else:
-           get_datasource_path = get_datasource_path + '&time={}'.format(time)
-        r = self.api.GET(get_datasource_path)
+            get_datasource_path = get_datasource_path + '&time={}'.format(time)
+        r = self.client.GET(get_datasource_path)
         return r
