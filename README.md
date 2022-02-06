@@ -125,7 +125,10 @@ This table outlines which parts of Grafana's HTTP API are covered by
 ## Software tests
 
 ```shell
-python setup.py test
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --editable=.[test]
+python -m unittest -vvv
 ```
 
 
