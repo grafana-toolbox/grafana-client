@@ -22,6 +22,14 @@ class Dashboard(Base):
         :param dashboard:
         :return:
         """
+
+        # When the "folderId" is not available within the dashboard payload,
+        # populate it from the nested "meta" object, if given.
+        if "folderId" not in dashboard:
+            if "meta" in dashboard and "folderId" in dashboard["meta"]:
+                dashboard = dashboard.copy()
+                dashboard["folderId"] = dashboard["meta"]["folderId"]
+
         put_dashboard_path = "/dashboards/db"
         r = self.client.POST(put_dashboard_path, json=dashboard)
         return r
