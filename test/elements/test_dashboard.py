@@ -32,6 +32,30 @@ class DashboardTestCase(unittest.TestCase):
         )
         dashboard = self.grafana.dashboard.get_dashboard("cIBgcSjkk")
         self.assertEqual(dashboard["dashboard"]["uid"], "cIBgcSjkk")
+        
+    @requests_mock.Mocker()
+    def test_get_dashboard_by_name(self, m):
+        m.get(
+            "http://localhost/api/dashboards/db/Production Overview",
+            json={
+                "dashboard": {
+                    "id": 1,
+                    "uid": "cIBgcSjkk",
+                    "title": "Production Overview",
+                    "tags": ["templated"],
+                    "timezone": "browser",
+                    "schemaVersion": 16,
+                    "version": 0,
+                },
+                "meta": {
+                    "isStarred": "false",
+                    "url": "/d/cIBgcSjkk/production-overview",
+                    "slug": "production-overview",
+                },
+            },
+        )
+        dashboard = self.grafana.dashboard.get_dashboard_by_name("Production Overview")
+        self.assertEqual(dashboard["dashboard"]["title"], "Production Overview")  
 
     @requests_mock.Mocker()
     def test_update_dashboard(self, m):
