@@ -36,7 +36,7 @@ class DashboardTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_dashboard_by_name(self, m):
         m.get(
-            "http://localhost/api/dashboards/name/Production%Overview",
+            "http://localhost/api/dashboards/db/Production Overview",
             json={
                 "dashboard": {
                     "id": 1,
@@ -55,7 +55,7 @@ class DashboardTestCase(unittest.TestCase):
             },
         )
         dashboard = self.grafana.dashboard.get_dashboard_by_name("Production Overview")
-        self.assertEqual(dashboard["dashboard"]["name"], "Production Overview")    
+        self.assertEqual(dashboard["dashboard"]["title"], "Production Overview")  
 
     @requests_mock.Mocker()
     def test_update_dashboard(self, m):
