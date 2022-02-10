@@ -23,7 +23,7 @@ class Dashboard(Base):
         :return:
         """
         get_dashboard_path = "/dashboards/db/%s" % dashboard_name
-        r = self.api.GET(get_dashboard_path)
+        r = self.client.GET(get_dashboard_path)
         return r
 
     def update_dashboard(self, dashboard):
