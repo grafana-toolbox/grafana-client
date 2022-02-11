@@ -113,7 +113,7 @@ class GrafanaClient:
                     response = r.json()
                 except ValueError:
                     response = r.text
-                message = response["message"] if "message" in response and type(response) == dict else r.text
+                message = response["message"] if type(response) == dict and "message" in response else r.text
 
                 if 500 <= r.status_code < 600:
                     raise GrafanaServerError(
