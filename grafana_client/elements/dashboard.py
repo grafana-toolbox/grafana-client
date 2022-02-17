@@ -15,6 +15,16 @@ class Dashboard(Base):
         get_dashboard_path = "/dashboards/uid/%s" % dashboard_uid
         r = self.client.GET(get_dashboard_path)
         return r
+    
+    def get_dashboard_by_name(self, dashboard_name):
+        """
+
+        :param dashboard_name:
+        :return:
+        """
+        get_dashboard_path = "/dashboards/db/%s" % dashboard_name
+        r = self.client.GET(get_dashboard_path)
+        return r
 
     def update_dashboard(self, dashboard):
         """
@@ -22,6 +32,14 @@ class Dashboard(Base):
         :param dashboard:
         :return:
         """
+
+        # When the "folderId" is not available within the dashboard payload,
+        # populate it from the nested "meta" object, if given.
+        if "folderId" not in dashboard:
+            if "meta" in dashboard and "folderId" in dashboard["meta"]:
+                dashboard = dashboard.copy()
+                dashboard["folderId"] = dashboard["meta"]["folderId"]
+
         put_dashboard_path = "/dashboards/db"
         r = self.client.POST(put_dashboard_path, json=dashboard)
         return r

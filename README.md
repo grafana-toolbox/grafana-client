@@ -7,7 +7,9 @@
 [![PyPI](https://img.shields.io/pypi/v/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
 [![Python versions](https://img.shields.io/pypi/pyversions/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
 [![Status](https://img.shields.io/pypi/status/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
+[![Downloads](https://img.shields.io/pypi/dm/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
 <!-- [![Conda](https://img.shields.io/conda/v/panodata/grafana-client.svg?style=flat-square)](https://anaconda.org/panodata/grafana-client) -->
+
 
 ## About
 
@@ -125,7 +127,10 @@ This table outlines which parts of Grafana's HTTP API are covered by
 ## Software tests
 
 ```shell
-python setup.py test
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --editable=.[test]
+python -m unittest -vvv
 ```
 
 

@@ -96,6 +96,7 @@ class Datasource(Base):
         r = self.client.DELETE(delete_datasource)
         return r
 
+<<<<<<< HEAD
     def get_datasource_proxy_data(self, datasource_id
         , query_type='query'
         , version='v1'
@@ -105,6 +106,11 @@ class Datasource(Base):
         , end=None
         , step=None
         ):
+=======
+    def get_datasource_proxy_data(
+        self, datasource_id, query_type="query", version="v1", expr=None, time=None, start=None, end=None, step=None
+    ):
+>>>>>>> 0ffbd789b43184eb9fed8ca6486565b90b603aa1
         """
 
         :param datasource_id:
@@ -114,6 +120,7 @@ class Datasource(Base):
 
         :return: r (dict)
         """
+<<<<<<< HEAD
         get_datasource_path = "/datasources/proxy/{0}" \
 		    '/api/{1}/{2}?query={3}'.format( datasource_id, version, query_type, expr)
         if query_type == 'query_range':
@@ -123,3 +130,14 @@ class Datasource(Base):
             get_datasource_path = get_datasource_path + '&time={}'.format(time)
         r = self.client.GET(get_datasource_path)
         return r
+=======
+        get_datasource_path = "/datasources/proxy/{0}" "/api/{1}/{2}?query={3}".format(
+            datasource_id, version, query_type, expr
+        )
+        if query_type == "query_range":
+            get_datasource_path = get_datasource_path + "&start={0}&end={1}&step={2}".format(start, end, step)
+        else:
+            get_datasource_path = get_datasource_path + "&time={}".format(time)
+        r = self.client.GET(get_datasource_path)
+        return r
+>>>>>>> 0ffbd789b43184eb9fed8ca6486565b90b603aa1
