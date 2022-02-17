@@ -52,10 +52,10 @@ class Annotations(Base):
             params.append("panelId=%s" % panel_id)
 
         if user_id:
-            params.append("userId=%s", user_id)
+            params.append("userId=%s" % user_id)
 
         if ann_type:
-            params.append("type=%s", ann_type)
+            params.append("type=%s" % ann_type)
 
         if tags:
             for tag in tags:
