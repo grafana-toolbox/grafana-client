@@ -3,6 +3,11 @@
 ## in progress
 
 
+## 2.2.0 (2022-03-16)
+
+* Retrieve dashboard by name/title. Thanks, @luixx!
+
+
 ## 2.1.0 (2022-02-07)
 
 * Add handler for health API. Thanks, @peekjef72!
