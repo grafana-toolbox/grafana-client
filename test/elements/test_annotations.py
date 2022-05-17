@@ -19,7 +19,7 @@ class AnnotationsTestCase(unittest.TestCase):
     def test_annotations(self, m):
         m.get(
             "http://localhost/api/annotations?from=1563183710618&to=1563185212275"
-            "&alertId=11&dashboardID=111&panelId=22&tags=tags-test&limit=1",
+            "&alertId=11&dashboardId=111&panelId=22&tags=tags-test&limit=1",
             json=[
                 {
                     "id": 80,

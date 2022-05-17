@@ -46,7 +46,7 @@ class Annotations(Base):
             params.append("alertId=%s" % alert_id)
 
         if dashboard_id:
-            params.append("dashboardID=%s" % dashboard_id)
+            params.append("dashboardId=%s" % dashboard_id)
 
         if panel_id:
             params.append("panelId=%s" % panel_id)
