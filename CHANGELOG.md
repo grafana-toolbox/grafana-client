@@ -3,6 +3,11 @@
 ## in progress
 
 
+## 2.2.1 (2022-05-20)
+
+* Fix annotations query string parameter `dashboardId`. Thanks, @richbon75!
+
+
 ## 2.2.0 (2022-03-16)
 
 * Retrieve dashboard by name/title. Thanks, @luixx!
