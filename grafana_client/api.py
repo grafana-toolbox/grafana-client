@@ -20,7 +20,7 @@ from .elements import (
 class GrafanaApi:
     def __init__(
         self,
-        auth,
+        auth=None,
         host="localhost",
         port=None,
         url_path_prefix="",

@@ -3,6 +3,12 @@
 ## in progress
 
 
+## 2.3.0 (2022-05-26)
+
+* Make `GrafanaApi(auth=)` an optional argument. This makes it easier to
+  connect to Grafana instances that do not require authentication.
+
+
 ## 2.2.1 (2022-05-20)
 
 * Fix annotations query string parameter `dashboardId`. Thanks, @richbon75!
