@@ -7,6 +7,7 @@
 
 * Make `GrafanaApi(auth=)` an optional argument. This makes it easier to
   connect to Grafana instances that do not require authentication.
+* Add basic example program, inquiring `play.grafana.org`.
 
 
 ## 2.2.1 (2022-05-20)
