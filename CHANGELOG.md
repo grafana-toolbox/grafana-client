@@ -3,6 +3,7 @@
 ## unreleased
 
 * Add example program `examples/team.py`. Thanks, @ricmano!
+* Improve data source API by adding the `_by_uid` variants.
 
 
 ## 2.3.0 (2022-05-26)
