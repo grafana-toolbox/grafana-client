@@ -58,6 +58,20 @@ class Datasource(Base):
         r = self.client.GET(get_datasource_path)
         return r
 
+    def get(self, datasource_id: str = None, datasource_uid: str = None, datasource_name: str = None):
+        """
+        Get dashboard by either datasource_id, datasource_uid, or datasource_name.
+        """
+        if datasource_id:
+            datasource = self.get_datasource_by_id(datasource_id)
+        elif datasource_uid:
+            datasource = self.get_datasource_by_uid(datasource_uid)
+        elif datasource_name:
+            datasource = self.get_datasource_by_name(datasource_name)
+        else:
+            raise KeyError("Either datasource_id or datasource_name must be given")
+        return datasource
+
     def create_datasource(self, datasource):
         """
 
