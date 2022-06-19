@@ -7,7 +7,7 @@ from grafana_client import GrafanaApi
 def main():
 
     # Connect to Grafana instance of Grafana Labs fame.
-    grafana = GrafanaApi(host='play.grafana.org')
+    grafana = GrafanaApi(host="play.grafana.org")
 
     print("## All folders on play.grafana.org", file=sys.stderr)
     folders = grafana.folder.get_all_folders()

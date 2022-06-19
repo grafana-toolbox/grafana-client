@@ -15,7 +15,7 @@ class Dashboard(Base):
         get_dashboard_path = "/dashboards/uid/%s" % dashboard_uid
         r = self.client.GET(get_dashboard_path)
         return r
-    
+
     def get_dashboard_by_name(self, dashboard_name):
         """
 
