@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## in progress
+## unreleased
+
+* Add example program `examples/team.py`. Thanks, @ricmano!
 
 
 ## 2.3.0 (2022-05-26)
