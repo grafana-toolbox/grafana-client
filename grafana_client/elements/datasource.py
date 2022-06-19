@@ -18,6 +18,8 @@ class Datasource(Base):
 
     def get_datasource_by_id(self, datasource_id):
         """
+        Warning: This API is deprecated since Grafana v9.0.0 and will be
+                 removed in a future release.
 
         :param datasource_id:
         :return:
@@ -33,6 +35,16 @@ class Datasource(Base):
         :return:
         """
         get_datasource_path = "/datasources/name/%s" % datasource_name
+        r = self.client.GET(get_datasource_path)
+        return r
+
+    def get_datasource_by_uid(self, datasource_uid):
+        """
+
+        :param datasource_uid:
+        :return:
+        """
+        get_datasource_path = "/datasources/uid/%s" % datasource_uid
         r = self.client.GET(get_datasource_path)
         return r
 
@@ -78,6 +90,8 @@ class Datasource(Base):
 
     def delete_datasource_by_id(self, datasource_id):
         """
+        Warning: This API is deprecated since Grafana v9.0.0 and will be
+                 removed in a future release.
 
         :param datasource_id:
         :return:
@@ -93,6 +107,16 @@ class Datasource(Base):
         :return:
         """
         delete_datasource = "/datasources/name/%s" % datasource_name
+        r = self.client.DELETE(delete_datasource)
+        return r
+
+    def delete_datasource_by_uid(self, datasource_uid):
+        """
+
+        :param datasource_uid:
+        :return:
+        """
+        delete_datasource = "/datasources/uid/%s" % datasource_uid
         r = self.client.DELETE(delete_datasource)
         return r
 
