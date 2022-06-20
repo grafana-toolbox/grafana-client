@@ -67,7 +67,7 @@ def datasource_factory(datasource: DatasourceModel):
             "sslmode": "disable",
         }
     elif datasource.type == "prometheus":
-        pass
+        datasource.access = "proxy"
     elif datasource.type == "testdata":
         pass
     else:
