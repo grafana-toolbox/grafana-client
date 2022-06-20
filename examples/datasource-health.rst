@@ -1,0 +1,164 @@
+################################
+Grafana data source health check
+################################
+
+
+*****
+About
+*****
+
+``datasource-health.py`` is a demo program for checking whether a Grafana data
+source is healthy, in the same manner like the "Save & test" button works, when
+creating a data source in the user interface.
+
+Grafana compatibility
+=====================
+
+The minimum supported version is Grafana 7.x, it does not work on older
+versions of Grafana. Prometheus only works on Grafana 8.x and newer.
+
+
+Data source coverage
+====================
+
+Support for those Grafana data sources is implemented as of June, 2022.
+
+- CrateDB
+- Elasticsearch
+- InfluxDB
+- PostgreSQL
+- Prometheus
+- Testdata
+
+We are humbly asking the community to contribute adapters for other data
+sources.
+
+
+*****
+Setup
+*****
+
+Start Grafana::
+
+    export GRAFANA_VERSION=7.5.16
+    export GRAFANA_VERSION=8.5.6
+    export GRAFANA_VERSION=9.0.0
+
+    docker run --rm -it \
+        --publish=3000:3000 \
+        --env='GF_SECURITY_ADMIN_PASSWORD=admin' \
+        grafana/grafana:${GRAFANA_VERSION}
+
+In another shell, acquire the sources of this repository, and activate the
+development sandbox::
+
+    git clone https://github.com/panodata/grafana-client
+    cd grafana-client
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install --editable=.[test]
+
+The default Grafana URL is ``http://localhost:3000``, with credentials ``admin:admin``.
+When needing to adjust that, use those environment variables::
+
+    # Authenticate with credentials.
+    export GRAFANA_URL=https://foo:bar@daq.example.com/grafana
+
+    # Authenticate with token.
+    export GRAFANA_URL=https://daq.example.com/grafana
+    export GRAFANA_TOKEN=eyJrIjoiUWVrYXJh....aWQiOjJ9  # grafana-client-dev
+
+
+*****
+Usage
+*****
+
+
+Introduction
+============
+
+You will need two shells, a separate one for launching individual database
+services with Docker, and the previous one where you just activated the
+virtualenv of the developer sandbox and eventually adjusted the environment
+variables.
+
+In the next section, you will find instructions for running a data source
+health check probe on different types of databases. When expanding this list,
+please keep its items alphanumerically sorted.
+
+
+CrateDB
+=======
+::
+
+    docker run --rm -it --publish=4200:4200 --publish=5432:5432 crate:4.8.1
+    python examples/datasource-health.py --type=cratedb --url=host.docker.internal:5432
+
+
+Elasticsearch
+=============
+::
+
+    # Start Elasticsearch.
+    docker run --rm -it --publish=9200:9200 --env="discovery.type=single-node" \
+        docker.elastic.co/elasticsearch/elasticsearch:7.17.4
+
+    # Submit a data point. This automatically creates an index named `testdrive`.
+    {apt,brew} install httpie
+    http POST "http://localhost:9200/testdrive/_doc/1?pretty" "\@timestamp=2022-06-20T16:04:22.396Z" "sensor=foobar-1" "value=42.42"
+
+    python examples/datasource-health.py --type=elasticsearch --url=http://host.docker.internal:9200
+
+
+InfluxDB 1.x
+============
+::
+
+    docker run --rm -it --publish=8086:8086 influxdb:1.8
+    docker run --rm -it --network=host influxdb:1.8 influx -host host.docker.internal
+    python examples/datasource-health.py --type=influxdb --url=http://host.docker.internal:8086
+
+
+InfluxDB 2.x
+============
+::
+
+    # https://docs.influxdata.com/influxdb/v2.0/upgrade/v1-to-v2/docker/#influxdb-2x-initialization-credentials
+    docker run --rm -it --publish=8086:8086 \
+        --env=DOCKER_INFLUXDB_INIT_MODE=setup \
+        --env=DOCKER_INFLUXDB_INIT_USERNAME=admin \
+        --env=DOCKER_INFLUXDB_INIT_PASSWORD=adminadmin \
+        --env=DOCKER_INFLUXDB_INIT_ORG=example \
+        --env=DOCKER_INFLUXDB_INIT_BUCKET=default \
+        --env=DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=admintoken \
+        influxdb:2.2
+    python examples/datasource-health.py --type=influxdb+flux --url=http://host.docker.internal:8086
+
+    docker run --rm -it --network=host influxdb:2.2 influx org list --token=admintoken
+    docker run --rm -it --network=host influxdb:2.2 influx bucket list --org=example --token=admintoken
+
+    export INFLUX_TOKEN=admintoken
+    influx bucket list --org=example
+
+
+PostgreSQL
+==========
+::
+
+    docker run --rm -it --publish=5432:5432 --env "POSTGRES_HOST_AUTH_METHOD=trust" postgres:14.3
+    python examples/datasource-health.py --type=postgres --url=host.docker.internal:5432
+
+
+Prometheus
+==========
+::
+
+    docker run --rm -it --publish=9090:9090 prom/prometheus
+    python examples/datasource-health.py --type=prometheus --url=http://host.docker.internal:9090
+
+
+Test data source
+================
+::
+
+    python examples/datasource-health.py --type=testdata

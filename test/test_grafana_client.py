@@ -64,6 +64,7 @@ class TestGrafanaClient(unittest.TestCase):
             auth=basic_auth,
             headers=None,
             json=None,
+            data=None,
             verify=False,
             timeout=5.0,
         )
