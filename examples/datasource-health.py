@@ -7,9 +7,11 @@ import json
 import logging
 import os
 import sys
-from optparse import OptionParser
+import warnings
 
-from pkg_resources import parse_version
+warnings.filterwarnings("ignore", category=Warning, message="distutils Version classes are deprecated")
+from distutils.version import LooseVersion
+from optparse import OptionParser
 
 from grafana_client import GrafanaApi
 from grafana_client.client import GrafanaClientError
@@ -18,6 +20,11 @@ from grafana_client.model import DatasourceModel
 from grafana_client.util import grafana_client_factory, setup_logging
 
 logger = logging.getLogger(__name__)
+
+
+VERSION_7 = LooseVersion("7")
+VERSION_8 = LooseVersion("8")
+VERSION_9 = LooseVersion("9")
 
 
 def ensure_datasource(grafana: GrafanaApi, datasource: DatasourceModel):
@@ -51,7 +58,7 @@ def ensure_datasource(grafana: GrafanaApi, datasource: DatasourceModel):
     return datasource
 
 
-def health_inquiry(grafana: GrafanaApi, datasource: DatasourceModel):
+def health_inquiry(grafana: GrafanaApi, datasource: DatasourceModel, grafana_version: LooseVersion = None):
     """
     Add a data source dynamically and run a data source health check on it.
     Be graceful if it exists already.
@@ -60,12 +67,20 @@ def health_inquiry(grafana: GrafanaApi, datasource: DatasourceModel):
     # Create data source.
     datasource = ensure_datasource(grafana, datasource)
     datasource_id = datasource["id"]
+    datasource_uid = datasource["uid"]
 
     # Resolve data source by UID.
     datasource = grafana.datasource.get(datasource_id=datasource_id)
 
     # Check data source health.
-    health = grafana.datasource.health_check(datasource=datasource)
+    if True or grafana_version and grafana_version >= VERSION_9:
+        try:
+            health = grafana.datasource.health(datasource_uid=datasource_uid)
+        except GrafanaClientError as ex:
+            logger.error(f"Data source health check for uid={datasource_uid} failed: {ex}. Response: {ex.response}")
+            raise
+    else:
+        health = grafana.datasource.health_check(datasource=datasource)
 
     # Delete data source again.
     grafana.datasource.delete_datasource_by_id(datasource_id)
@@ -81,11 +96,11 @@ def prometheus_demo(grafana: GrafanaApi):
     return health_info
 
 
-def run_healthcheck(grafana: GrafanaApi, grafana_version: str = None):
+def run_healthcheck(grafana: GrafanaApi, grafana_version: LooseVersion = None):
 
     # When called without options, invoke the Prometheus demo.
     if len(sys.argv) == 1:
-        if grafana_version < parse_version("8"):
+        if grafana_version < VERSION_8:
             raise NotImplementedError(
                 f"Data source health check subsystem on Grafana version {grafana_version} not supported for Prometheus"
             )
@@ -102,7 +117,7 @@ def run_healthcheck(grafana: GrafanaApi, grafana_version: str = None):
             parser.error("Options --type and --url required")
 
         # Sanity checks
-        if options.type == "prometheus" and grafana_version < parse_version("8"):
+        if options.type == "prometheus" and grafana_version < VERSION_8:
             raise NotImplementedError(
                 f"Data source health check subsystem on Grafana version {grafana_version} not supported for Prometheus"
             )
@@ -113,7 +128,7 @@ def run_healthcheck(grafana: GrafanaApi, grafana_version: str = None):
         datasource = datasource_factory(datasource)
 
         # Invoke the health check.
-        health_info = health_inquiry(grafana, datasource)
+        health_info = health_inquiry(grafana, datasource, grafana_version=grafana_version)
 
     # Display the outcome and terminate program based on success state.
     print(json.dumps(health_info, indent=2))
@@ -131,10 +146,10 @@ if __name__ == "__main__":
     grafana_client = grafana_client_factory(grafana_url=grafana_url, grafana_token=os.environ.get("GRAFANA_TOKEN"))
 
     grafana_info = grafana_client.health.check()
-    grafana_version = parse_version(grafana_info["version"])
+    grafana_version = LooseVersion(grafana_info["version"])
     logger.info(f"Connected to Grafana version {grafana_version} at {grafana_url}")
 
-    if grafana_version < parse_version("7"):
+    if grafana_version < VERSION_7:
         raise NotImplementedError(f"Data source health check subsystem not ready for Grafana version {grafana_version}")
 
     run_healthcheck(grafana_client, grafana_version=grafana_version)
