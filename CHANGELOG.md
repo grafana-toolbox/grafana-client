@@ -5,6 +5,7 @@
 * Add example program `examples/team.py`. Thanks, @ricmano!
 * Improve data source API by adding the `_by_uid` variants.
 * Improve data source API by adding universal `datasource.get()` method.
+* Improve data source API by adding a data source health-check probe.
 
 
 ## 2.3.0 (2022-05-26)
