@@ -18,6 +18,19 @@ class Datasource(Base):
         super(Datasource, self).__init__(client)
         self.client = client
 
+    def health(self, datasource_uid: str):
+        """
+        Makes a call to the health endpoint of a data source identified by the
+        given ``uid``.
+
+        Available in Grafana 9+.
+
+        https://grafana.com/docs/grafana/latest/developers/http_api/data_source/#check-data-source-health
+        """
+        path = f"/datasources/uid/{datasource_uid}/health"
+        r = self.client.GET(path)
+        return r
+
     def find_datasource(self, datasource_name):
         """
 

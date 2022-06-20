@@ -6,6 +6,8 @@
 * Improve data source API by adding the `_by_uid` variants.
 * Improve data source API by adding universal `datasource.get()` method.
 * Improve data source API by adding a data source health-check probe.
+* Support data source health check endpoint introduced with Grafana 9.
+  Thanks, @jangaraj!
 
 
 ## 2.3.0 (2022-05-26)
