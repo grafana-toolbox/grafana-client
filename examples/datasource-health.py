@@ -73,13 +73,16 @@ def health_inquiry(grafana: GrafanaApi, datasource: DatasourceModel, grafana_ver
     datasource = grafana.datasource.get(datasource_id=datasource_id)
 
     # Check data source health.
+    health = None
     if True or grafana_version and grafana_version >= VERSION_9:
         try:
             health = grafana.datasource.health(datasource_uid=datasource_uid)
         except GrafanaClientError as ex:
-            logger.error(f"Data source health check for uid={datasource_uid} failed: {ex}. Response: {ex.response}")
-            raise
-    else:
+            logger.warning(f"Native data source health check for uid={datasource_uid} failed: {ex}. Response: {ex.response}")
+            if ex.status_code != 404:
+                raise
+
+    if health is None:
         health = grafana.datasource.health_check(datasource=datasource)
 
     # Delete data source again.

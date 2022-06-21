@@ -8,6 +8,8 @@
 * Improve data source API by adding a data source health-check probe.
 * Support data source health check endpoint introduced with Grafana 9.
   Thanks, @jangaraj!
+* Add gracefulness when using the new data source health check endpoint.
+  Apparently, this is not implemented thoroughly for all data source types yet.
 
 
 ## 2.3.0 (2022-05-26)
