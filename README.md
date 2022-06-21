@@ -4,9 +4,11 @@
 [![Test coverage](https://img.shields.io/codecov/c/gh/panodata/grafana-client.svg?style=flat-square)](https://codecov.io/gh/panodata/grafana-client/)
 [![License](https://img.shields.io/github/license/panodata/grafana-client.svg?style=flat-square)](https://github.com/panodata/grafana-client/blob/main/LICENSE) 
 
-[![PyPI](https://img.shields.io/pypi/v/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
 [![Python versions](https://img.shields.io/pypi/pyversions/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
+[![Grafana versions](https://img.shields.io/badge/Grafana-5.x%20--%209.x-blue.svg?style=flat-square)](https://github.com/grafana/grafana)
+
 [![Status](https://img.shields.io/pypi/status/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
+[![PyPI](https://img.shields.io/pypi/v/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
 [![Downloads](https://img.shields.io/pypi/dm/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
 <!-- [![Conda](https://img.shields.io/conda/v/panodata/grafana-client.svg?style=flat-square)](https://anaconda.org/panodata/grafana-client) -->
 
@@ -14,18 +16,6 @@
 ## About
 
 A client library for the Grafana HTTP API, written in Python.
-
-## History
-
-The library was originally conceived by [Andrew Prokhorenkov] and contributors
-as [grafana_api]. Thank you very much for your efforts!
-
-At [future maintenance of `grafana_api`], we discussed the need for a fork
-because the repository stopped receiving updates since more than a year.
-
-While forking it, we renamed the package to `grafana-client` and slightly
-trimmed the module namespace.
-
 
 
 ## Getting started
@@ -132,6 +122,25 @@ source .venv/bin/activate
 pip install --editable=.[test]
 python -m unittest -vvv
 ```
+
+## Applications
+
+A list of applications based on `grafana-client`.
+
+- [grafana-import-tool](https://github.com/peekjef72/grafana-import-tool)
+- [grafana-snapshots-tool](https://github.com/peekjef72/grafana-snapshots-tool)
+- [grafana-wtf](https://github.com/panodata/grafana-wtf)
+
+
+## History
+
+The library was originally conceived by [Andrew Prokhorenkov] and contributors
+as [grafana_api]. Thank you very much for your efforts!
+
+At [future maintenance of `grafana_api`], we discussed the need for a fork
+because the repository stopped receiving updates since more than a year.
+While forking it, we renamed the package to `grafana-client` and slightly
+trimmed the module namespace.
 
 
 ## Acknowledgements
