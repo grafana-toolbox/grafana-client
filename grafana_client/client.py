@@ -106,6 +106,13 @@ class GrafanaClient:
     def __getattr__(self, item):
         def __request_runner(url, json=None, data=None, headers=None):
             __url = "%s%s" % (self.url, url)
+            # Sanity checks.
+            if json is not None and not isinstance(json, (dict, list)):
+                raise TypeError(
+                    f"JSON request payload has invalid shape. "
+                    f"Accepted are dictionaries and lists. "
+                    f"The type is: {type(json)}"
+                )
             runner = getattr(self.s, item.lower())
             r = runner(
                 __url,

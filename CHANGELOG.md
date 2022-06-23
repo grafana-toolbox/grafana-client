@@ -18,6 +18,8 @@
 * Add example program `grafanalib-upload-dashboard.py`
 * Fix endless-loop bug in the `search_teams` function. Thanks, @changdingfang!
 * Set the `User-Agent` header to `grafana-client/{version}`
+* Don't permit scalar value as JSON request body to the Grafana HTTP API,
+  it is always wrong. Thanks, @ricmano!
 
 
 ## 2.3.0 (2022-05-26)

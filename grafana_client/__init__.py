@@ -1,4 +1,5 @@
 import warnings
+
 try:
     from importlib.metadata import PackageNotFoundError, version
 except ModuleNotFoundError:  # pragma:nocover

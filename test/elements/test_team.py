@@ -1,3 +1,4 @@
+import json
 import unittest
 
 import requests_mock
@@ -123,7 +124,6 @@ class TeamsTestCase(unittest.TestCase):
         teams = self.grafana.teams.search_teams("my team", perpage=5)
         self.assertEqual(len(teams), 2)
 
-
     @requests_mock.Mocker()
     def test_get_team_by_name(self, m):
         m.get(
@@ -165,11 +165,30 @@ class TeamsTestCase(unittest.TestCase):
         self.assertEqual(team["name"], "MyTestTeam")
 
     @requests_mock.Mocker()
-    def test_add_team(self, m):
+    def test_add_team_success(self, m):
         m.post("http://localhost/api/teams", json={"message": "Team created", "teamId": 2})
         team = {"name": "MySecondTestTeam", "email": "email@example.org"}
         new_team = self.grafana.teams.add_team(team)
         self.assertEqual(new_team["teamId"], 2)
+
+    @requests_mock.Mocker()
+    def test_add_team_invalid_payload(self, m):
+        """
+        Accidentally send serialized JSON instead of a data structure.
+        """
+        m.post(
+            "http://localhost/api/teams",
+            json={"message": "bad request data", "traceID": "00000000000000000000000000000000"},
+            status_code=400,
+        )
+        team_as_json = json.dumps({"name": "MySecondTestTeam", "email": "email@example.org"})
+
+        with self.assertRaises(TypeError) as ex:
+            self.grafana.teams.add_team(team_as_json)
+        self.assertEqual(
+            "JSON request payload has invalid shape. Accepted are dictionaries and lists. The type is: <class 'str'>",
+            str(ex.exception),
+        )
 
     @requests_mock.Mocker()
     def test_update_team(self, m):
