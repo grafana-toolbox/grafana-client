@@ -68,17 +68,6 @@ class UsersTestCase(unittest.TestCase):
         self.assertEqual(users, [{}])
 
     @requests_mock.Mocker()
-    # FIXME: Runs into an endless loop.
-    #        See also https://github.com/panodata/grafana-client/issues/12.
-    def fixme_test_search_users_perpage(self, m):
-        m.get(
-            "http://localhost/api/users?query=foo&perpage=5",
-            json=[{}],
-        )
-        users = self.grafana.users.search_users("foo", perpage=5)
-        self.assertEqual(users, [{}])
-
-    @requests_mock.Mocker()
     def test_search_users_perpage(self, m):
         m.get(
             "http://localhost/api/users?query=foo&page=1&perpage=1",
@@ -89,6 +78,19 @@ class UsersTestCase(unittest.TestCase):
             json=[],
         )
         users = self.grafana.users.search_users("foo", perpage=1)
+        self.assertEqual(len(users), 2)
+
+    @requests_mock.Mocker()
+    def test_search_users_perpage_no_endless_loop(self, m):
+        m.get(
+            "http://localhost/api/users?query=foo&page=1&perpage=5",
+            json=[{"name": "foo"}, {"name": "bar"}],
+        )
+        m.get(
+            "http://localhost/api/users?query=foo&page=2&perpage=5",
+            json=[],
+        )
+        users = self.grafana.users.search_users("foo", perpage=5)
         self.assertEqual(len(users), 2)
 
     @requests_mock.Mocker()

@@ -72,6 +72,15 @@ class TeamsTestCase(unittest.TestCase):
                 "perPage": 1,
             },
         )
+        m.get(
+            "http://localhost/api/teams/search?query=team&page=3&perpage=1",
+            json={
+                "totalCount": 2,
+                "teams": [],
+                "page": 3,
+                "perPage": 1,
+            },
+        )
         teams = self.grafana.teams.search_teams("team", perpage=1)
         self.assertEqual(teams[0]["name"], "MyTestTeam")
         self.assertEqual(teams[1]["name"], "SecondTeam")
