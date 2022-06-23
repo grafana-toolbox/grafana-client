@@ -1,48 +1,10 @@
 import logging
 import sys
-import warnings
-from urllib.parse import parse_qs, urlparse
-
-from urllib3.exceptions import InsecureRequestWarning
 
 
 def setup_logging(level=logging.INFO):
-    log_format = "%(asctime)-15s [%(name)-35s] %(levelname)-7s: %(message)s"
+    log_format = "%(asctime)-15s [%(name)-35s] %(levelname)-8s: %(message)s"
     logging.basicConfig(format=log_format, stream=sys.stderr, level=level)
-
-
-def grafana_client_factory(grafana_url, grafana_token=None):
-    """
-    From `grafana-wtf`.
-    """
-    url = urlparse(grafana_url)
-
-    # Grafana API Key auth
-    if grafana_token:
-        auth = grafana_token
-
-    # HTTP basic auth
-    else:
-        username = url.username or "admin"
-        password = url.password or "admin"
-        auth = (username, password)
-
-    verify = as_bool(parse_qs(url.query).get("verify", [True])[0])
-    if verify is False:
-        warnings.filterwarnings("ignore", category=InsecureRequestWarning)
-
-    from grafana_client import GrafanaApi
-
-    grafana = GrafanaApi(
-        auth,
-        protocol=url.scheme,
-        host=url.hostname,
-        port=url.port,
-        url_path_prefix=url.path.lstrip("/"),
-        verify=verify,
-    )
-
-    return grafana
 
 
 def as_bool(value: str) -> bool:

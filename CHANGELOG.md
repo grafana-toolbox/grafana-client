@@ -12,6 +12,7 @@
   Apparently, this is not implemented thoroughly for all data source types yet.
 * Add new factory methods `GrafanaApi.{from_url(),from_env()}`.
 * Add `GrafanaApi.connect()` and `GrafanaApi.version()`.
+* Data source health check subsystem refactoring, many software tests.
 
 
 ## 2.3.0 (2022-05-26)

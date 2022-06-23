@@ -1,22 +1,25 @@
 import json
 import logging
 import time
-from typing import Dict
+from distutils.version import LooseVersion
+from typing import Dict, Optional, Union
 
 from ..client import GrafanaBadInputError, GrafanaClientError, GrafanaServerError
 from ..knowledge import get_healthcheck_expression, query_factory
-from ..model import DatasourceHealth
+from ..model import DatasourceHealthResponse, DatasourceIdentifier
 from .base import Base
 
 logger = logging.getLogger(__name__)
 
+VERSION_9 = LooseVersion("9")
 VERBOSE = False
 
 
 class Datasource(Base):
-    def __init__(self, client):
+    def __init__(self, client, api):
         super(Datasource, self).__init__(client)
         self.client = client
+        self.api = api
 
     def health(self, datasource_uid: str):
         """
@@ -83,18 +86,18 @@ class Datasource(Base):
         r = self.client.GET(get_datasource_path)
         return r
 
-    def get(self, datasource_id: str = None, datasource_uid: str = None, datasource_name: str = None):
+    def get(self, dsident: DatasourceIdentifier):
         """
         Get dashboard by either datasource_id, datasource_uid, or datasource_name.
         """
-        if datasource_id:
-            datasource = self.get_datasource_by_id(datasource_id)
-        elif datasource_uid:
-            datasource = self.get_datasource_by_uid(datasource_uid)
-        elif datasource_name:
-            datasource = self.get_datasource_by_name(datasource_name)
+        if dsident.id:
+            datasource = self.get_datasource_by_id(dsident.id)
+        elif dsident.uid:
+            datasource = self.get_datasource_by_uid(dsident.uid)
+        elif dsident.name:
+            datasource = self.get_datasource_by_name(dsident.name)
         else:
-            raise KeyError("Either datasource_id or datasource_name must be given")
+            raise KeyError("Data source must be identified by one of id, uid, or name")
         return datasource
 
     def create_datasource(self, datasource):
@@ -181,10 +184,17 @@ class Datasource(Base):
         r = self.client.GET(get_datasource_path)
         return r
 
-    def query(self, datasource: Dict, expression: str):
+    def query(self, datasource: Union[DatasourceIdentifier, Dict], expression: str, store: Optional[str] = None):
         """
         Send a query to the designated data source and return its response.
+
+        TODO: This is by far not complete. The `query_factory` function has to
+              be made more elaborate in order to query different data source
+              types.
         """
+
+        if isinstance(datasource, DatasourceIdentifier):
+            datasource = self.get(datasource)
 
         datasource_id = datasource["id"]
         datasource_type = datasource["type"]
@@ -196,7 +206,9 @@ class Datasource(Base):
             raise ValueError("Expression must be given")
 
         # Build the query payload. Each data source has different query attributes.
-        query = query_factory(datasource, expression)
+        query = query_factory(datasource, expression, store)
+
+        logger.info(f"Submitting query: {query}")
 
         # Compute request method, body, and endpoint.
         send_request = self.client.POST
@@ -204,6 +216,8 @@ class Datasource(Base):
         # Certain data sources like InfluxDB 1.x, still use the `/datasources/proxy` route.
         if datasource_type == "influxdb" and datasource_dialect == "InfluxQL":
             url = f"/datasources/proxy/{datasource_id}/query"
+            if store is not None:
+                url += f"?db={store}"
             payload = {"q": query["q"]}
             request_kwargs = {"data": payload}
 
@@ -211,7 +225,9 @@ class Datasource(Base):
         elif expression.startswith("url://"):
             url = expression.replace("url://", "")
             url = url.format(
-                datasource_id=datasource["id"], datasource_uid=datasource["uid"], database_name=datasource["database"]
+                datasource_id=datasource.get("id"),
+                datasource_uid=datasource.get("uid"),
+                database_name=datasource.get("database"),
             )
             request_kwargs = {}
             send_request = self.client.GET
@@ -221,27 +237,33 @@ class Datasource(Base):
             url = "/ds/query"
             payload = {"queries": [query]}
             request_kwargs = {"json": payload}
+
         else:
             raise NotImplementedError(f"Unable to submit query to data source with access type '{access_type}'")
 
         # Submit query.
         try:
             r = send_request(url, **request_kwargs)
+            # logger.debug(f"Response from generic data source query: {r}")
             return r
-        except (GrafanaServerError, GrafanaClientError) as ex:
+        except (GrafanaClientError, GrafanaServerError) as ex:
             logger.error(
-                f"Unable to query data source id={datasource_id}, type={datasource_type}. Reason: {ex}. Response: {ex.response}"
+                f"Querying data source failed. id={datasource_id}, type={datasource_type}. Reason: {ex}. Response: {ex.response}"
             )
             raise
 
-    def health_check(self, datasource: Dict):
+    def health_check(self, datasource: Union[DatasourceIdentifier, Dict]):
         """
         Run a data source health check and return its success state, duration,
         and an (error) message.
 
-        See `examples/datasource.py` for an example implementation.
+        See `examples/datasource-health-check.py` for an example implementation.
         """
 
+        if isinstance(datasource, DatasourceIdentifier):
+            datasource = self.get(datasource)
+
+        datasource_uid = datasource["uid"]
         datasource_type = datasource["type"]
         datasource_dialect = datasource.get("jsonData", {}).get("version")
         access_type = datasource["access"]
@@ -257,7 +279,7 @@ class Datasource(Base):
         try:
             response = self.query(datasource, expression)
             response_display = response
-            if VERBOSE:
+            if VERBOSE:  # pragma:nocover
                 response_display = json.dumps(response, indent=2)
             logger.debug(f"Health check query response is: {response_display}")
             success = False
@@ -298,7 +320,7 @@ class Datasource(Base):
                         else:
                             raise KeyError(f"Unexpected result format")
                     except (KeyError, IndexError, AssertionError) as ex:
-                        message = f"FATAL: Unable to decode result from dictionary-type response: {ex}"
+                        message = f"FATAL: Unable to decode result from dictionary-type response: {ex.__class__.__name__}: {ex}"
                         logger.warning(message)
 
                 # Evaluate first item when `results` is a list.
@@ -341,4 +363,99 @@ class Datasource(Base):
                 message = str(ex)
 
         duration = round(time.time() - start, 4)
-        return DatasourceHealth(success=success, message=message, duration=duration, response=response)
+        if success:
+            status = "OK"
+        else:
+            status = "ERROR"
+        return DatasourceHealthResponse(
+            uid=datasource_uid,
+            type=datasource_type,
+            success=success,
+            status=status,
+            message=message,
+            duration=duration,
+            response=response,
+        )
+
+    def health_inquiry(self, datasource_uid: str):
+        """
+        Inquiry data source health. Try native method available since Grafana 9 first,
+        and fall back to client-side implementation afterwards.
+        """
+
+        # Check if data source actually exists.
+        try:
+            datasource = self.get(DatasourceIdentifier(uid=datasource_uid))
+            datasource_type = datasource["type"]
+            logger.debug(f"Data source information: {datasource}")
+        except GrafanaClientError as ex:
+            logger.error(f"Data source with UID '{datasource_uid}' does not exist: {ex}. Response: {ex.response}")
+            if ex.status_code == 404:
+                message = ex.response.get("message")
+                health = DatasourceHealthResponse(
+                    uid=datasource_uid,
+                    type=None,
+                    success=False,
+                    status="ERROR",
+                    message=message,
+                    duration=None,
+                    response=ex.response,
+                )
+                return health
+            else:
+                raise
+
+        # Check data source health.
+        health = None
+
+        # Use native Grafana 9+ data source health check.
+        start = time.time()
+        raised = True
+        noop = False
+        if self.api.version and LooseVersion(self.api.version) >= VERSION_9:
+            try:
+                health_native = self.health(datasource_uid=datasource_uid)
+                logger.debug(f"Response from native data source health check: {health_native}")
+                status = health_native["status"]
+                message = health_native["message"]
+                success = status == "OK"
+                response = health_native
+                raised = False
+            except (GrafanaClientError, GrafanaBadInputError) as ex:
+                logger.warning(
+                    f"Native data source health check for uid={datasource_uid} failed: {ex}. "
+                    f"Status: {ex.status_code}. Response: {ex.response}"
+                )
+                if ex.status_code in [400]:
+                    status = ex.response["status"]
+                    message = ex.response["message"]
+                    success = False
+                    response = ex.response
+                    raised = False
+                elif ex.status_code == 404:
+                    noop = True
+                else:
+                    raise
+            finally:
+                if not noop:
+                    if raised:
+                        raise
+                    else:
+                        duration = round(time.time() - start, 4)
+                        health = DatasourceHealthResponse(
+                            uid=datasource_uid,
+                            type=datasource_type,
+                            success=success,
+                            status=status,
+                            message=message,
+                            duration=duration,
+                            response=response,
+                        )
+
+        if health is None:
+            # Resolve data source by UID.
+            datasource = self.get(DatasourceIdentifier(uid=datasource_uid))
+            # Run client-side health check.
+            health = self.health_check(datasource=datasource)
+
+        return health
