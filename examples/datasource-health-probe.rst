@@ -1,5 +1,5 @@
 ################################
-Grafana data source health check
+Grafana data source health probe
 ################################
 
 
@@ -7,31 +7,15 @@ Grafana data source health check
 About
 *****
 
-``datasource-health.py`` is a demo program for checking whether a Grafana data
-source is healthy, in the same manner like the "Save & test" button works, when
-creating a data source in the user interface.
+``datasource-health-probe.py`` is an example program which can be used to
+explore the data source health check feature on your local workstation, with
+both Grafana and database service instances started using Docker.
 
-Grafana compatibility
-=====================
+Data source items are created on demand, so this program needs corresponding
+permissions on the Grafana API to create and delete data source items.
 
-The minimum supported version is Grafana 7.x, it does not work on older
-versions of Grafana. Prometheus only works on Grafana 8.x and newer.
-
-
-Data source coverage
-====================
-
-Support for those Grafana data sources is implemented as of June, 2022.
-
-- CrateDB
-- Elasticsearch
-- InfluxDB
-- PostgreSQL
-- Prometheus
-- Testdata
-
-We are humbly asking the community to contribute adapters for other data
-sources.
+The created data source items will be called ``probe-{type}``. For example,
+``probe-prometheus``. After probing them, they will be deleted again.
 
 
 *****
@@ -42,7 +26,7 @@ Start Grafana::
 
     export GRAFANA_VERSION=7.5.16
     export GRAFANA_VERSION=8.5.6
-    export GRAFANA_VERSION=9.0.0
+    export GRAFANA_VERSION=9.0.1
     export GRAFANA_VERSION=main
 
     docker run --rm -it \
@@ -93,7 +77,7 @@ CrateDB
 ::
 
     docker run --rm -it --publish=4200:4200 --publish=5432:5432 crate:4.8.1
-    python examples/datasource-health.py --type=cratedb --url=host.docker.internal:5432
+    python examples/datasource-health-probe.py --type=cratedb --url=host.docker.internal:5432
 
 
 Elasticsearch
@@ -108,7 +92,7 @@ Elasticsearch
     {apt,brew} install httpie
     http POST "http://localhost:9200/testdrive/_doc/1?pretty" "\@timestamp=2022-06-20T16:04:22.396Z" "sensor=foobar-1" "value=42.42"
 
-    python examples/datasource-health.py --type=elasticsearch --url=http://host.docker.internal:9200
+    python examples/datasource-health-probe.py --type=elasticsearch --url=http://host.docker.internal:9200
 
 
 InfluxDB 1.x
@@ -117,7 +101,7 @@ InfluxDB 1.x
 
     docker run --rm -it --publish=8086:8086 influxdb:1.8
     docker run --rm -it --network=host influxdb:1.8 influx -host host.docker.internal
-    python examples/datasource-health.py --type=influxdb --url=http://host.docker.internal:8086
+    python examples/datasource-health-probe.py --type=influxdb --url=http://host.docker.internal:8086
 
 
 InfluxDB 2.x
@@ -133,7 +117,7 @@ InfluxDB 2.x
         --env=DOCKER_INFLUXDB_INIT_BUCKET=default \
         --env=DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=admintoken \
         influxdb:2.2
-    python examples/datasource-health.py --type=influxdb+flux --url=http://host.docker.internal:8086
+    python examples/datasource-health-probe.py --type=influxdb+flux --url=http://host.docker.internal:8086
 
     docker run --rm -it --network=host influxdb:2.2 influx org list --token=admintoken
     docker run --rm -it --network=host influxdb:2.2 influx bucket list --org=example --token=admintoken
@@ -147,7 +131,7 @@ PostgreSQL
 ::
 
     docker run --rm -it --publish=5432:5432 --env "POSTGRES_HOST_AUTH_METHOD=trust" postgres:14.3
-    python examples/datasource-health.py --type=postgres --url=host.docker.internal:5432
+    python examples/datasource-health-probe.py --type=postgres --url=host.docker.internal:5432
 
 
 Prometheus
@@ -155,11 +139,12 @@ Prometheus
 ::
 
     docker run --rm -it --publish=9090:9090 prom/prometheus
-    python examples/datasource-health.py --type=prometheus --url=http://host.docker.internal:9090
+    python examples/datasource-health-probe.py --type=prometheus --url=http://host.docker.internal:9090
 
 
-Test data source
-================
+Testdata
+========
 ::
 
-    python examples/datasource-health.py --type=testdata
+    python examples/datasource-health-probe.py --type=testdata
+

@@ -13,6 +13,7 @@
 * Add new factory methods `GrafanaApi.{from_url(),from_env()}`.
 * Add `GrafanaApi.connect()` and `GrafanaApi.version()`.
 * Data source health check subsystem refactoring, many software tests.
+* Improve example programs `datasource-health-*`
 
 
 ## 2.3.0 (2022-05-26)
