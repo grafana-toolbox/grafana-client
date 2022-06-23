@@ -1,23 +1,21 @@
 """
-Demo program for checking whether a data source is healthy.
+Example program for probing whether a data source is healthy.
 
-Documentation: See `datasource-health.rst`.
+Documentation: https://github.com/panodata/grafana-client/blob/main/examples/datasource-health-probe.rst
 """
 import json
 import logging
-import os
 import sys
-import warnings
-
-warnings.filterwarnings("ignore", category=Warning, message="distutils Version classes are deprecated")
 from distutils.version import LooseVersion
 from optparse import OptionParser
+
+import requests
 
 from grafana_client import GrafanaApi
 from grafana_client.client import GrafanaClientError
 from grafana_client.knowledge import datasource_factory
 from grafana_client.model import DatasourceModel
-from grafana_client.util import grafana_client_factory, setup_logging
+from grafana_client.util import setup_logging
 
 logger = logging.getLogger(__name__)
 
@@ -58,48 +56,33 @@ def ensure_datasource(grafana: GrafanaApi, datasource: DatasourceModel):
     return datasource
 
 
-def health_inquiry(grafana: GrafanaApi, datasource: DatasourceModel, grafana_version: LooseVersion = None):
+def health_probe(grafana: GrafanaApi, datasource: DatasourceModel):
     """
-    Add a data source dynamically and run a data source health check on it.
-    Be graceful if it exists already.
+    Add a data source dynamically, run a data source health check on it,
+    and delete it again. Be graceful if the data source exists already.
     """
-
     # Create data source.
     datasource = ensure_datasource(grafana, datasource)
-    datasource_id = datasource["id"]
     datasource_uid = datasource["uid"]
 
-    # Resolve data source by UID.
-    datasource = grafana.datasource.get(datasource_id=datasource_id)
-
-    # Check data source health.
-    health = None
-    if True or grafana_version and grafana_version >= VERSION_9:
-        try:
-            health = grafana.datasource.health(datasource_uid=datasource_uid)
-        except GrafanaClientError as ex:
-            logger.warning(f"Native data source health check for uid={datasource_uid} failed: {ex}. Response: {ex.response}")
-            if ex.status_code != 404:
-                raise
-
-    if health is None:
-        health = grafana.datasource.health_check(datasource=datasource)
+    # Invoke the health check.
+    health_info = grafana.datasource.health_inquiry(datasource_uid=datasource_uid)
 
     # Delete data source again.
-    grafana.datasource.delete_datasource_by_id(datasource_id)
+    grafana.datasource.delete_datasource_by_uid(datasource_uid)
 
-    return health.for_response()
+    return health_info.asdict_compact()
 
 
 def prometheus_demo(grafana: GrafanaApi):
     datasource = DatasourceModel(
         name="probe-prometheus", type="prometheus", url="http://host.docker.internal:9090", access="server"
     )
-    health_info = health_inquiry(grafana, datasource)
+    health_info = health_probe(grafana, datasource)
     return health_info
 
 
-def run_healthcheck(grafana: GrafanaApi, grafana_version: LooseVersion = None):
+def run(grafana: GrafanaApi, grafana_version: LooseVersion = None):
 
     # When called without options, invoke the Prometheus demo.
     if len(sys.argv) == 1:
@@ -130,8 +113,8 @@ def run_healthcheck(grafana: GrafanaApi, grafana_version: LooseVersion = None):
         datasource = DatasourceModel(name=name, type=options.type, url=options.url, access="server")
         datasource = datasource_factory(datasource)
 
-        # Invoke the health check.
-        health_info = health_inquiry(grafana, datasource, grafana_version=grafana_version)
+        # Invoke the health probe.
+        health_info = health_probe(grafana, datasource)
 
     # Display the outcome and terminate program based on success state.
     print(json.dumps(health_info, indent=2))
@@ -143,16 +126,16 @@ if __name__ == "__main__":
 
     setup_logging(level=logging.DEBUG)
 
-    grafana_url = os.environ.get("GRAFANA_URL", "http://localhost:3000")
+    # Connect to Grafana instance and run health probe.
+    grafana_client = GrafanaApi.from_env()
 
-    # Connect to Grafana instance and run health check.
-    grafana_client = grafana_client_factory(grafana_url=grafana_url, grafana_token=os.environ.get("GRAFANA_TOKEN"))
+    try:
+        grafana_client.connect()
+    except requests.exceptions.ConnectionError as ex:
+        raise SystemExit(1)
 
-    grafana_info = grafana_client.health.check()
-    grafana_version = LooseVersion(grafana_info["version"])
-    logger.info(f"Connected to Grafana version {grafana_version} at {grafana_url}")
-
+    grafana_version = LooseVersion(grafana_client.version)
     if grafana_version < VERSION_7:
         raise NotImplementedError(f"Data source health check subsystem not ready for Grafana version {grafana_version}")
 
-    run_healthcheck(grafana_client, grafana_version=grafana_version)
+    run(grafana_client, grafana_version=grafana_version)
