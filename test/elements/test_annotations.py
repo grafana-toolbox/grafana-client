@@ -19,7 +19,7 @@ class AnnotationsTestCase(unittest.TestCase):
     def test_annotations(self, m):
         m.get(
             "http://localhost/api/annotations?from=1563183710618&to=1563185212275"
-            "&alertId=11&dashboardId=111&panelId=22&tags=tags-test&limit=1",
+            "&alertId=11&dashboardId=111&panelId=22&userId=42&type=alert&tags=tags-test&limit=1",
             json=[
                 {
                     "id": 80,
@@ -27,7 +27,8 @@ class AnnotationsTestCase(unittest.TestCase):
                     "alertName": "",
                     "dashboardId": 111,
                     "panelId": 22,
-                    "userId": 0,
+                    "userId": 42,
+                    "type": "alert",
                     "newState": "",
                     "prevState": "",
                     "created": 1563280160455,
@@ -48,6 +49,8 @@ class AnnotationsTestCase(unittest.TestCase):
             alert_id=11,
             dashboard_id=111,
             panel_id=22,
+            user_id=42,
+            ann_type="alert",
             tags=["tags-test"],
             limit=1,
         )
@@ -55,6 +58,8 @@ class AnnotationsTestCase(unittest.TestCase):
         self.assertEqual(annotations[0]["alertId"], 11)
         self.assertEqual(annotations[0]["dashboardId"], 111)
         self.assertEqual(annotations[0]["panelId"], 22)
+        self.assertEqual(annotations[0]["userId"], 42)
+        self.assertEqual(annotations[0]["type"], "alert")
         self.assertEqual(annotations[0]["tags"][0], "tags-test")
 
         self.assertEqual(len(annotations), 1)
