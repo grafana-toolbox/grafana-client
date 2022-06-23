@@ -15,6 +15,7 @@
 * Data source health check subsystem refactoring, many software tests.
 * Improve example programs `datasource-health-*`
 * Add example program `datasource-query.py`
+* Add example program `grafanalib-upload-dashboard.py`
 
 
 ## 2.3.0 (2022-05-26)
