@@ -1,8 +1,13 @@
+import logging
 import os
 import warnings
+from functools import lru_cache as memoized
 from typing import Tuple, Union
 from urllib.parse import parse_qs, urlparse
+
+import requests
 from urllib3.exceptions import InsecureRequestWarning
+
 from .client import GrafanaClient
 from .elements import (
     Admin,
@@ -20,6 +25,9 @@ from .elements import (
     User,
     Users,
 )
+from .util import as_bool
+
+logger = logging.getLogger(__name__)
 
 
 class GrafanaApi:
@@ -57,6 +65,24 @@ class GrafanaApi:
         self.annotations = Annotations(self.client)
         self.snapshots = Snapshots(self.client)
         self.notifications = Notifications(self.client)
+
+    def connect(self):
+        try:
+            grafana_info = self.health.check()
+        except requests.exceptions.ConnectionError as ex:
+            logger.critical(f"Unable to connect to Grafana at {self.url or self.client.url_host}: {ex}")
+            raise
+        logger.info(f"Connected to Grafana at {self.url}: {grafana_info}")
+        return grafana_info
+
+    @property
+    @memoized
+    def version(self):
+        grafana_info = self.health.check()
+        version = grafana_info["version"]
+        logger.info(f"Inquired Grafana version: {version}")
+        return version
+
     @classmethod
     def from_url(cls, url: str = None, credential: Union[str, Tuple[str, str]] = None):
         """
