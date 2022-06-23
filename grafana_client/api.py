@@ -76,7 +76,7 @@ class GrafanaApi:
         return grafana_info
 
     @property
-    @memoized
+    @memoized(maxsize=1)
     def version(self):
         grafana_info = self.health.check()
         version = grafana_info["version"]
