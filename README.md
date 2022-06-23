@@ -31,7 +31,7 @@ Connect to your Grafana API endpoint using the `GrafanaApi` class.
 ```python
 from grafana_client import GrafanaApi
 
-grafana = GrafanaApi(auth='eyJrIjoiWHg...dGJpZCI6MX0=', host='grafana.example.org')
+grafana = GrafanaApi.from_url("https://grafana.example.org/grafana")
 
 # Create user
 user = grafana.admin.create_user(
