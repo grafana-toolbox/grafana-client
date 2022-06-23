@@ -41,19 +41,19 @@ user = grafana.admin.create_user(
 user = grafana.admin.change_user_password(2, "newpassword")
 
 # Search dashboards based on tag
-grafana.search.search_dashboards(tag='applications')
+grafana.search.search_dashboards(tag="applications")
 
 # Find a user by email
-user = grafana.users.find_user('test@example.org')
+user = grafana.users.find_user("test@example.org")
 
 # Add user to team 2
 grafana.teams.add_team_member(2, user["id"])
 
 # Create or update a dashboard
-grafana.dashboard.update_dashboard(dashboard={'dashboard': {...}, 'folderId': 0, 'overwrite': True})
+grafana.dashboard.update_dashboard(dashboard={"dashboard": {...}, "folderId": 0, "overwrite": True})
 
 # Delete a dashboard by UID
-grafana.dashboard.delete_dashboard(dashboard_uid='abcdefgh')
+grafana.dashboard.delete_dashboard(dashboard_uid="foobar")
 
 # Create organization
 grafana.organization.create_organization({"name": "new_organization"})
@@ -65,31 +65,49 @@ grafana.organization.create_organization({"name": "new_organization"})
 There are two ways to authenticate to the Grafana API. Either use an API token,
 or HTTP basic auth.
 
-To use the admin API, you need to use HTTP basic auth, as stated at the
-[Grafana Admin API documentation].
+To use the admin API, you need to use HTTP basic authentication, as stated at
+the [Grafana Admin API documentation].
 
 ```python
 from grafana_client import GrafanaApi
 
-# Use HTTP basic authentication
-grafana = GrafanaApi(
-    auth=("username", "password"),
-    host='grafana.example.org'
+# Use Grafana API token.
+grafana = GrafanaApi.from_url(
+    url="https://grafana.example.org/grafana",
+    auth="eyJrIjoiWHg...dGJpZCI6MX0=",
 )
 
-# Use Grafana API token
-grafana = GrafanaApi(
-    auth='eyJrIjoiWHg...dGJpZCI6MX0=',
-    host='grafana.example.org'
+# Use HTTP basic authentication.
+grafana = GrafanaApi.from_url(
+    url="https://username:password@grafana.example.org/grafana",
 )
+
+# Optionally turn off TLS certificate verification.
+grafana = GrafanaApi.from_url(
+    url="https://username:password@grafana.example.org/grafana?verify=false",
+)
+
+# Use `GRAFANA_URL` and `GRAFANA_TOKEN` environment variables.
+grafana = GrafanaApi.from_env()
+```
+
+## Proxy
+
+The underlying `requests` library honors the `HTTP_PROXY` and `HTTPS_PROXY`
+environment variables. Setting them before invoking an application using
+`grafana-client` has been confirmed to work. For example:
+```
+export HTTP_PROXY=10.10.1.10:3128
+export HTTPS_PROXY=10.10.1.11:1080
 ```
 
 
-## Status
+## Details
 
-This table outlines which parts of Grafana's HTTP API are covered by
-`grafana-client`, see also [Grafana HTTP API reference].
+This section of the documentation outlines which parts of the Grafana HTTP API
+are supported, and to which degree. See also [Grafana HTTP API reference].
 
+### Overview
 
 | API | Status |
 |---|---|
@@ -114,6 +132,41 @@ This table outlines which parts of Grafana's HTTP API are covered by
 | User | + |
 
 
+### Data source health check
+
+#### Introduction
+
+For checking whether a Grafana data source is healthy, Grafana 9 has a
+server-side data source health check API. For earlier versions, a client-side
+implementation is provided.
+
+This implementation works in the same manner as the "Save & test" button works,
+when creating a data source in the user interface.
+
+The feature can be explored through corresponding client programs in the
+`examples/` folder of this repository.
+
+#### Compatibility
+
+The minimum supported version is Grafana 7.x, it does not work on older
+versions of Grafana. Prometheus only works on Grafana 8.x and newer.
+
+#### Data source coverage
+
+Support for data source health checks on those Grafana data sources is
+implemented as of June 2022.
+
+- CrateDB
+- Elasticsearch
+- InfluxDB
+- PostgreSQL
+- Prometheus
+- Testdata
+
+We are humbly asking the community to contribute adapters for other data
+sources.
+
+
 ## Software tests
 
 ```shell
@@ -128,8 +181,10 @@ python -m unittest -vvv
 A list of applications based on `grafana-client`.
 
 - [grafana-import-tool](https://github.com/peekjef72/grafana-import-tool)
+- [grafana-ldap-sync-script](https://github.com/NovatecConsulting/grafana-ldap-sync-script)
 - [grafana-snapshots-tool](https://github.com/peekjef72/grafana-snapshots-tool)
 - [grafana-wtf](https://github.com/panodata/grafana-wtf)
+- [nixops-grafana](https://github.com/tewfik-ghariani/nixops-grafana)
 
 
 ## History
