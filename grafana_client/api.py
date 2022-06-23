@@ -53,7 +53,7 @@ class GrafanaApi:
         self.url = None
         self.admin = Admin(self.client)
         self.dashboard = Dashboard(self.client)
-        self.datasource = Datasource(self.client)
+        self.datasource = Datasource(self.client, self)
         self.folder = Folder(self.client)
         self.health = Health(self.client)
         self.organization = Organization(self.client)
