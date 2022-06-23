@@ -14,6 +14,7 @@
 * Add `GrafanaApi.connect()` and `GrafanaApi.version()`.
 * Data source health check subsystem refactoring, many software tests.
 * Improve example programs `datasource-health-*`
+* Add example program `datasource-query.py`
 
 
 ## 2.3.0 (2022-05-26)
