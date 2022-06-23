@@ -22,6 +22,22 @@ class MockResponse:
 
 
 class TestGrafanaClient(unittest.TestCase):
+    def test_grafana_client_user_agent_default(self):
+        grafana = GrafanaApi.from_url()
+
+        from grafana_client import __appname__, __version__
+
+        user_agent = f"{__appname__}/{__version__}"
+
+        self.assertTrue(user_agent.startswith("grafana-client"))
+        self.assertEqual(grafana.client.s.headers["User-Agent"], user_agent)
+
+    def test_grafana_client_user_agent_custom(self):
+        grafana = GrafanaApi(
+            ("admin", "admin"), host="localhost", url_path_prefix="", protocol="https", user_agent="foobar/3000"
+        )
+        self.assertEqual(grafana.client.s.headers["User-Agent"], "foobar/3000")
+
     @patch("grafana_client.client.GrafanaClient.__getattr__")
     def test_grafana_client(self, mock_get):
         mock_get.return_value = Mock()

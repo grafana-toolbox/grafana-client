@@ -17,6 +17,7 @@
 * Add example program `datasource-query.py`
 * Add example program `grafanalib-upload-dashboard.py`
 * Fix endless-loop bug in the `search_teams` function. Thanks, @changdingfang!
+* Set the `User-Agent` header to `grafana-client/{version}`
 
 
 ## 2.3.0 (2022-05-26)

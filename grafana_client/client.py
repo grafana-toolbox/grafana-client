@@ -64,6 +64,7 @@ class GrafanaClient:
         protocol="http",
         verify=True,
         timeout=5.0,
+        user_agent: str = None,
     ):
         self.auth = auth
         self.verify = verify
@@ -90,7 +91,12 @@ class GrafanaClient:
 
         self.url = construct_api_url()
 
+        from grafana_client import __appname__, __version__
+
+        self.user_agent = user_agent or f"{__appname__}/{__version__}"
+
         self.s = requests.Session()
+        self.s.headers["User-Agent"] = self.user_agent
         if self.auth is not None:
             if not isinstance(self.auth, tuple):
                 self.auth = TokenAuth(self.auth)

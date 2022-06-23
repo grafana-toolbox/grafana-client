@@ -40,6 +40,7 @@ class GrafanaApi:
         protocol="http",
         verify=True,
         timeout=5.0,
+        user_agent: str = None,
     ):
         self.client = GrafanaClient(
             auth,
@@ -49,6 +50,7 @@ class GrafanaApi:
             protocol=protocol,
             verify=verify,
             timeout=timeout,
+            user_agent=user_agent,
         )
         self.url = None
         self.admin = Admin(self.client)
