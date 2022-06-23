@@ -98,7 +98,7 @@ class GrafanaClient:
                 self.auth = requests.auth.HTTPBasicAuth(*self.auth)
 
     def __getattr__(self, item):
-        def __request_runnner(url, json=None, data=None, headers=None):
+        def __request_runner(url, json=None, data=None, headers=None):
             __url = "%s%s" % (self.url, url)
             runner = getattr(self.s, item.lower())
             r = runner(
@@ -135,4 +135,4 @@ class GrafanaClient:
                     )
             return r.json()
 
-        return __request_runnner
+        return __request_runner

@@ -10,7 +10,6 @@
 - [o] Real data queries, see https://github.com/panodata/grafana-client/pull/5 ff.
 - [o] Provide example program for querying data sources
 - [o] Protect against submitting JSON into API methods
-- [o] Fix typo: `runnner`
 - [o] Make example program `datasource-query.py` fully work
 
 ## Community contributions
