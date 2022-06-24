@@ -47,6 +47,15 @@ INFLUXDB1_DATASOURCE = {
     "jsonData": {"httpMode": "POST", "version": "InfluxQL"},
 }
 
+MYSQL_DATASOURCE = {
+    "id": 51,
+    "uid": "7CpzLp37z",
+    "name": "MariaDB",
+    "type": "mysql",
+    "access": "proxy",
+    "url": "localhost:3306",
+}
+
 POSTGRES_DATASOURCE = {
     "id": 50,
     "uid": "v2KYBt37k",
@@ -511,6 +520,32 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
                 success=True,
                 status="OK",
                 message="Success",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_mysql(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/7CpzLp37z",
+            json=MYSQL_DATASOURCE,
+        )
+        m.post(
+            "http://localhost/api/ds/query",
+            json={"results": {"test": {"frames": [{"schema": {"meta": {"executedQueryString": "SELECT 1"}}}]}}},
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="7CpzLp37z"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="7CpzLp37z",
+                type="mysql",
+                success=True,
+                status="OK",
+                message="SELECT 1",
                 duration=None,
                 response=None,
             ),
