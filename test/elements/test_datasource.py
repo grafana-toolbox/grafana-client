@@ -188,6 +188,11 @@ PROMETHEUS_HEALTH_RESPONSE = {
     }
 }
 
+DATAFRAME_RESPONSE_EMPTY = {"results": {"test": {"frames": []}}}
+DATAFRAME_RESPONSE_SELECT1 = {
+    "results": {"test": {"frames": [{"schema": {"meta": {"executedQueryString": "SELECT 1"}}}]}}
+}
+
 
 class DatasourceTestCase(unittest.TestCase):
     def setUp(self):
@@ -541,7 +546,7 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         )
         m.post(
             "http://localhost/api/ds/query",
-            json={"results": {"test": {"frames": [{"schema": {"meta": {"executedQueryString": "SELECT 1"}}}]}}},
+            json=DATAFRAME_RESPONSE_SELECT1,
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="7CpzLp37z"))
         response.duration = None
@@ -593,7 +598,7 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         )
         m.post(
             "http://localhost/api/ds/query",
-            json={"results": {"test": {"frames": [{"schema": {"meta": {"executedQueryString": "SELECT 1"}}}]}}},
+            json=DATAFRAME_RESPONSE_SELECT1,
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
         response.duration = None
@@ -632,6 +637,32 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
                 success=True,
                 status="OK",
                 message="Expr: 1+1\nStep: 15s",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_prometheus_empty_dataframe(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/h8KkCLt7z",
+            json=PROMETHEUS_DATASOURCE,
+        )
+        m.post(
+            "http://localhost/api/ds/query",
+            json=DATAFRAME_RESPONSE_EMPTY,
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="h8KkCLt7z"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="h8KkCLt7z",
+                type="prometheus",
+                success=True,
+                status="OK",
+                message="Success",
                 duration=None,
                 response=None,
             ),
