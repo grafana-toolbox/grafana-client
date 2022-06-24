@@ -134,6 +134,14 @@ InfluxDB 2.x
     influx bucket list --org=example
 
 
+MariaDB / MySQL
+===============
+::
+
+    docker run --rm -it --publish=3306:3306 --env "MARIADB_ROOT_PASSWORD=root" mariadb:10
+    python examples/datasource-health-probe.py --type=mysql --url=host.docker.internal:3306
+
+
 PostgreSQL
 ==========
 ::
