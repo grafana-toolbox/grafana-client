@@ -449,21 +449,40 @@ class Datasource(Base):
                 success = status == "OK"
                 response = health_native
                 raised = False
-            except (GrafanaClientError, GrafanaBadInputError) as ex:
+            except (GrafanaClientError, GrafanaServerError, GrafanaBadInputError) as ex:
                 logger.warning(
-                    f"Native data source health check for uid={datasource_uid} failed: {ex}. "
+                    f"Native data source health check failed. uid={datasource_uid}, ex={ex}. "
                     f"Status: {ex.status_code}. Response: {ex.response}"
                 )
+                message = None
                 if ex.status_code in [400]:
                     status = ex.response["status"]
                     message = ex.response["message"]
                     success = False
                     response = ex.response
                     raised = False
-                elif ex.status_code == 404:
+
+                # When Grafana 9+ server-side health checks are not implemented
+                # yet, Grafana mostly croaks with either `404 Not Found`, or
+                # `Server Error 504: There was an issue communicating with your instance.`.
+                # Let's make this a noop in order to fall back to the client-side
+                # implementation.
+                # elif ex.status_code in [404, 504]:
+                elif ex.status_code in [404]:
                     noop = True
+                elif ex.status_code >= 500:
+                    status = "FATAL"
+                    message = f"{ex.__class__.__name__}: {ex}"
+                    success = False
+                    response = ex.response
+                    raised = False
+
                 else:
                     raise
+
+                if "code" in ex.response:
+                    message = f"[{ex.response['code']}] {message}"
+
             finally:
                 if not noop:
                     if raised:

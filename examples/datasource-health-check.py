@@ -49,13 +49,10 @@ def run(grafana: GrafanaApi):
             if health_info.success:
                 statistics["ok"] += 1
             else:
-                statistics["error"] += 1
-        except (GrafanaServerError,) as ex:
-            message = f"{ex.__class__.__name__}: {ex}"
-            health_info = DatasourceHealthResponse(
-                uid=datasource["uid"], type=datasource["type"], success=False, status="FATAL", message=message
-            )
-            statistics["fatal"] += 1
+                if health_info.status == "FATAL":
+                    statistics["fatal"] += 1
+                else:
+                    statistics["error"] += 1
         except NotImplementedError as ex:
             message = f"{ex.__class__.__name__}: {ex}"
             health_info = DatasourceHealthResponse(
