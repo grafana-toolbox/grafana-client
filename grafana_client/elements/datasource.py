@@ -339,9 +339,15 @@ class Datasource(Base):
                 if isinstance(results, dict):
                     try:
                         result = results["test"]
-                        # Grafana 9 and up uses the DataFrame format.
+                        # Responses in new DataFrame format.
                         if "frames" in result:
-                            message = result["frames"][0]["schema"]["meta"]["executedQueryString"]
+                            assert isinstance(
+                                result["frames"], list
+                            ), "DataFrame response detected, but 'frames' is not a list"
+                            try:
+                                message = result["frames"][0]["schema"]["meta"]["executedQueryString"]
+                            except (IndexError, KeyError):
+                                message = "Success"
                             success = True
                         # Grafana 7 and 8 use the previous format.
                         elif "refId" in result:
