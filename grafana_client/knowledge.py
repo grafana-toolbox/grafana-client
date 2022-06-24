@@ -68,6 +68,11 @@ def datasource_factory(datasource: DatasourceModel) -> DatasourceModel:
         datasource.secureJsonFields = {
             "token": False,
         }
+    elif datasource.type == "opentsdb":
+        datasource.access = "proxy"
+        datasource.jsonData = {
+            "tsdbVersion": 3,
+        }
     elif datasource.type == "mysql":
         datasource.user = "root"
         datasource.secureJsonData = {
@@ -145,6 +150,8 @@ def query_factory(datasource, expression: str, store: Optional[str] = None) -> U
             "format": "table",
             "rawSql": expression,
         }
+    elif datasource_type == "opentsdb":
+        query = {}
     elif datasource_type == "postgres":
         query = {
             "refId": "test",
@@ -199,6 +206,7 @@ HEALTHCHECK_EXPRESSION_MAP = {
     "influxdb+influxql": "SHOW RETENTION POLICIES on _internal",
     "influxdb+flux": "buckets()",
     "mysql": "SELECT 1",
+    "opentsdb": "url:///datasources/proxy/{datasource_id}/api/suggest?type=metrics&q=cpu&max=100",
     "postgres": "SELECT 1",
     "prometheus": "1+1",
     "simpod-json-datasource": "url:///datasources/proxy/{datasource_id}",

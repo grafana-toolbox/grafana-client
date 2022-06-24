@@ -160,6 +160,7 @@ implemented as of June 2022.
 - Elasticsearch
 - Graphite
 - InfluxDB
+- OpenTSDB
 - PostgreSQL
 - Prometheus
 - Testdata

@@ -324,6 +324,11 @@ class Datasource(Base):
                     message = f"FATAL: Unable to decode result from Graphite response: {ex.__class__.__name__}: {ex}"
                     logger.warning(message)
 
+            # With OpenTSDB, a 200 OK response with empty body is just fine.
+            elif datasource_type == "opentsdb":
+                message = "Success"
+                success = True
+
             # Generic case, where the response has a top-level "results" key.
             else:
                 results = response["results"]
