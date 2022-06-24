@@ -96,6 +96,8 @@ def query_factory(datasource, expression: str, store: Optional[str] = None) -> U
         query = expression
     elif datasource_type == "grafana-simple-json-datasource":
         query = expression
+    elif datasource_type == "graphite":
+        query = {"target": "constantLine(100)", "from": "-1h", "until": "now", "format": "json", "maxDataPoints": 300}
     elif datasource_type == "influxdb":
         dialect = datasource["jsonData"].get("version", "InfluxQL")
         query = {
@@ -171,6 +173,7 @@ HEALTHCHECK_EXPRESSION_MAP = {
     "elasticsearch": "url:///datasources/proxy/{datasource_id}/{database_name}/_mapping",
     "fetzerch-sunandmoon-datasource": "url:///datasources/uid/{datasource_uid}",
     "grafana-simple-json-datasource": "url:///datasources/proxy/{datasource_id}",
+    "graphite": "foo",
     "influxdb": "SHOW RETENTION POLICIES on _internal",
     "influxdb+influxql": "SHOW RETENTION POLICIES on _internal",
     "influxdb+flux": "buckets()",

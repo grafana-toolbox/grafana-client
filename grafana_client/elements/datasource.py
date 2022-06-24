@@ -221,6 +221,10 @@ class Datasource(Base):
             payload = {"q": query["q"]}
             request_kwargs = {"data": payload}
 
+        elif datasource_type == "graphite":
+            url = f"/datasources/proxy/{datasource_id}/render"
+            request_kwargs = {"data": query}
+
         # This case is very special. It is used for Elasticsearch and Testdata.
         elif expression.startswith("url://"):
             url = expression.replace("url://", "")
@@ -308,6 +312,18 @@ class Datasource(Base):
                     success = True
                 except (AssertionError, KeyError) as ex:
                     message = f"{ex.__class__.__name__}: {ex}"
+
+            elif datasource_type == "graphite":
+                result = response[0]
+                try:
+                    assert result["target"]
+                    assert result["tags"]
+                    assert len(result["datapoints"]) == 3
+                    message = "Success"
+                    success = True
+                except (KeyError, IndexError, AssertionError) as ex:
+                    message = f"FATAL: Unable to decode result from Graphite response: {ex.__class__.__name__}: {ex}"
+                    logger.warning(message)
 
             # Generic case, where the response has a top-level "results" key.
             else:
