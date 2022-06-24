@@ -56,6 +56,14 @@ MYSQL_DATASOURCE = {
     "url": "localhost:3306",
 }
 
+OPENTSDB_DATASOURCE = {
+    "id": 51,
+    "uid": "hkuk5h3nk",
+    "name": "OpenTSDB",
+    "type": "opentsdb",
+    "access": "proxy",
+}
+
 POSTGRES_DATASOURCE = {
     "id": 50,
     "uid": "v2KYBt37k",
@@ -546,6 +554,32 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
                 success=True,
                 status="OK",
                 message="SELECT 1",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_opentsdb(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/hkuk5h3nk",
+            json=OPENTSDB_DATASOURCE,
+        )
+        m.get(
+            "http://localhost/api/datasources/proxy/51/api/suggest",
+            json="",
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="hkuk5h3nk"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="hkuk5h3nk",
+                type="opentsdb",
+                success=True,
+                status="OK",
+                message="Success",
                 duration=None,
                 response=None,
             ),

@@ -142,6 +142,14 @@ MariaDB / MySQL
     python examples/datasource-health-probe.py --type=mysql --url=host.docker.internal:3306
 
 
+OpenTSDB
+========
+::
+
+    docker run --rm -it --publish=4242:4242 petergrace/opentsdb-docker:latest
+    python examples/datasource-health-probe.py --type=opentsdb --url=host.docker.internal:4242
+
+
 PostgreSQL
 ==========
 ::
