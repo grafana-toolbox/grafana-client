@@ -817,8 +817,20 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
             json={"status": "ERROR", "message": "Something failed"},
             status_code=500,
         )
-        self.assertRaises(
-            GrafanaServerError, lambda: self.grafana.datasource.health_inquiry(datasource_uid="h8KkCLt7z")
+        response = self.grafana.datasource.health_inquiry(datasource_uid="h8KkCLt7z")
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="h8KkCLt7z",
+                type="prometheus",
+                success=False,
+                status="FATAL",
+                message="GrafanaServerError: Server Error 500: Something failed",
+                duration=None,
+                response=None,
+            ),
         )
 
     @requests_mock.Mocker()
