@@ -287,14 +287,27 @@ class Datasource(Base):
             # This case is very special. It is used for Elasticsearch and Testdata.
             if datasource_type == "elasticsearch":
                 database_name = datasource["database"]
-                assert response[database_name]["mappings"]["properties"], "Invalid response from Elasticsearch"
-                message = "Success"
-                success = True
-            elif datasource_type == "testdata":
-                assert response["id"], "Invalid response from Testdata. No attribute 'id' in response."
-                assert response["uid"], "Invalid response from Testdata. No attribute 'uid' in response."
-                message = "Success"
-                success = True
+                try:
+                    assert response[database_name]["mappings"]["properties"], "Invalid response from Elasticsearch"
+                    message = "Success"
+                    success = True
+                except (AssertionError, KeyError) as ex:
+                    message = f"{ex.__class__.__name__}: {ex}"
+            elif datasource_type in ["fetzerch-sunandmoon-datasource", "testdata"]:
+                try:
+                    assert response["id"], "Invalid response. No attribute 'id' in response."
+                    assert response["uid"], "Invalid response. No attribute 'uid' in response."
+                    if datasource_type == "fetzerch-sunandmoon-datasource":
+                        assert response["jsonData"][
+                            "latitude"
+                        ], "Invalid response. No attribute 'jsonData.latitude' in response."
+                        assert response["jsonData"][
+                            "longitude"
+                        ], "Invalid response. No attribute 'jsonData.longitude' in response."
+                    message = "Success"
+                    success = True
+                except (AssertionError, KeyError) as ex:
+                    message = f"{ex.__class__.__name__}: {ex}"
 
             # Generic case, where the response has a top-level "results" key.
             else:

@@ -92,6 +92,8 @@ def query_factory(datasource, expression: str, store: Optional[str] = None) -> U
         raise NotImplementedError("__NEVER__")
     elif datasource_type == "elasticsearch":
         query = expression
+    elif datasource_type == "fetzerch-sunandmoon-datasource":
+        query = expression
     elif datasource_type == "influxdb":
         dialect = datasource["jsonData"]["version"]
         query = {
@@ -163,6 +165,7 @@ def query_factory(datasource, expression: str, store: Optional[str] = None) -> U
 # TODO: Complete the list for all popular databases.
 HEALTHCHECK_EXPRESSION_MAP = {
     "elasticsearch": "url:///datasources/proxy/{datasource_id}/{database_name}/_mapping",
+    "fetzerch-sunandmoon-datasource": "url:///datasources/uid/{datasource_uid}",
     "influxdb": "SHOW RETENTION POLICIES on _internal",
     "influxdb+influxql": "SHOW RETENTION POLICIES on _internal",
     "influxdb+flux": "buckets()",
