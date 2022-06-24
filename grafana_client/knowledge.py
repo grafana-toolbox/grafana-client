@@ -42,6 +42,11 @@ def datasource_factory(datasource: DatasourceModel) -> DatasourceModel:
             "esVersion": "7.10.0",
             "timeField": "@timestamp",
         }
+    elif datasource.type == "graphite":
+        datasource.access = "proxy"
+        datasource.jsonData = {
+            "graphiteVersion": "1.1",
+        }
     elif datasource.type in ["influxdb", "influxdb+influxql"]:
         datasource.type = "influxdb"
         datasource.access = "proxy"
@@ -177,7 +182,7 @@ HEALTHCHECK_EXPRESSION_MAP = {
     "influxdb": "SHOW RETENTION POLICIES on _internal",
     "influxdb+influxql": "SHOW RETENTION POLICIES on _internal",
     "influxdb+flux": "buckets()",
-    "postgres": "SELECT 1;",
+    "postgres": "SELECT 1",
     "prometheus": "1+1",
     "simpod-json-datasource": "url:///datasources/proxy/{datasource_id}",
     "testdata": "url:///datasources/uid/{datasource_uid}",

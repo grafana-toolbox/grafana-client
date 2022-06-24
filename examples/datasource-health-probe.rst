@@ -95,6 +95,14 @@ Elasticsearch
     python examples/datasource-health-probe.py --type=elasticsearch --url=http://host.docker.internal:9200
 
 
+Graphite
+========
+::
+
+    docker run --rm -it --publish=8080:8080 graphiteapp/graphite-statsd:latest
+    python examples/datasource-health-probe.py --type=graphite --url=http://host.docker.internal:8080
+
+
 InfluxDB 1.x
 ============
 ::

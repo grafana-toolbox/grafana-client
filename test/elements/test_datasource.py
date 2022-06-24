@@ -15,6 +15,51 @@ from grafana_client.client import (
 )
 from grafana_client.model import DatasourceHealthResponse, DatasourceIdentifier
 
+ELASTICSEARCH_DATASOURCE = {
+    "id": 44,
+    "uid": "34inf2sdc",
+    "name": "Elasticsearch",
+    "type": "elasticsearch",
+    "access": "proxy",
+    "database": "bazqux",
+    "url": "http://localhost:9200",
+    "jsonData": {
+        "esVersion": "7.10.0",
+        "timeField": "@timestamp",
+    },
+}
+
+GRAPHITE_DATASOURCE = {
+    "id": 48,
+    "uid": "wr47rz34e",
+    "name": "Graphite",
+    "type": "graphite",
+    "access": "proxy",
+}
+
+INFLUXDB1_DATASOURCE = {
+    "id": 43,
+    "uid": "9ac78sdc2",
+    "name": "InfluxDB",
+    "type": "influxdb",
+    "access": "proxy",
+    "url": "http://localhost:8086",
+    "jsonData": {"httpMode": "POST", "version": "InfluxQL"},
+}
+
+POSTGRES_DATASOURCE = {
+    "id": 50,
+    "uid": "v2KYBt37k",
+    "name": "PostgreSQL",
+    "type": "postgres",
+    "access": "proxy",
+    "url": "localhost:5432",
+    "jsonData": {
+        "postgresVersion": 1200,
+        "sslmode": "disable",
+    },
+}
+
 PROMETHEUS_DATASOURCE = {
     "id": 42,
     "uid": "h8KkCLt7z",
@@ -34,27 +79,31 @@ PROMETHEUS_DATASOURCE = {
     "readOnly": False,
 }
 
-INFLUXDB1_DATASOURCE = {
-    "id": 43,
-    "uid": "9ac78sdc2",
-    "name": "InfluxDB",
-    "type": "influxdb",
+SIMPLE_JSON_DATASOURCE = {
+    "id": 47,
+    "uid": "rw783ds3e",
+    "name": "SimpleJson",
+    "type": "grafana-simple-json-datasource",
     "access": "proxy",
-    "url": "http://localhost:8086",
-    "jsonData": {"httpMode": "POST", "version": "InfluxQL"},
 }
 
-ELASTICSEARCH_DATASOURCE = {
-    "id": 44,
-    "uid": "34inf2sdc",
-    "name": "Elasticsearch",
-    "type": "elasticsearch",
+SIMPOD_JSON_DATASOURCE = {
+    "id": 49,
+    "uid": "oie238af3",
+    "name": "SimpodJson",
+    "type": "simpod-json-datasource",
     "access": "proxy",
-    "database": "bazqux",
-    "url": "http://localhost:9200",
+}
+
+SUNANDMOON_DATASOURCE = {
+    "id": 46,
+    "uid": "239fasva4",
+    "name": "SunAndMoon",
+    "type": "fetzerch-sunandmoon-datasource",
+    "access": "proxy",
     "jsonData": {
-        "esVersion": "7.10.0",
-        "timeField": "@timestamp",
+        "latitude": 42.42,
+        "longitude": 84.84,
     },
 }
 
@@ -367,6 +416,17 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         self.grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="http")
 
     @requests_mock.Mocker()
+    def test_health_check_access_type_failure(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/h8KkCLt7z",
+            json=PROMETHEUS_DATASOURCE,
+        )
+
+        datasource = PROMETHEUS_DATASOURCE.copy()
+        datasource["access"] = "__UNKNOWN__"
+        self.assertRaises(NotImplementedError, lambda: self.grafana.datasource.health_check(datasource))
+
+    @requests_mock.Mocker()
     def test_health_check_elasticsearch(self, m):
         m.get(
             "http://localhost/api/datasources/uid/34inf2sdc",
@@ -384,6 +444,32 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             DatasourceHealthResponse(
                 uid="34inf2sdc",
                 type="elasticsearch",
+                success=True,
+                status="OK",
+                message="Success",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_graphite(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/wr47rz34e",
+            json=GRAPHITE_DATASOURCE,
+        )
+        m.post(
+            "http://localhost/api/datasources/proxy/48/render",
+            json=[{"target": "", "tags": {}, "datapoints": []}],
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="wr47rz34e"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="wr47rz34e",
+                type="graphite",
                 success=True,
                 status="OK",
                 message="Success",
@@ -431,6 +517,32 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         )
 
     @requests_mock.Mocker()
+    def test_health_check_postgres(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/v2KYBt37k",
+            json=POSTGRES_DATASOURCE,
+        )
+        m.post(
+            "http://localhost/api/ds/query",
+            json={"results": {"test": {"frames": [{"schema": {"meta": {"executedQueryString": "SELECT 1"}}}]}}},
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="v2KYBt37k",
+                type="postgres",
+                success=True,
+                status="OK",
+                message="SELECT 1",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
     def test_health_check_prometheus(self, m):
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
@@ -451,6 +563,81 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
                 success=True,
                 status="OK",
                 message="Expr: 1+1\nStep: 15s",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_simplejson(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/rw783ds3e",
+            json=SIMPLE_JSON_DATASOURCE,
+        )
+        m.get(
+            "http://localhost/api/datasources/proxy/47",
+            json={"results": {"test": {"error": "Resource not found: /metadata"}}},
+            status_code=404,
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="rw783ds3e"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="rw783ds3e",
+                type="grafana-simple-json-datasource",
+                success=False,
+                status="ERROR",
+                message="Resource not found: /metadata",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_simpod_json(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/oie238af3",
+            json=SIMPOD_JSON_DATASOURCE,
+        )
+        m.get(
+            "http://localhost/api/datasources/proxy/49",
+            json={"results": [{"statement_id": "ID", "series": []}]},
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="oie238af3"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="oie238af3",
+                type="simpod-json-datasource",
+                success=True,
+                status="OK",
+                message="Success",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_sunandmoon(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/239fasva4",
+            json=SUNANDMOON_DATASOURCE,
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="239fasva4"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="239fasva4",
+                type="fetzerch-sunandmoon-datasource",
+                success=True,
+                status="OK",
+                message="Success",
                 duration=None,
                 response=None,
             ),
@@ -478,16 +665,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             ),
         )
 
-    @requests_mock.Mocker()
-    def test_health_check_access_type_failure(self, m):
-        m.get(
-            "http://localhost/api/datasources/uid/h8KkCLt7z",
-            json=PROMETHEUS_DATASOURCE,
-        )
 
-        datasource = PROMETHEUS_DATASOURCE.copy()
-        datasource["access"] = "__UNKNOWN__"
-        self.assertRaises(NotImplementedError, lambda: self.grafana.datasource.health_check(datasource))
+class DatasourceHealthInquiryTestCase(unittest.TestCase):
+    def setUp(self):
+        self.grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="http")
 
     @requests_mock.Mocker()
     def test_health_inquiry_native_prometheus_success(self, m):

@@ -158,6 +158,7 @@ implemented as of June 2022.
 
 - CrateDB
 - Elasticsearch
+- Graphite
 - InfluxDB
 - PostgreSQL
 - Prometheus
