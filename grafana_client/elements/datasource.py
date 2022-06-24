@@ -4,6 +4,8 @@ import time
 from distutils.version import LooseVersion
 from typing import Dict, Optional, Union
 
+from requests import ReadTimeout
+
 from ..client import GrafanaBadInputError, GrafanaClientError, GrafanaServerError
 from ..knowledge import get_healthcheck_expression, query_factory
 from ..model import DatasourceHealthResponse, DatasourceIdentifier
@@ -394,6 +396,11 @@ class Datasource(Base):
                     message = f"Unknown: {ex}. Response: {ex.response}"
             else:
                 message = str(ex)
+
+        except ReadTimeout as ex:
+            message = str(ex)
+            success = False
+            response = None
 
         duration = round(time.time() - start, 4)
         if success:

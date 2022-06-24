@@ -22,6 +22,7 @@
   it is always wrong. Thanks, @ricmano!
 * Example `datasource-health-check`: Without `--uid` option, scan the whole
   Grafana instance
+* Data source health check: Be graceful on network read timeouts
 
 
 ## 2.3.0 (2022-05-26)
