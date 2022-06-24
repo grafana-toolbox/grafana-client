@@ -316,9 +316,8 @@ class Datasource(Base):
             elif datasource_type == "graphite":
                 result = response[0]
                 try:
-                    assert result["target"]
-                    assert result["tags"]
-                    assert len(result["datapoints"]) == 3
+                    assert isinstance(result["target"], str)
+                    assert isinstance(result["datapoints"], list)
                     message = "Success"
                     success = True
                 except (KeyError, IndexError, AssertionError) as ex:
