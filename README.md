@@ -65,7 +65,7 @@ grafana.organization.create_organization({"name": "new_organization"})
 There are two ways to authenticate to the Grafana API. Either use an API token,
 or HTTP basic auth.
 
-To use the admin API, you need to use HTTP basic authentication, as stated at
+To use the admin API, you need to use HTTP Basic Authentication, as stated at
 the [Grafana Admin API documentation].
 
 ```python
