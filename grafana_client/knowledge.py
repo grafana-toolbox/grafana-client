@@ -95,7 +95,7 @@ def query_factory(datasource, expression: str, store: Optional[str] = None) -> U
     elif datasource_type == "fetzerch-sunandmoon-datasource":
         query = expression
     elif datasource_type == "influxdb":
-        dialect = datasource["jsonData"]["version"]
+        dialect = datasource["jsonData"].get("version", "InfluxQL")
         query = {
             "refId": "test",
             "datasource": {
