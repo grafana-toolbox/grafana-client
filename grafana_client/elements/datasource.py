@@ -198,7 +198,7 @@ class Datasource(Base):
 
         datasource_id = datasource["id"]
         datasource_type = datasource["type"]
-        datasource_dialect = datasource.get("jsonData", {}).get("version")
+        datasource_dialect = datasource.get("jsonData", {}).get("version", "InfluxQL")
         access_type = datasource["access"]
 
         # Sanity checks.
