@@ -154,6 +154,8 @@ def query_factory(datasource, expression: str, store: Optional[str] = None) -> U
             # "step": 300,
             # "utcOffsetSec": 7200,
         }
+    elif datasource_type == "simpod-json-datasource":
+        query = expression
     elif datasource_type == "testdata":
         query = expression
     else:
@@ -171,6 +173,7 @@ HEALTHCHECK_EXPRESSION_MAP = {
     "influxdb+flux": "buckets()",
     "postgres": "SELECT 1;",
     "prometheus": "1+1",
+    "simpod-json-datasource": "url:///datasources/proxy/{datasource_id}",
     "testdata": "url:///datasources/uid/{datasource_uid}",
 }
 
