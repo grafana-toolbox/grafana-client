@@ -254,7 +254,8 @@ class Datasource(Base):
             return r
         except (GrafanaClientError, GrafanaServerError) as ex:
             logger.error(
-                f"Querying data source failed. id={datasource_id}, type={datasource_type}. Reason: {ex}. Response: {ex.response}"
+                f"Querying data source failed. id={datasource_id}, type={datasource_type}. "
+                f"Reason: {ex}. Response: {ex.response or '<empty>'}"
             )
             raise
 
@@ -290,79 +291,87 @@ class Datasource(Base):
             logger.debug(f"Health check query response is: {response_display}")
             success = False
 
-            # This case is very special. It is used for Elasticsearch and Testdata.
+            # Elasticsearch has a special response format.
             if datasource_type == "elasticsearch":
                 database_name = datasource["database"]
-                try:
-                    assert response[database_name]["mappings"]["properties"], "Invalid response from Elasticsearch"
-                    message = "Success"
-                    success = True
-                except (AssertionError, KeyError) as ex:
-                    message = f"{ex.__class__.__name__}: {ex}"
+                if database_name in response:
+                    try:
+                        _ = response[database_name]["mappings"]["properties"]
+                        message = "Success"
+                        success = True
+                    except KeyError as ex:
+                        reason = f"{ex.__class__.__name__}: {ex}"
+                        message = f"Invalid response. {reason}"
+                else:
+                    message = f"No response for database '{database_name}'"
+
+            # When probed, those data sources only return their own representations?
             elif datasource_type in ["fetzerch-sunandmoon-datasource", "testdata"]:
                 try:
-                    assert response["id"], "Invalid response. No attribute 'id' in response."
-                    assert response["uid"], "Invalid response. No attribute 'uid' in response."
+                    _ = response["id"]
+                    _ = response["uid"]
                     if datasource_type == "fetzerch-sunandmoon-datasource":
-                        assert response["jsonData"][
-                            "latitude"
-                        ], "Invalid response. No attribute 'jsonData.latitude' in response."
-                        assert response["jsonData"][
-                            "longitude"
-                        ], "Invalid response. No attribute 'jsonData.longitude' in response."
+                        _ = response["jsonData"]["latitude"]
+                        _ = response["jsonData"]["longitude"]
                     message = "Success"
                     success = True
-                except (AssertionError, KeyError) as ex:
-                    message = f"{ex.__class__.__name__}: {ex}"
+                except KeyError as ex:
+                    reason = f"{ex.__class__.__name__}: {ex}"
+                    message = f"Invalid response. {reason}"
 
+            # Graphite has a special response format.
             elif datasource_type == "graphite":
-                result = response[0]
                 try:
-                    assert isinstance(result["target"], str)
-                    assert isinstance(result["datapoints"], list)
+                    result = response[0]
+                    _ = result["target"]
+                    _ = result["datapoints"]
                     message = "Success"
                     success = True
-                except (KeyError, IndexError, AssertionError) as ex:
-                    message = f"FATAL: Unable to decode result from Graphite response: {ex.__class__.__name__}: {ex}"
-                    logger.warning(message)
+                except (IndexError, KeyError) as ex:
+                    reason = f"{ex.__class__.__name__}: {ex}"
+                    message = f"Invalid response. {reason}"
 
             # With OpenTSDB, a 200 OK response with empty body is just fine.
             elif datasource_type == "opentsdb":
                 message = "Success"
                 success = True
 
-            # Generic case, where the response has a top-level "results" key.
+            # Generic case, where the response has a top-level ´results` key.
             else:
                 results = response["results"]
 
-                # Evaluate response when the "refId" is reflected.
                 if isinstance(results, dict):
                     try:
+
+                        # The `refId` currently used is always `test`, see `knowledge.py`.
+                        # TODO: Change to `gcX`.
                         result = results["test"]
-                        # Responses in new DataFrame format.
+
+                        # Handle response in new DataFrame format.
+                        # Data frames are available in Grafana 7.0+, and replaced the Time series and Table structures
+                        # with a more generic data structure that can support a wider range of data types.
+                        # -- https://grafana.com/docs/grafana/latest/developers/plugins/data-frames/
                         if "frames" in result:
-                            assert isinstance(
-                                result["frames"], list
-                            ), "DataFrame response detected, but 'frames' is not a list"
+                            if not isinstance(result["frames"], list):
+                                raise TypeError("DataFrame response detected, but 'frames' is not a list")
                             try:
                                 message = result["frames"][0]["schema"]["meta"]["executedQueryString"]
                             except (IndexError, KeyError):
                                 message = "Success"
                             success = True
-                        # Grafana 7 and 8 use the previous format.
+
+                        # Handle response in previous format, where the `refId` is reflected on the top-level.
                         elif "refId" in result:
-                            # Grafana 8
                             try:
                                 message = result["meta"]["executedQueryString"]
-                            # Grafana 7
                             except KeyError:
                                 message = "Success"
                             success = True
                         else:
-                            raise KeyError(f"Unexpected result format")
-                    except (KeyError, IndexError, AssertionError) as ex:
-                        message = f"FATAL: Unable to decode result from dictionary-type response: {ex.__class__.__name__}: {ex}"
-                        logger.warning(message)
+                            raise TypeError("Invalid response format")
+                    except TypeError as ex:
+                        reason = f"{ex.__class__.__name__}: {ex}"
+                        message = f"FATAL: Unable to decode result from dictionary-type response. {reason}"
 
                 # Evaluate first item when `results` is a list.
                 elif isinstance(results, list):
@@ -371,23 +380,25 @@ class Datasource(Base):
                         if "error" in result:
                             message = result["error"]
                         else:
-                            assert "statement_id" in result, "No 'statement_id' in result"
-                            assert "series" in result, "No 'series' in result"
+                            _ = result["statement_id"]
+                            _ = result["series"]
                             message = "Success"
                             success = True
-                    except (KeyError, IndexError, AssertionError) as ex:
-                        message = f"FATAL: Unable to decode result from list-type response: {ex}"
-                        logger.warning(message)
+                    except (IndexError, KeyError) as ex:
+                        reason = f"{ex.__class__.__name__}: {ex}"
+                        message = f"FATAL: Unable to decode result from list-type response. {reason}"
                 else:
-                    raise KeyError(f"Unknown response type for data source type {datasource_type}: {type(results)}")
+                    message = (
+                        f"FATAL: Unknown response type '{type(results)}' from data source type '{datasource_type}'"
+                    )
 
         except (GrafanaBadInputError, GrafanaServerError, GrafanaClientError) as ex:
             success = False
             response = ex.response
-            if isinstance(ex.response, dict):
+            if isinstance(response, dict):
                 if datasource_type == "elasticsearch":
-                    error = ex.response["error"]
-                    status_code = ex.response["status"]
+                    error = response["error"]
+                    status_code = response["status"]
                     if "root_cause" in error:
                         error = error["root_cause"][0]
                         error_type = error["type"]
@@ -397,13 +408,13 @@ class Datasource(Base):
                         message = str(error)
 
                 elif "results" in ex.response:
-                    message = ex.response["results"]["test"]["error"]
+                    message = response["results"]["test"]["error"]
                 else:
-                    message = f"Unknown: {ex}. Response: {ex.response}"
+                    message = f"Unknown: {ex}. Response: {response}"
             else:
                 message = str(ex)
 
-        except ReadTimeout as ex:
+        except ReadTimeout as ex:  # pragma:nocover
             message = str(ex)
             success = False
             response = None
@@ -413,6 +424,8 @@ class Datasource(Base):
             status = "OK"
         else:
             status = "ERROR"
+            logger.warning(message)
+
         return DatasourceHealthResponse(
             uid=datasource_uid,
             type=datasource_type,
