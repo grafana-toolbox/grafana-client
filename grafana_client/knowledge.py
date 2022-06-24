@@ -94,6 +94,8 @@ def query_factory(datasource, expression: str, store: Optional[str] = None) -> U
         query = expression
     elif datasource_type == "fetzerch-sunandmoon-datasource":
         query = expression
+    elif datasource_type == "grafana-simple-json-datasource":
+        query = expression
     elif datasource_type == "influxdb":
         dialect = datasource["jsonData"].get("version", "InfluxQL")
         query = {
@@ -168,6 +170,7 @@ def query_factory(datasource, expression: str, store: Optional[str] = None) -> U
 HEALTHCHECK_EXPRESSION_MAP = {
     "elasticsearch": "url:///datasources/proxy/{datasource_id}/{database_name}/_mapping",
     "fetzerch-sunandmoon-datasource": "url:///datasources/uid/{datasource_uid}",
+    "grafana-simple-json-datasource": "url:///datasources/proxy/{datasource_id}",
     "influxdb": "SHOW RETENTION POLICIES on _internal",
     "influxdb+influxql": "SHOW RETENTION POLICIES on _internal",
     "influxdb+flux": "buckets()",
