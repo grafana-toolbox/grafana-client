@@ -1,6 +1,5 @@
-import json
 import unittest
-from unittest import mock
+from copy import deepcopy
 from unittest.mock import Mock, patch
 
 import requests_mock
@@ -8,10 +7,8 @@ import requests_mock
 from grafana_client import GrafanaApi
 from grafana_client.client import (
     GrafanaBadInputError,
-    GrafanaClient,
     GrafanaClientError,
     GrafanaServerError,
-    GrafanaUnauthorizedError,
 )
 from grafana_client.model import DatasourceHealthResponse, DatasourceIdentifier
 
@@ -123,6 +120,8 @@ SUNANDMOON_DATASOURCE = {
         "longitude": 84.84,
     },
 }
+SUNANDMOON_DATASOURCE_INCOMPLETE = deepcopy(SUNANDMOON_DATASOURCE)
+del SUNANDMOON_DATASOURCE_INCOMPLETE["jsonData"]["latitude"]
 
 TESTDATA_DATASOURCE = {
     "id": 45,
@@ -131,6 +130,7 @@ TESTDATA_DATASOURCE = {
     "type": "testdata",
     "access": "proxy",
 }
+
 
 PROMETHEUS_DATA_RESPONSE = {
     "status": "success",
@@ -152,7 +152,14 @@ PROMETHEUS_DATA_RESPONSE = {
     },
 }
 
-PROMETHEUS_HEALTH_RESPONSE = {
+
+DATAFRAME_RESPONSE_EMPTY = {"results": {"test": {"frames": []}}}
+DATAFRAME_RESPONSE_INVALID = {"results": {"test": {"frames": "foobar"}}}
+DATAFRAME_RESPONSE_HEALTH_SELECT1 = {
+    "results": {"test": {"frames": [{"schema": {"meta": {"executedQueryString": "SELECT 1"}}}]}}
+}
+
+DATAFRAME_RESPONSE_HEALTH_PROMETHEUS = {
     "results": {
         "test": {
             "frames": [
@@ -186,11 +193,6 @@ PROMETHEUS_HEALTH_RESPONSE = {
             ]
         }
     }
-}
-
-DATAFRAME_RESPONSE_EMPTY = {"results": {"test": {"frames": []}}}
-DATAFRAME_RESPONSE_SELECT1 = {
-    "results": {"test": {"frames": [{"schema": {"meta": {"executedQueryString": "SELECT 1"}}}]}}
 }
 
 
@@ -302,7 +304,7 @@ class DatasourceTestCase(unittest.TestCase):
         )
 
         with self.assertRaises(GrafanaBadInputError):
-            result = self.grafana.datasource.find_datasource("it_doesnot_exist")
+            self.grafana.datasource.find_datasource("it_doesnot_exist")
 
     @requests_mock.Mocker()
     def test_get_datasource_id_by_name(self, m):
@@ -362,11 +364,11 @@ class DatasourceTestCase(unittest.TestCase):
     def test_query_with_datasource_prometheus(self, m):
         m.post(
             "http://localhost/api/ds/query",
-            json=PROMETHEUS_HEALTH_RESPONSE,
+            json=DATAFRAME_RESPONSE_HEALTH_PROMETHEUS,
         )
         datasource = PROMETHEUS_DATASOURCE.copy()
         response = self.grafana.datasource.query(datasource, "1+1")
-        self.assertEqual(response, PROMETHEUS_HEALTH_RESPONSE)
+        self.assertEqual(response, DATAFRAME_RESPONSE_HEALTH_PROMETHEUS)
 
     @requests_mock.Mocker()
     def test_query_with_datasource_influxdb_influxql(self, m):
@@ -398,10 +400,10 @@ class DatasourceTestCase(unittest.TestCase):
         )
         m.post(
             "http://localhost/api/ds/query",
-            json=PROMETHEUS_HEALTH_RESPONSE,
+            json=DATAFRAME_RESPONSE_HEALTH_PROMETHEUS,
         )
         response = self.grafana.datasource.query(DatasourceIdentifier(uid="h8KkCLt7z"), "1+1")
-        self.assertEqual(response, PROMETHEUS_HEALTH_RESPONSE)
+        self.assertEqual(response, DATAFRAME_RESPONSE_HEALTH_PROMETHEUS)
 
     def test_query_unknown_access_type_failure(self):
         datasource = PROMETHEUS_DATASOURCE.copy()
@@ -449,7 +451,7 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         self.assertRaises(NotImplementedError, lambda: self.grafana.datasource.health_check(datasource))
 
     @requests_mock.Mocker()
-    def test_health_check_elasticsearch(self, m):
+    def test_health_check_elasticsearch_success(self, m):
         m.get(
             "http://localhost/api/datasources/uid/34inf2sdc",
             json=ELASTICSEARCH_DATASOURCE,
@@ -475,7 +477,113 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         )
 
     @requests_mock.Mocker()
-    def test_health_check_graphite(self, m):
+    def test_health_check_elasticsearch_empty_response_failure(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/34inf2sdc",
+            json=ELASTICSEARCH_DATASOURCE,
+        )
+        m.get(
+            "http://localhost/api/datasources/proxy/44/bazqux/_mapping",
+            json={},
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="34inf2sdc"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="34inf2sdc",
+                type="elasticsearch",
+                success=False,
+                status="ERROR",
+                message="No response for database 'bazqux'",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_elasticsearch_incomplete_response_failure(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/34inf2sdc",
+            json=ELASTICSEARCH_DATASOURCE,
+        )
+        m.get(
+            "http://localhost/api/datasources/proxy/44/bazqux/_mapping",
+            json={"bazqux": {}},
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="34inf2sdc"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="34inf2sdc",
+                type="elasticsearch",
+                success=False,
+                status="ERROR",
+                message="Invalid response. KeyError: 'mappings'",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_elasticsearch_error_response_failure(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/34inf2sdc",
+            json=ELASTICSEARCH_DATASOURCE,
+        )
+        m.get(
+            "http://localhost/api/datasources/proxy/44/bazqux/_mapping",
+            json={"error": "This failed!", "status": 400},
+            status_code=400,
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="34inf2sdc"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="34inf2sdc",
+                type="elasticsearch",
+                success=False,
+                status="ERROR",
+                message="This failed!",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_elasticsearch_error_response_with_root_cause_failure(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/34inf2sdc",
+            json=ELASTICSEARCH_DATASOURCE,
+        )
+        m.get(
+            "http://localhost/api/datasources/proxy/44/bazqux/_mapping",
+            json={"error": {"root_cause": [{"type": "foo", "reason": "bar"}]}, "status": 400},
+            status_code=400,
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="34inf2sdc"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="34inf2sdc",
+                type="elasticsearch",
+                success=False,
+                status="ERROR",
+                message="Status: 400. Type: foo. Reason: bar",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_graphite_success(self, m):
         m.get(
             "http://localhost/api/datasources/uid/wr47rz34e",
             json=GRAPHITE_DATASOURCE,
@@ -495,6 +603,32 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
                 success=True,
                 status="OK",
                 message="Success",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_graphite_empty_response_failure(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/wr47rz34e",
+            json=GRAPHITE_DATASOURCE,
+        )
+        m.post(
+            "http://localhost/api/datasources/proxy/48/render",
+            json=[],
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="wr47rz34e"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="wr47rz34e",
+                type="graphite",
+                success=False,
+                status="ERROR",
+                message="Invalid response. IndexError: list index out of range",
                 duration=None,
                 response=None,
             ),
@@ -546,7 +680,7 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         )
         m.post(
             "http://localhost/api/ds/query",
-            json=DATAFRAME_RESPONSE_SELECT1,
+            json=DATAFRAME_RESPONSE_HEALTH_SELECT1,
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="7CpzLp37z"))
         response.duration = None
@@ -598,7 +732,7 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         )
         m.post(
             "http://localhost/api/ds/query",
-            json=DATAFRAME_RESPONSE_SELECT1,
+            json=DATAFRAME_RESPONSE_HEALTH_SELECT1,
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
         response.duration = None
@@ -617,14 +751,14 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         )
 
     @requests_mock.Mocker()
-    def test_health_check_prometheus(self, m):
+    def test_health_check_prometheus_healthy_success(self, m):
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
             json=PROMETHEUS_DATASOURCE,
         )
         m.post(
             "http://localhost/api/ds/query",
-            json=PROMETHEUS_HEALTH_RESPONSE,
+            json=DATAFRAME_RESPONSE_HEALTH_PROMETHEUS,
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="h8KkCLt7z"))
         response.duration = None
@@ -643,7 +777,7 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         )
 
     @requests_mock.Mocker()
-    def test_health_check_prometheus_empty_dataframe(self, m):
+    def test_health_check_prometheus_empty_dataframe_success(self, m):
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
             json=PROMETHEUS_DATASOURCE,
@@ -663,6 +797,33 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
                 success=True,
                 status="OK",
                 message="Success",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_prometheus_invalid_dataframe_failure(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/h8KkCLt7z",
+            json=PROMETHEUS_DATASOURCE,
+        )
+        m.post(
+            "http://localhost/api/ds/query",
+            json=DATAFRAME_RESPONSE_INVALID,
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="h8KkCLt7z"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="h8KkCLt7z",
+                type="prometheus",
+                success=False,
+                status="ERROR",
+                message="FATAL: Unable to decode result from dictionary-type response. "
+                "TypeError: DataFrame response detected, but 'frames' is not a list",
                 duration=None,
                 response=None,
             ),
@@ -722,7 +883,7 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         )
 
     @requests_mock.Mocker()
-    def test_health_check_sunandmoon(self, m):
+    def test_health_check_sunandmoon_success(self, m):
         m.get(
             "http://localhost/api/datasources/uid/239fasva4",
             json=SUNANDMOON_DATASOURCE,
@@ -738,6 +899,28 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
                 success=True,
                 status="OK",
                 message="Success",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_sunandmoon_incomplete_failure(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/239fasva4",
+            json=SUNANDMOON_DATASOURCE_INCOMPLETE,
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="239fasva4"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="239fasva4",
+                type="fetzerch-sunandmoon-datasource",
+                success=False,
+                status="ERROR",
+                message="Invalid response. KeyError: 'latitude'",
                 duration=None,
                 response=None,
             ),
@@ -760,6 +943,255 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
                 success=True,
                 status="OK",
                 message="Success",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_zdict_valid_response_success(self, m):
+        """
+        This is not a test for a real `postgres` data source.
+        It only exercises a specific response shape.
+        Here: The new DataFrame dictionary-type response.
+        """
+        m.get(
+            "http://localhost/api/datasources/uid/v2KYBt37k",
+            json=POSTGRES_DATASOURCE,
+        )
+        m.post(
+            "http://localhost/api/ds/query",
+            json={"results": {"test": {"refId": "foobar", "meta": {"executedQueryString": "ALIVE?"}}}},
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="v2KYBt37k",
+                type="postgres",
+                success=True,
+                status="OK",
+                message="ALIVE?",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_zdict_incomplete_response_success(self, m):
+        """
+        This is not a test for a real `postgres` data source.
+        It only exercises a specific response shape.
+        Here: The new DataFrame dictionary-type response.
+        """
+        m.get(
+            "http://localhost/api/datasources/uid/v2KYBt37k",
+            json=POSTGRES_DATASOURCE,
+        )
+        m.post(
+            "http://localhost/api/ds/query",
+            json={"results": {"test": {"refId": "foobar"}}},
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="v2KYBt37k",
+                type="postgres",
+                success=True,
+                status="OK",
+                message="Success",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_zdict_incomplete_response_failure(self, m):
+        """
+        This is not a test for a real `postgres` data source.
+        It only exercises a specific response shape.
+        Here: The new DataFrame dictionary-type response.
+        """
+        m.get(
+            "http://localhost/api/datasources/uid/v2KYBt37k",
+            json=POSTGRES_DATASOURCE,
+        )
+        m.post(
+            "http://localhost/api/ds/query",
+            json={"results": {"test": {}}},
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="v2KYBt37k",
+                type="postgres",
+                success=False,
+                status="ERROR",
+                message="FATAL: Unable to decode result from dictionary-type response. TypeError: Invalid response format",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_zlist_error_response_failure(self, m):
+        """
+        This is not a test for a real `postgres` data source.
+        It only exercises a specific response shape.
+        Here: The previous list-type response.
+        """
+        m.get(
+            "http://localhost/api/datasources/uid/v2KYBt37k",
+            json=POSTGRES_DATASOURCE,
+        )
+        m.post(
+            "http://localhost/api/ds/query",
+            json={"results": [{"error": "This failed!"}]},
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="v2KYBt37k",
+                type="postgres",
+                success=False,
+                status="ERROR",
+                message="This failed!",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_zlist_incomplete_response_failure(self, m):
+        """
+        This is not a test for a real `postgres` data source.
+        It only exercises a specific response shape.
+        Here: The previous list-type response.
+        """
+        m.get(
+            "http://localhost/api/datasources/uid/v2KYBt37k",
+            json=POSTGRES_DATASOURCE,
+        )
+        m.post(
+            "http://localhost/api/ds/query",
+            json={"results": [{}]},
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="v2KYBt37k",
+                type="postgres",
+                success=False,
+                status="ERROR",
+                message="FATAL: Unable to decode result from list-type response. KeyError: 'statement_id'",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_zlist_empty_response_failure(self, m):
+        """
+        This is not a test for a real `postgres` data source.
+        It only exercises a specific response shape.
+        Here: The previous list-type response.
+        """
+        m.get(
+            "http://localhost/api/datasources/uid/v2KYBt37k",
+            json=POSTGRES_DATASOURCE,
+        )
+        m.post(
+            "http://localhost/api/ds/query",
+            json={"results": []},
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="v2KYBt37k",
+                type="postgres",
+                success=False,
+                status="ERROR",
+                message="FATAL: Unable to decode result from list-type response. IndexError: list index out of range",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_zzdummy_invalid_type_failure(self, m):
+        """
+        This is not a test for a real `postgres` data source.
+        It only exercises a specific response shape.
+        Here: A response with an invalid data type.
+        """
+        m.get(
+            "http://localhost/api/datasources/uid/v2KYBt37k",
+            json=POSTGRES_DATASOURCE,
+        )
+        m.post(
+            "http://localhost/api/ds/query",
+            json={"results": "WRONG!"},
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="v2KYBt37k",
+                type="postgres",
+                success=False,
+                status="ERROR",
+                message="FATAL: Unknown response type '<class 'str'>' from data source type 'postgres'",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_zzdummy_exception_without_response_failure(self, m):
+        """
+        This is not a test for a real `postgres` data source.
+        It only exercises a specific response shape.
+        Here: A response with an invalid data type.
+        """
+        m.get(
+            "http://localhost/api/datasources/uid/v2KYBt37k",
+            json=POSTGRES_DATASOURCE,
+        )
+        m.post(
+            "http://localhost/api/ds/query",
+            json=None,
+            status_code=400,
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="v2KYBt37k",
+                type="postgres",
+                success=False,
+                status="ERROR",
+                message="Bad Input: ``",
                 duration=None,
                 response=None,
             ),
@@ -862,6 +1294,25 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
         )
 
     @requests_mock.Mocker()
+    def test_health_inquiry_native_unknown_error_418(self, m):
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
+        )
+        m.get(
+            "http://localhost/api/datasources/uid/39mf288en",
+            json={"type": "unknown"},
+        )
+        m.get(
+            "http://localhost/api/datasources/uid/39mf288en/health",
+            json={"status": "ERROR", "message": "Something failed"},
+            status_code=418,
+        )
+        with self.assertRaises(GrafanaClientError) as ctx:
+            self.grafana.datasource.health_inquiry(datasource_uid="39mf288en")
+        self.assertEqual(str(ctx.exception), "Client Error 418: Something failed")
+
+    @requests_mock.Mocker()
     def test_health_inquiry_native_prometheus_error_404(self, m):
         m.get(
             "http://localhost/api/health",
@@ -914,7 +1365,7 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
         )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z/health",
-            json={"status": "ERROR", "message": "Something failed"},
+            json={"status": "ERROR", "message": "Something failed", "code": "foobar"},
             status_code=500,
         )
         response = self.grafana.datasource.health_inquiry(datasource_uid="h8KkCLt7z")
@@ -927,21 +1378,10 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
                 type="prometheus",
                 success=False,
                 status="FATAL",
-                message="GrafanaServerError: Server Error 500: Something failed",
+                message="[foobar] GrafanaServerError: Server Error 500: Something failed",
                 duration=None,
                 response=None,
             ),
-        )
-
-    @requests_mock.Mocker()
-    def test_health_inquiry_response_499(self, m):
-        m.get(
-            "http://localhost/api/datasources/uid/39mf288en",
-            json={"status": "FATAL", "message": "Bad request"},
-            status_code=499,
-        )
-        self.assertRaises(
-            GrafanaClientError, lambda: self.grafana.datasource.health_inquiry(datasource_uid="39mf288en")
         )
 
     @requests_mock.Mocker()
@@ -965,6 +1405,17 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
                 duration=None,
                 response=None,
             ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_inquiry_response_418(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/39mf288en",
+            json={"status": "FATAL", "message": "Bad request"},
+            status_code=418,
+        )
+        self.assertRaises(
+            GrafanaClientError, lambda: self.grafana.datasource.health_inquiry(datasource_uid="39mf288en")
         )
 
     @requests_mock.Mocker()
