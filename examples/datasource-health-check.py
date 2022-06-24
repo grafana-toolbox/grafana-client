@@ -12,6 +12,8 @@ from optparse import OptionParser
 import requests
 
 from grafana_client import GrafanaApi
+from grafana_client.client import GrafanaServerError
+from grafana_client.model import DatasourceHealthResponse
 from grafana_client.util import setup_logging
 
 logger = logging.getLogger(__name__)
@@ -23,15 +25,53 @@ def run(grafana: GrafanaApi):
     parser = OptionParser()
     parser.add_option("--uid", dest="uid", help="Data source UID")
     (options, args) = parser.parse_args()
-    if not options.uid:
-        parser.error("Option --uid required")
 
-    # Invoke the health check.
-    health_info = grafana.datasource.health_inquiry(datasource_uid=options.uid)
+    if options.uid:
+        datasources = [grafana.datasource.get_datasource_by_uid(options.uid)]
+    else:
+        datasources = grafana.datasource.list_datasources()
 
-    # Display the outcome and terminate program based on success state.
-    print(json.dumps(health_info.asdict_compact(), indent=2))
-    if not health_info.success:
+    if not datasources:
+        logger.warning(f"No data sources found at {grafana.url}")
+        sys.exit(2)
+
+    logger.info(f"Probing {len(datasources)} data sources")
+
+    success = True
+    statistics = {"ok": 0, "error": 0, "fatal": 0, "unknown": 0}
+    for datasource in datasources:
+
+        logger.info(f"Discovered datasource with uid={datasource['uid']} and type={datasource['type']}")
+
+        # Invoke the health check.
+        try:
+            health_info = grafana.datasource.health_inquiry(datasource_uid=datasource["uid"])
+            if health_info.success:
+                statistics["ok"] += 1
+            else:
+                statistics["error"] += 1
+        except (GrafanaServerError,) as ex:
+            message = f"{ex.__class__.__name__}: {ex}"
+            health_info = DatasourceHealthResponse(
+                uid=datasource["uid"], type=datasource["type"], success=False, status="FATAL", message=message
+            )
+            statistics["fatal"] += 1
+        except NotImplementedError as ex:
+            message = f"{ex.__class__.__name__}: {ex}"
+            health_info = DatasourceHealthResponse(
+                uid=datasource["uid"], type=datasource["type"], success=False, status="UNKNOWN", message=message
+            )
+            statistics["unknown"] += 1
+            logger.exception(message)
+
+        # Display the outcome and terminate program based on success state.
+        print(json.dumps(health_info.asdict_compact(), indent=2))
+        if not health_info.success:
+            success = False
+
+    logger.info(f"Statistics: {statistics}")
+
+    if not success:
         sys.exit(1)
 
 
