@@ -698,7 +698,7 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         """
         This is not a test for a real `postgres` data source.
         It only exercises a specific response shape.
-        Here: The previous list-type response.
+        Here: A response with an empty "results" slot.
         """
         m.get(
             "http://localhost/api/datasources/uid/v2KYBt37k",
@@ -719,6 +719,37 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
                 success=False,
                 status="ERROR",
                 message="FATAL: Unable to decode result from list-type response. IndexError: list index out of range",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_zdummy_void_response_failure(self, m):
+        """
+        This is not a test for a real `postgres` data source.
+        It only exercises a specific response shape.
+        Here: An absolute empty (void) response.
+        """
+        m.get(
+            "http://localhost/api/datasources/uid/v2KYBt37k",
+            json=POSTGRES_DATASOURCE,
+        )
+        m.post(
+            "http://localhost/api/ds/query",
+            json={},
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="v2KYBt37k",
+                type="postgres",
+                success=False,
+                status="ERROR",
+                message="Response lacks expected keys 'results' or 'data'",
                 duration=None,
                 response=None,
             ),
@@ -749,7 +780,7 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
                 type="postgres",
                 success=False,
                 status="ERROR",
-                message="FATAL: Unknown response type '<class 'str'>' from data source type 'postgres'",
+                message="FATAL: Unknown response type '<class 'str'>'. Expected: dictionary or list.",
                 duration=None,
                 response=None,
             ),

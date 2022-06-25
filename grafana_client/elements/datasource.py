@@ -2,7 +2,7 @@ import json
 import logging
 import time
 from distutils.version import LooseVersion
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Tuple, Union
 
 from requests import ReadTimeout
 
@@ -259,7 +259,7 @@ class Datasource(Base):
             )
             raise
 
-    def health_check(self, datasource: Union[DatasourceIdentifier, Dict]):
+    def health_check(self, datasource: Union[DatasourceIdentifier, Dict]) -> DatasourceHealthResponse:
         """
         Run a data source health check and return its success state, duration,
         and an (error) message.
@@ -336,61 +336,12 @@ class Datasource(Base):
                 message = "Success"
                 success = True
 
-            # Generic case, where the response has a top-level ´results` key.
+            # Generic case, where the response has a top-level `results` or `data` key.
             else:
-                results = response["results"]
-
-                if isinstance(results, dict):
-                    try:
-
-                        # The `refId` currently used is always `test`, see `knowledge.py`.
-                        # TODO: Change to `gcX`.
-                        result = results["test"]
-
-                        # Handle response in new DataFrame format.
-                        # Data frames are available in Grafana 7.0+, and replaced the Time series and Table structures
-                        # with a more generic data structure that can support a wider range of data types.
-                        # -- https://grafana.com/docs/grafana/latest/developers/plugins/data-frames/
-                        if "frames" in result:
-                            if not isinstance(result["frames"], list):
-                                raise TypeError("DataFrame response detected, but 'frames' is not a list")
-                            try:
-                                message = result["frames"][0]["schema"]["meta"]["executedQueryString"]
-                            except (IndexError, KeyError):
-                                message = "Success"
-                            success = True
-
-                        # Handle response in previous format, where the `refId` is reflected on the top-level.
-                        elif "refId" in result:
-                            try:
-                                message = result["meta"]["executedQueryString"]
-                            except KeyError:
-                                message = "Success"
-                            success = True
-                        else:
-                            raise TypeError("Invalid response format")
-                    except TypeError as ex:
-                        reason = f"{ex.__class__.__name__}: {ex}"
-                        message = f"FATAL: Unable to decode result from dictionary-type response. {reason}"
-
-                # Evaluate first item when `results` is a list.
-                elif isinstance(results, list):
-                    try:
-                        result = results[0]
-                        if "error" in result:
-                            message = result["error"]
-                        else:
-                            _ = result["statement_id"]
-                            _ = result["series"]
-                            message = "Success"
-                            success = True
-                    except (IndexError, KeyError) as ex:
-                        reason = f"{ex.__class__.__name__}: {ex}"
-                        message = f"FATAL: Unable to decode result from list-type response. {reason}"
+                if "results" in response:
+                    success, message = self.parse_health_response_results(response=response)
                 else:
-                    message = (
-                        f"FATAL: Unknown response type '{type(results)}' from data source type '{datasource_type}'"
-                    )
+                    message = f"Response lacks expected keys 'results' or 'data'"
 
         except (GrafanaBadInputError, GrafanaServerError, GrafanaClientError) as ex:
             success = False
@@ -436,7 +387,7 @@ class Datasource(Base):
             response=response,
         )
 
-    def health_inquiry(self, datasource_uid: str):
+    def health_inquiry(self, datasource_uid: str) -> DatasourceHealthResponse:
         """
         Inquiry data source health. Try native method available since Grafana 9 first,
         and fall back to client-side implementation afterwards.
@@ -493,13 +444,11 @@ class Datasource(Base):
                     response = ex.response
                     raised = False
 
-                # When Grafana 9+ server-side health checks are not implemented
-                # yet, Grafana mostly croaks with either `404 Not Found`, or
-                # `Server Error 504: There was an issue communicating with your instance.`.
-                # Let's make this a noop in order to fall back to the client-side
+                # When Grafana 9+ server-side health checks are not implemented yet, Grafana mostly croaks with either
+                # `404 Not Found`, `Server Error 503: Plugin unavailable`, or `Server Error 504: There was an issue
+                # communicating with your instance`. Let's make this a noop in order to fall back to the client-side
                 # implementation.
-                # elif ex.status_code in [404, 504]:
-                elif ex.status_code in [404]:
+                elif ex.status_code in [404, 503]:  # 504
                     noop = True
                 elif ex.status_code >= 500:
                     status = "FATAL"
@@ -537,3 +486,59 @@ class Datasource(Base):
             health = self.health_check(datasource=datasource)
 
         return health
+
+    @staticmethod
+    def parse_health_response_results(response: Dict) -> Tuple[bool, str]:
+        success = False
+        results = response["results"]
+        if isinstance(results, dict):
+            try:
+
+                # The `refId` currently used is always `test`, see `knowledge.py`.
+                # TODO: Change to `gcX`.
+                result = results["test"]
+
+                # Handle response in new DataFrame format.
+                # Data frames are available in Grafana 7.0+, and replaced the Time series and Table structures
+                # with a more generic data structure that can support a wider range of data types.
+                # -- https://grafana.com/docs/grafana/latest/developers/plugins/data-frames/
+                if "frames" in result:
+                    if not isinstance(result["frames"], list):
+                        raise TypeError("DataFrame response detected, but 'frames' is not a list")
+                    try:
+                        message = result["frames"][0]["schema"]["meta"]["executedQueryString"]
+                    except (IndexError, KeyError):
+                        message = "Success"
+                    success = True
+
+                # Handle response in previous format, where the `refId` is reflected on the top-level.
+                elif "refId" in result:
+                    try:
+                        message = result["meta"]["executedQueryString"]
+                    except KeyError:
+                        message = "Success"
+                    success = True
+                else:
+                    raise TypeError("Invalid response format")
+            except TypeError as ex:
+                reason = f"{ex.__class__.__name__}: {ex}"
+                message = f"FATAL: Unable to decode result from dictionary-type response. {reason}"
+
+        # Evaluate first item when `results` is a list.
+        elif isinstance(results, list):
+            try:
+                result = results[0]
+                if "error" in result:
+                    message = result["error"]
+                else:
+                    _ = result["statement_id"]
+                    _ = result["series"]
+                    message = "Success"
+                    success = True
+            except (IndexError, KeyError) as ex:
+                reason = f"{ex.__class__.__name__}: {ex}"
+                message = f"FATAL: Unable to decode result from list-type response. {reason}"
+        else:
+            message = f"FATAL: Unknown response type '{type(results)}'. Expected: dictionary or list."
+
+        return success, message
