@@ -31,7 +31,7 @@ Connect to your Grafana API endpoint using the `GrafanaApi` class.
 ```python
 from grafana_client import GrafanaApi
 
-grafana = GrafanaApi.from_url("https://grafana.example.org/grafana")
+grafana = GrafanaApi.from_url("https://daq.example.org/grafana/")
 
 # Create user
 user = grafana.admin.create_user(
@@ -73,18 +73,22 @@ from grafana_client import GrafanaApi
 
 # Use Grafana API token.
 grafana = GrafanaApi.from_url(
-    url="https://grafana.example.org/grafana",
+    url="https://daq.example.org/grafana/",
     credential="eyJrIjoiWHg...dGJpZCI6MX0=",
 )
 
 # Use HTTP basic authentication.
 grafana = GrafanaApi.from_url(
-    url="https://username:password@grafana.example.org/grafana",
+    url="https://username:password@daq.example.org/grafana/",
+)
+grafana = GrafanaApi.from_url(
+    url="https://daq.example.org/grafana/",
+    credential=("username", "password")
 )
 
 # Optionally turn off TLS certificate verification.
 grafana = GrafanaApi.from_url(
-    url="https://username:password@grafana.example.org/grafana?verify=false",
+    url="https://username:password@daq.example.org/grafana/?verify=false",
 )
 
 # Use `GRAFANA_URL` and `GRAFANA_TOKEN` environment variables.
@@ -202,8 +206,8 @@ trimmed the module namespace.
 
 ## Acknowledgements
 
-Thanks to all the [contributors] who helped to co-create and conceive this
-software in one way or another. You know who you are.
+Thanks to all [contributors] who helped to co-create and conceive this software
+in one way or another. You know who you are.
 
 
 ## Contributing
