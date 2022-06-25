@@ -74,7 +74,7 @@ from grafana_client import GrafanaApi
 # Use Grafana API token.
 grafana = GrafanaApi.from_url(
     url="https://grafana.example.org/grafana",
-    auth="eyJrIjoiWHg...dGJpZCI6MX0=",
+    credential="eyJrIjoiWHg...dGJpZCI6MX0=",
 )
 
 # Use HTTP basic authentication.
