@@ -164,6 +164,7 @@ implemented as of June 2022.
 - Elasticsearch
 - Graphite
 - InfluxDB
+- Jaeger
 - OpenTSDB
 - PostgreSQL
 - Prometheus
