@@ -32,6 +32,14 @@ INFLUXDB1_DATASOURCE = {
     "jsonData": {"httpMode": "POST", "version": "InfluxQL"},
 }
 
+JAEGER_DATASOURCE = {
+    "id": 53,
+    "uid": "DbtFe237k",
+    "name": "Jaeger",
+    "type": "jaeger",
+    "access": "proxy",
+}
+
 MYSQL_DATASOURCE = {
     "id": 51,
     "uid": "7CpzLp37z",

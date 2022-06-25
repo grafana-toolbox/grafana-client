@@ -340,6 +340,8 @@ class Datasource(Base):
             else:
                 if "results" in response:
                     success, message = self.parse_health_response_results(response=response)
+                elif "data" in response:
+                    success, message = self.parse_health_response_data(response=response)
                 else:
                     message = f"Response lacks expected keys 'results' or 'data'"
 
@@ -540,5 +542,21 @@ class Datasource(Base):
                 message = f"FATAL: Unable to decode result from list-type response. {reason}"
         else:
             message = f"FATAL: Unknown response type '{type(results)}'. Expected: dictionary or list."
+
+        return success, message
+
+    @staticmethod
+    def parse_health_response_data(response: Dict) -> Tuple[bool, str]:
+        """
+        Response from Jaeger::
+
+            {"data":["jaeger-query"],"total":1,"limit":0,"offset":0,"errors":null}
+        """
+        success = False
+        message = str(response["data"])
+        if "errors" in response and response["errors"]:
+            message = str(response["errors"])
+        else:
+            success = True
 
         return success, message

@@ -19,7 +19,6 @@ stackdriver
 testdata
 
 ### UNKNOWN
-jaeger
 loki
 mssql
 tempo

@@ -134,6 +134,14 @@ InfluxDB 2.x
     influx bucket list --org=example
 
 
+Jaeger
+======
+::
+
+    docker run --rm -it --name=jaeger --publish=16686:16686 jaegertracing/all-in-one:1
+    python examples/datasource-health-probe.py --type=jaeger --url=http://host.docker.internal:16686
+
+
 MariaDB / MySQL
 ===============
 ::

@@ -7,6 +7,7 @@ from test.elements.test_datasource_fixtures import (
     ELASTICSEARCH_DATASOURCE,
     GRAPHITE_DATASOURCE,
     INFLUXDB1_DATASOURCE,
+    JAEGER_DATASOURCE,
     MYSQL_DATASOURCE,
     OPENTSDB_DATASOURCE,
     POSTGRES_DATASOURCE,
@@ -257,6 +258,64 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
                 success=True,
                 status="OK",
                 message="Success",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_jaeger_success(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/DbtFe237k",
+            json=JAEGER_DATASOURCE,
+        )
+        m.get(
+            "http://localhost/api/datasources/proxy/53/api/services",
+            json={"data": ["jaeger-query"], "total": 1, "limit": 0, "offset": 0, "errors": None},
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="DbtFe237k"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="DbtFe237k",
+                type="jaeger",
+                success=True,
+                status="OK",
+                message="['jaeger-query']",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_jaeger_error_response_failure(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/DbtFe237k",
+            json=JAEGER_DATASOURCE,
+        )
+        m.get(
+            "http://localhost/api/datasources/proxy/53/api/services",
+            json={
+                "data": ["jaeger-query"],
+                "total": 1,
+                "limit": 0,
+                "offset": 0,
+                "errors": [{"code": 418, "message": "foobar"}],
+            },
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="DbtFe237k"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="DbtFe237k",
+                type="jaeger",
+                success=False,
+                status="ERROR",
+                message="[{'code': 418, 'message': 'foobar'}]",
                 duration=None,
                 response=None,
             ),
