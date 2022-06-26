@@ -165,6 +165,7 @@ implemented as of June 2022.
 - Graphite
 - InfluxDB
 - Jaeger
+- Loki
 - OpenTSDB
 - PostgreSQL
 - Prometheus

@@ -19,7 +19,6 @@ stackdriver
 testdata
 
 ### UNKNOWN
-loki
 mssql
 tempo
 zipkin

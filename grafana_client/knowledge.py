@@ -75,6 +75,8 @@ def datasource_factory(datasource: DatasourceModel) -> DatasourceModel:
         datasource.jsonData = {
             "tsdbVersion": 3,
         }
+    elif datasource.type == "loki":
+        datasource.access = "proxy"
     elif datasource.type == "mysql":
         datasource.user = "root"
         datasource.secureJsonData = {
@@ -143,6 +145,8 @@ def query_factory(datasource, expression: str, store: Optional[str] = None) -> U
             raise KeyError(f"InfluxDB dialect '{dialect}' unknown")
     elif datasource_type == "jaeger":
         query = {}
+    elif datasource_type == "loki":
+        query = {}
     elif datasource_type == "mysql":
         query = {
             "refId": "test",
@@ -210,6 +214,7 @@ HEALTHCHECK_EXPRESSION_MAP = {
     "influxdb+influxql": "SHOW RETENTION POLICIES on _internal",
     "influxdb+flux": "buckets()",
     "jaeger": "url:///datasources/proxy/{datasource_id}/api/services",
+    "loki": "url:///datasources/{datasource_id}/resources/labels?start=1656274994383000000&end=1656275594383000000",
     "mysql": "SELECT 1",
     "opentsdb": "url:///datasources/proxy/{datasource_id}/api/suggest?type=metrics&q=cpu&max=100",
     "postgres": "SELECT 1",

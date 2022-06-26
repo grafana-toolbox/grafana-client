@@ -142,6 +142,13 @@ Jaeger
     python examples/datasource-health-probe.py --type=jaeger --url=http://host.docker.internal:16686
 
 
+Loki
+====
+::
+
+    docker run --rm -it --name=loki --publish=3100:3100 grafana/loki:2.5.0
+    python examples/datasource-health-probe.py --type=loki --url=http://host.docker.internal:3100
+
 MariaDB / MySQL
 ===============
 ::

@@ -331,6 +331,13 @@ class Datasource(Base):
                     reason = f"{ex.__class__.__name__}: {ex}"
                     message = f"Invalid response. {reason}"
 
+            elif datasource_type == "loki":
+                if "status" in response and response["status"] == "success":
+                    message = "Success"
+                    success = True
+                else:
+                    message = response["message"]
+
             # With OpenTSDB, a 200 OK response with empty body is just fine.
             elif datasource_type == "opentsdb":
                 message = "Success"
@@ -551,6 +558,11 @@ class Datasource(Base):
         Response from Jaeger::
 
             {"data":["jaeger-query"],"total":1,"limit":0,"offset":0,"errors":null}
+
+        Response from Loki::
+
+            {"status":"success","data":["__name__"]}
+
         """
         success = False
         message = str(response["data"])
