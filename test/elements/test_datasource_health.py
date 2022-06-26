@@ -8,6 +8,7 @@ from test.elements.test_datasource_fixtures import (
     GRAPHITE_DATASOURCE,
     INFLUXDB1_DATASOURCE,
     JAEGER_DATASOURCE,
+    LOKI_DATASOURCE,
     MYSQL_DATASOURCE,
     OPENTSDB_DATASOURCE,
     POSTGRES_DATASOURCE,
@@ -316,6 +317,58 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
                 success=False,
                 status="ERROR",
                 message="[{'code': 418, 'message': 'foobar'}]",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_loki_success(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/vCyglaq7z",
+            json=LOKI_DATASOURCE,
+        )
+        m.get(
+            "http://localhost/api/datasources/54/resources/labels",
+            json={"status": "success", "data": ["__name__"]},
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="vCyglaq7z"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="vCyglaq7z",
+                type="loki",
+                success=True,
+                status="OK",
+                message="Success",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_loki_error_response_failure(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/vCyglaq7z",
+            json=LOKI_DATASOURCE,
+        )
+        m.get(
+            "http://localhost/api/datasources/54/resources/labels",
+            json={"message": "Failed to call resource", "traceID": "00000000000000000000000000000000"},
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="vCyglaq7z"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="vCyglaq7z",
+                type="loki",
+                success=False,
+                status="ERROR",
+                message="Failed to call resource",
                 duration=None,
                 response=None,
             ),

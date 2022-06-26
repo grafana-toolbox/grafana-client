@@ -40,6 +40,14 @@ JAEGER_DATASOURCE = {
     "access": "proxy",
 }
 
+LOKI_DATASOURCE = {
+    "id": 54,
+    "uid": "vCyglaq7z",
+    "name": "Loki",
+    "type": "loki",
+    "access": "proxy",
+}
+
 MYSQL_DATASOURCE = {
     "id": 51,
     "uid": "7CpzLp37z",
