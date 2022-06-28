@@ -172,6 +172,7 @@ implemented as of June 2022.
 - Prometheus
 - Tempo
 - Testdata
+- Zipkin
 
 We are humbly asking the community to contribute adapters for other data
 sources.

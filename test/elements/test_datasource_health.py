@@ -20,6 +20,7 @@ from test.elements.test_datasource_fixtures import (
     SUNANDMOON_DATASOURCE_INCOMPLETE,
     TEMPO_DATASOURCE,
     TESTDATA_DATASOURCE,
+    ZIPKIN_DATASOURCE,
 )
 
 import requests_mock
@@ -723,6 +724,32 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             DatasourceHealthResponse(
                 uid="439fngqr2",
                 type="testdata",
+                success=True,
+                status="OK",
+                message="Success",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_zipkin_success(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/3sXIv8q7k",
+            json=ZIPKIN_DATASOURCE,
+        )
+        m.get(
+            "http://localhost/api/datasources/proxy/57/api/v2/services",
+            json=[],
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="3sXIv8q7k"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="3sXIv8q7k",
+                type="zipkin",
                 success=True,
                 status="OK",
                 message="Success",

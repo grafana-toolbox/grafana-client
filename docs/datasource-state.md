@@ -19,7 +19,6 @@ stackdriver
 testdata
 
 ### UNKNOWN
-zipkin
 
 ### TODO
 alertmanager
