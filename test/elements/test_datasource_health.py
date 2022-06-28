@@ -17,6 +17,7 @@ from test.elements.test_datasource_fixtures import (
     SIMPOD_JSON_DATASOURCE,
     SUNANDMOON_DATASOURCE,
     SUNANDMOON_DATASOURCE_INCOMPLETE,
+    TEMPO_DATASOURCE,
     TESTDATA_DATASOURCE,
 )
 
@@ -623,6 +624,59 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
                 success=False,
                 status="ERROR",
                 message="Invalid response. KeyError: 'latitude'",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_tempo_success(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/aTk86s3nk",
+            json=TEMPO_DATASOURCE,
+        )
+        m.get(
+            "http://localhost/api/datasources/proxy/55/api/echo",
+            headers={"Content-Type": "text/plain"},
+            text="echo",
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="aTk86s3nk"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="aTk86s3nk",
+                type="tempo",
+                success=True,
+                status="OK",
+                message="Success",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_tempo_error_response_failure(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/aTk86s3nk",
+            json=TEMPO_DATASOURCE,
+        )
+        m.get(
+            "http://localhost/api/datasources/proxy/55/api/echo",
+            status_code=502,
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="aTk86s3nk"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="aTk86s3nk",
+                type="tempo",
+                success=False,
+                status="ERROR",
+                message="Server Error 502: ",
                 duration=None,
                 response=None,
             ),

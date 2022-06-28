@@ -343,6 +343,12 @@ class Datasource(Base):
                 message = "Success"
                 success = True
 
+            # With Tempo, a 200 OK response with a non-empty body is probably just fine.
+            elif datasource_type == "tempo":
+                if len(response) >= 0:
+                    message = "Success"
+                    success = True
+
             # Generic case, where the response has a top-level `results` or `data` key.
             else:
                 if "results" in response:

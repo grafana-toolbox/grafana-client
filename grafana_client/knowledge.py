@@ -90,6 +90,8 @@ def datasource_factory(datasource: DatasourceModel) -> DatasourceModel:
         }
     elif datasource.type == "prometheus":
         datasource.access = "proxy"
+    elif datasource.type == "tempo":
+        datasource.access = "proxy"
     elif datasource.type == "testdata":
         pass
     else:
@@ -196,6 +198,8 @@ def query_factory(datasource, expression: str, store: Optional[str] = None) -> U
         }
     elif datasource_type == "simpod-json-datasource":
         query = expression
+    elif datasource_type == "tempo":
+        query = {}
     elif datasource_type == "testdata":
         query = expression
     else:
@@ -220,6 +224,7 @@ HEALTHCHECK_EXPRESSION_MAP = {
     "postgres": "SELECT 1",
     "prometheus": "1+1",
     "simpod-json-datasource": "url:///datasources/proxy/{datasource_id}",
+    "tempo": "url:///datasources/proxy/{datasource_id}/api/echo",
     "testdata": "url:///datasources/uid/{datasource_uid}",
 }
 

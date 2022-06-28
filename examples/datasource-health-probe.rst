@@ -181,6 +181,15 @@ Prometheus
     python examples/datasource-health-probe.py --type=prometheus --url=http://host.docker.internal:9090
 
 
+Tempo
+=====
+::
+
+    docker run --rm -it --name=tempo --publish=3200:80 grafana/tempo:1.4.1 \
+        --target=all --storage.trace.backend=local --storage.trace.local.path=/var/tempo --auth.enabled=false
+    python examples/datasource-health-probe.py --type=tempo --url=http://host.docker.internal:3200
+
+
 Testdata
 ========
 ::

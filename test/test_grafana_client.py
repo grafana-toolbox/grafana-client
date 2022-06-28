@@ -13,9 +13,10 @@ from grafana_client.client import GrafanaClientError, TokenAuth
 
 
 class MockResponse:
-    def __init__(self, json_data, status_code):
+    def __init__(self, json_data, status_code, headers=None):
         self.json_data = json_data
         self.status_code = status_code
+        self.headers = headers or {"Content-Type": "application/json"}
 
     def json(self):
         return self.json_data

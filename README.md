@@ -169,6 +169,7 @@ implemented as of June 2022.
 - OpenTSDB
 - PostgreSQL
 - Prometheus
+- Tempo
 - Testdata
 
 We are humbly asking the community to contribute adapters for other data
