@@ -349,6 +349,12 @@ class Datasource(Base):
                     message = "Success"
                     success = True
 
+            # With Zipkin, a 200 OK response with a JSON body containing an empty array is probably just fine.
+            elif datasource_type == "zipkin":
+                if response == []:
+                    message = "Success"
+                    success = True
+
             # Generic case, where the response has a top-level `results` or `data` key.
             else:
                 if "results" in response:

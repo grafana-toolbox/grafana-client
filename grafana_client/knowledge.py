@@ -107,6 +107,8 @@ def datasource_factory(datasource: DatasourceModel) -> DatasourceModel:
         datasource.access = "proxy"
     elif datasource.type == "testdata":
         pass
+    elif datasource.type == "zipkin":
+        datasource.access = "proxy"
     else:
         raise NotImplementedError(f"Unknown data source type: {datasource.type}")
     return datasource
@@ -226,6 +228,8 @@ def query_factory(datasource, expression: str, store: Optional[str] = None) -> U
         query = {}
     elif datasource_type == "testdata":
         query = expression
+    elif datasource_type == "zipkin":
+        query = {}
     else:
         raise NotImplementedError(f"Unknown data source type: {datasource_type}")
     return query
@@ -251,6 +255,7 @@ HEALTHCHECK_EXPRESSION_MAP = {
     "simpod-json-datasource": "url:///datasources/proxy/{datasource_id}",
     "tempo": "url:///datasources/proxy/{datasource_id}/api/echo",
     "testdata": "url:///datasources/uid/{datasource_uid}",
+    "zipkin": "url:///datasources/proxy/{datasource_id}/api/v2/services",
 }
 
 

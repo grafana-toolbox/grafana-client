@@ -151,6 +151,14 @@ TESTDATA_DATASOURCE = {
     "access": "proxy",
 }
 
+ZIPKIN_DATASOURCE = {
+    "id": 57,
+    "uid": "3sXIv8q7k",
+    "name": "Zipkin",
+    "type": "zipkin",
+    "access": "proxy",
+}
+
 
 PROMETHEUS_DATA_RESPONSE = {
     "status": "success",

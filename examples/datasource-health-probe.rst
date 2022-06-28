@@ -216,3 +216,10 @@ Testdata
 
     python examples/datasource-health-probe.py --type=testdata
 
+
+Zipkin
+======
+::
+
+    docker run --rm -it --publish=9411:9411 openzipkin/zipkin:2.23
+    python examples/datasource-health-probe.py --type=zipkin --url=http://host.docker.internal:9411
