@@ -9,6 +9,7 @@ from test.elements.test_datasource_fixtures import (
     INFLUXDB1_DATASOURCE,
     JAEGER_DATASOURCE,
     LOKI_DATASOURCE,
+    MSSQL_DATASOURCE,
     MYSQL_DATASOURCE,
     OPENTSDB_DATASOURCE,
     POSTGRES_DATASOURCE,
@@ -370,6 +371,32 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
                 success=False,
                 status="ERROR",
                 message="Failed to call resource",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_mssql(self, m):
+        m.get(
+            "http://localhost/api/datasources/uid/0pueH83nz",
+            json=MSSQL_DATASOURCE,
+        )
+        m.post(
+            "http://localhost/api/ds/query",
+            json=DATAFRAME_RESPONSE_HEALTH_SELECT1,
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="0pueH83nz"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="0pueH83nz",
+                type="mssql",
+                success=True,
+                status="OK",
+                message="SELECT 1",
                 duration=None,
                 response=None,
             ),

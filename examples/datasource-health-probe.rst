@@ -157,6 +157,26 @@ MariaDB / MySQL
     python examples/datasource-health-probe.py --type=mysql --url=host.docker.internal:3306
 
 
+Microsoft SQL Server
+====================
+::
+
+    # Start service.
+    docker run --rm -it --publish=1433:1433 \
+        --env="ACCEPT_EULA=Y" --env="SA_PASSWORD=root123?" \
+        mcr.microsoft.com/mssql/server:2022-latest
+
+    # Create database `testdrive`.
+    docker run --rm -it --network=host mcr.microsoft.com/mssql/server:2022-latest /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "root123?" -Q "CREATE DATABASE testdrive;"
+
+    # Invoke Grafana database probe.
+    python examples/datasource-health-probe.py --type=mssql --url=host.docker.internal:1433
+
+Interactive client console::
+
+    docker run --rm -it --network=host mcr.microsoft.com/mssql/server:2022-latest /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P root123?
+
+
 OpenTSDB
 ========
 ::
