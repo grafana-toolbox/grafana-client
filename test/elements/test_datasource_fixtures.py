@@ -127,6 +127,14 @@ SUNANDMOON_DATASOURCE = {
 SUNANDMOON_DATASOURCE_INCOMPLETE = deepcopy(SUNANDMOON_DATASOURCE)
 del SUNANDMOON_DATASOURCE_INCOMPLETE["jsonData"]["latitude"]
 
+TEMPO_DATASOURCE = {
+    "id": 55,
+    "uid": "aTk86s3nk",
+    "name": "Tempo",
+    "type": "tempo",
+    "access": "proxy",
+}
+
 TESTDATA_DATASOURCE = {
     "id": 45,
     "uid": "439fngqr2",

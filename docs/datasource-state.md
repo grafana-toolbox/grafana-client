@@ -20,7 +20,6 @@ testdata
 
 ### UNKNOWN
 mssql
-tempo
 zipkin
 
 ### TODO
