@@ -77,6 +77,19 @@ def datasource_factory(datasource: DatasourceModel) -> DatasourceModel:
         }
     elif datasource.type == "loki":
         datasource.access = "proxy"
+    elif datasource.type == "mssql":
+        datasource.access = "proxy"
+        datasource.database = "testdrive"
+        datasource.user = "sa"
+        datasource.jsonData = {
+            "authenticationType": "SQL Server Authentication",
+        }
+        datasource.secureJsonData = {
+            "password": "root123?",
+        }
+        datasource.secureJsonFields = {
+            "password": False,
+        }
     elif datasource.type == "mysql":
         datasource.user = "root"
         datasource.secureJsonData = {
@@ -149,6 +162,17 @@ def query_factory(datasource, expression: str, store: Optional[str] = None) -> U
         query = {}
     elif datasource_type == "loki":
         query = {}
+    elif datasource_type == "mssql":
+        query = {
+            "refId": "test",
+            "datasource": {
+                "type": datasource["type"],
+                "uid": datasource.get("uid"),
+            },
+            "datasourceId": datasource.get("id"),
+            "format": "table",
+            "rawSql": expression,
+        }
     elif datasource_type == "mysql":
         query = {
             "refId": "test",
@@ -219,6 +243,7 @@ HEALTHCHECK_EXPRESSION_MAP = {
     "influxdb+flux": "buckets()",
     "jaeger": "url:///datasources/proxy/{datasource_id}/api/services",
     "loki": "url:///datasources/{datasource_id}/resources/labels?start=1656274994383000000&end=1656275594383000000",
+    "mssql": "SELECT 1",
     "mysql": "SELECT 1",
     "opentsdb": "url:///datasources/proxy/{datasource_id}/api/suggest?type=metrics&q=cpu&max=100",
     "postgres": "SELECT 1",

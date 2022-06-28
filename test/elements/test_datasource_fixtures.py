@@ -48,6 +48,14 @@ LOKI_DATASOURCE = {
     "access": "proxy",
 }
 
+MSSQL_DATASOURCE = {
+    "id": 56,
+    "uid": "0pueH83nz",
+    "name": "MSSQL",
+    "type": "mssql",
+    "access": "proxy",
+}
+
 MYSQL_DATASOURCE = {
     "id": 51,
     "uid": "7CpzLp37z",

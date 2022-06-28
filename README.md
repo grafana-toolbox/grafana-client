@@ -166,6 +166,7 @@ implemented as of June 2022.
 - InfluxDB
 - Jaeger
 - Loki
+- Microsoft SQL Server
 - OpenTSDB
 - PostgreSQL
 - Prometheus

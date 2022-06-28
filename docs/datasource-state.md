@@ -19,7 +19,6 @@ stackdriver
 testdata
 
 ### UNKNOWN
-mssql
 zipkin
 
 ### TODO
