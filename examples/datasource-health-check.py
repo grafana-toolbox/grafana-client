@@ -12,7 +12,6 @@ from optparse import OptionParser
 import requests
 
 from grafana_client import GrafanaApi
-from grafana_client.client import GrafanaServerError
 from grafana_client.model import DatasourceHealthResponse
 from grafana_client.util import setup_logging
 

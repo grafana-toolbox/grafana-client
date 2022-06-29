@@ -26,7 +26,7 @@ Start Grafana::
 
     export GRAFANA_VERSION=7.5.16
     export GRAFANA_VERSION=8.5.6
-    export GRAFANA_VERSION=9.0.1
+    export GRAFANA_VERSION=9.0.2
     export GRAFANA_VERSION=main
 
     docker run --rm -it \
