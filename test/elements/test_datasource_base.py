@@ -190,7 +190,7 @@ class DatasourceTestCase(unittest.TestCase):
             json=DATAFRAME_RESPONSE_HEALTH_PROMETHEUS,
         )
         datasource = PROMETHEUS_DATASOURCE.copy()
-        response = self.grafana.datasource.query(datasource, "1+1")
+        response = self.grafana.datasource.smartquery(datasource, "1+1")
         self.assertEqual(response, DATAFRAME_RESPONSE_HEALTH_PROMETHEUS)
 
     @requests_mock.Mocker()
@@ -200,7 +200,7 @@ class DatasourceTestCase(unittest.TestCase):
             json={},
         )
         datasource = INFLUXDB1_DATASOURCE.copy()
-        response = self.grafana.datasource.query(datasource, "SHOW RETENTION POLICIES on _internal", store="foobar")
+        response = self.grafana.datasource.smartquery(datasource, "SHOW RETENTION POLICIES on _internal", store="foobar")
         # TODO: No response payload yet.
 
     @requests_mock.Mocker()
@@ -210,7 +210,7 @@ class DatasourceTestCase(unittest.TestCase):
             json={},
         )
         datasource = ELASTICSEARCH_DATASOURCE.copy()
-        response = self.grafana.datasource.query(
+        response = self.grafana.datasource.smartquery(
             datasource, "url:///datasources/proxy/44/bazqux/_mapping", store="bazqux"
         )
         # TODO: No response payload yet.
@@ -225,17 +225,17 @@ class DatasourceTestCase(unittest.TestCase):
             "http://localhost/api/ds/query",
             json=DATAFRAME_RESPONSE_HEALTH_PROMETHEUS,
         )
-        response = self.grafana.datasource.query(DatasourceIdentifier(uid="h8KkCLt7z"), "1+1")
+        response = self.grafana.datasource.smartquery(DatasourceIdentifier(uid="h8KkCLt7z"), "1+1")
         self.assertEqual(response, DATAFRAME_RESPONSE_HEALTH_PROMETHEUS)
 
     def test_query_unknown_access_type_failure(self):
         datasource = PROMETHEUS_DATASOURCE.copy()
         datasource["access"] = "__UNKNOWN__"
-        self.assertRaises(NotImplementedError, lambda: self.grafana.datasource.query(datasource, expression="1+1"))
+        self.assertRaises(NotImplementedError, lambda: self.grafana.datasource.smartquery(datasource, expression="1+1"))
 
     def test_query_empty_expression_failure(self):
         datasource = PROMETHEUS_DATASOURCE.copy()
-        self.assertRaises(ValueError, lambda: self.grafana.datasource.query(datasource, expression=None))
+        self.assertRaises(ValueError, lambda: self.grafana.datasource.smartquery(datasource, expression=None))
 
     @patch("grafana_client.client.GrafanaClient.__getattr__")
     def test_query_client_error_failure(self, mock_get):
@@ -244,7 +244,7 @@ class DatasourceTestCase(unittest.TestCase):
         mock_get.return_value.side_effect = GrafanaClientError(status_code=400, response={}, message="Something failed")
 
         datasource = PROMETHEUS_DATASOURCE.copy()
-        self.assertRaises(GrafanaClientError, lambda: self.grafana.datasource.query(datasource, expression="1+1"))
+        self.assertRaises(GrafanaClientError, lambda: self.grafana.datasource.smartquery(datasource, expression="1+1"))
 
     @patch("grafana_client.client.GrafanaClient.__getattr__")
     def test_query_server_error_failure(self, mock_get):
@@ -255,4 +255,4 @@ class DatasourceTestCase(unittest.TestCase):
         )
 
         datasource = PROMETHEUS_DATASOURCE.copy()
-        self.assertRaises(GrafanaServerError, lambda: self.grafana.datasource.query(datasource, expression="1+1"))
+        self.assertRaises(GrafanaServerError, lambda: self.grafana.datasource.smartquery(datasource, expression="1+1"))
