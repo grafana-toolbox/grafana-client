@@ -13,6 +13,7 @@ from .elements import (
     Admin,
     Annotations,
     Dashboard,
+    DashboardVersions,
     Datasource,
     Folder,
     Health,
@@ -55,6 +56,7 @@ class GrafanaApi:
         self.url = None
         self.admin = Admin(self.client)
         self.dashboard = Dashboard(self.client)
+        self.dashboard_versions = DashboardVersions(self.client)
         self.datasource = Datasource(self.client, self)
         self.folder = Folder(self.client)
         self.health = Health(self.client)

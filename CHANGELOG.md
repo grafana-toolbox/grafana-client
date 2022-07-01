@@ -26,6 +26,7 @@
 * Data source health check: Improve acceptance criteria when probing Prometheus
 * Data source health check: Clean up core implementation, add more tests
   Code coverage is now at 100%.
+* Add support for "Dashboard Versions" API. Thanks, @DrMxxxxx!
 
 
 ## 2.3.0 (2022-05-26)

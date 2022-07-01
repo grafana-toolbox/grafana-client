@@ -147,7 +147,7 @@ class GrafanaClient:
                         "Client Error {0}: {1}".format(r.status_code, message),
                     )
             # The "Tempo" data source responds with text/plain.
-            if r.headers.get("Content-Type", "").startswith("text/plain"):
+            if r.headers.get("Content-Type", "").startswith("text/"):
                 return r.text
             else:
                 return r.json()

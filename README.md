@@ -148,7 +148,7 @@ versions of Grafana might not support certain features or subsystems.
 | Annotations | + |
 | Authentication | +- |
 | Dashboard | + |
-| Dashboard Versions | - |
+| Dashboard Versions | + |
 | Dashboard Permissions | + |
 | Data Source | + |
 | Folder | + |
