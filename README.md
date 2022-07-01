@@ -15,27 +15,39 @@
 
 ## About
 
-A client library for the Grafana HTTP API, written in Python.
+A client library for accessing the Grafana HTTP API, written in Python.
 
 
-## Getting started
+## Setup
 
 Install the package from PyPI.
-
 ```
 pip install grafana-client --upgrade
 ```
 
-Connect to your Grafana API endpoint using the `GrafanaApi` class.
+
+## Usage
+
+### API overview
+
+This section gives you an idea about how to use the API on behalf of a few
+samples.
 
 ```python
 from grafana_client import GrafanaApi
 
-grafana = GrafanaApi.from_url("https://daq.example.org/grafana/")
+# Connect to Grafana API endpoint using the `GrafanaApi` class
+grafana = GrafanaApi.from_url(
+    "https://username:password@daq.example.org/grafana/")
 
 # Create user
-user = grafana.admin.create_user(
-    {"name": "User", "email": "user@example.org", "login": "user", "password": "userpassword", "OrgId": 1})
+user = grafana.admin.create_user({
+    "name": "User", 
+    "email": "user@example.org", 
+    "login": "user", 
+    "password": "userpassword", 
+    "OrgId": 1,
+})
 
 # Change user password
 user = grafana.admin.change_user_password(2, "newpassword")
@@ -50,14 +62,24 @@ user = grafana.users.find_user("test@example.org")
 grafana.teams.add_team_member(2, user["id"])
 
 # Create or update a dashboard
-grafana.dashboard.update_dashboard(dashboard={"dashboard": {...}, "folderId": 0, "overwrite": True})
+grafana.dashboard.update_dashboard(
+    dashboard={"dashboard": {...}, "folderId": 0, "overwrite": True})
 
 # Delete a dashboard by UID
 grafana.dashboard.delete_dashboard(dashboard_uid="foobar")
 
 # Create organization
-grafana.organization.create_organization({"name": "new_organization"})
+grafana.organization.create_organization(
+    organization={"name": "new_organization"})
 ```
+
+### Example programs
+
+There are complete example programs to get you started within the [examples
+folder] of this repository.
+
+Feel free to use them as blueprints for your own programs. If you think your
+exercises could be useful for others, don't hesitate to share them back.
 
 
 ## Authentication
@@ -111,6 +133,11 @@ export HTTPS_PROXY=10.10.1.11:1080
 This section of the documentation outlines which parts of the Grafana HTTP API
 are supported, and to which degree. See also [Grafana HTTP API reference].
 
+### Compatibility
+
+`grafana-client` is largely compatible with Grafana 5.x-9.x. However, earlier
+versions of Grafana might not support certain features or subsystems.
+
 ### Overview
 
 | API | Status |
@@ -140,25 +167,24 @@ are supported, and to which degree. See also [Grafana HTTP API reference].
 
 #### Introduction
 
-For checking whether a Grafana data source is healthy, Grafana 9 has a
-server-side data source health check API. For earlier versions, a client-side
+For checking whether a Grafana data source is healthy, Grafana 9 and newer has
+a server-side data source health check API. For earlier versions, a client-side
 implementation is provided.
 
 This implementation works in the same manner as the "Save & test" button works,
 when creating a data source in the user interface.
 
 The feature can be explored through corresponding client programs in the
-`examples/` folder of this repository.
+[examples folder] of this repository.
 
 #### Compatibility
 
-The minimum supported version is Grafana 7.x, it does not work on older
-versions of Grafana. Prometheus only works on Grafana 8.x and newer.
+The minimum required version for data source health checks is Grafana 7.
+Prometheus only works on Grafana 8 and newer.
 
 #### Data source coverage
 
-Support for data source health checks on those Grafana data sources is
-implemented as of June 2022.
+Health checks are supported for these Grafana data source types.
 
 - CrateDB
 - Elasticsearch
@@ -175,17 +201,8 @@ implemented as of June 2022.
 - Zipkin
 
 We are humbly asking the community to contribute adapters for other data
-sources.
+source types, popular or not.
 
-
-## Software tests
-
-```shell
-python3 -m venv .venv
-source .venv/bin/activate
-pip install --editable=.[test]
-python -m unittest -vvv
-```
 
 ## Applications
 
@@ -211,8 +228,8 @@ trimmed the module namespace.
 
 ## Acknowledgements
 
-Thanks to all [contributors] who helped to co-create and conceive this software
-in one way or another. You know who you are.
+Thanks to the original authors and all [contributors] who helped to co-create
+and conceive this software in one way or another. You know who you are.
 
 
 ## Contributing
@@ -224,6 +241,20 @@ report or fix a bug.
 The issue tracker URL is: https://github.com/panodata/grafana-client/issues
 
 
+## Development
+
+In order to create a development sandbox, you may want to follow this list of
+commands. When you see the software tests succeed, you should be ready to start
+hacking.
+```shell
+git clone https://github.com/panodata/grafana-client
+cd grafana-client
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --editable=.[test]
+python -m unittest -vvv
+```
+
 ## License
 
 `grafana-client` is licensed under the terms of the MIT License, see [LICENSE] file.
@@ -231,6 +262,7 @@ The issue tracker URL is: https://github.com/panodata/grafana-client/issues
 
 [Andrew Prokhorenkov]: https://github.com/m0nhawk/grafana_api
 [contributors]: https://github.com/panodata/grafana-client/graphs/contributors
+[examples folder]: https://github.com/panodata/grafana-client/tree/main/examples
 [future maintenance of `grafana_api`]: https://github.com/m0nhawk/grafana_api/issues/88
 [grafana_api]: https://github.com/m0nhawk/grafana_api
 [Grafana Admin API documentation]: https://grafana.com/docs/grafana/latest/http_api/admin/
