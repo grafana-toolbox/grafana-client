@@ -16,6 +16,14 @@
   on a whole instance, instead of `examples/datasource-health-check.py`.
 - [o] Spawn Grafana instance without authentication?
   - https://github.com/joe-elliott/tempo-otel-example/blob/master/docker-compose.yaml#L42-L44
+- [o] Add support for more data source health checks
+  - https://github.com/yesoreyeram/grafana-infinity-datasource
+  - https://github.com/scottlepp/grafana-sqlproxy-datasource
+  - https://github.com/grafana/mqtt-datasource
+  - https://github.com/grafana/google-bigquery-datasource
+  - https://github.com/orgs/grafana/repositories?q=datasource
+  - https://github.com/search?q=grafana+datasource
+- [o] The new alerting API
 
 ## Community contributions
 - [o] Alerts
