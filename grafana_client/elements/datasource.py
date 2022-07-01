@@ -186,7 +186,7 @@ class Datasource(Base):
         r = self.client.GET(get_datasource_path)
         return r
 
-    def query(self, datasource: Union[DatasourceIdentifier, Dict], expression: str, store: Optional[str] = None):
+    def smartquery(self, datasource: Union[DatasourceIdentifier, Dict], expression: str, store: Optional[str] = None):
         """
         Send a query to the designated data source and return its response.
 
@@ -284,7 +284,7 @@ class Datasource(Base):
 
         start = time.time()
         try:
-            response = self.query(datasource, expression)
+            response = self.smartquery(datasource, expression)
             response_display = response
             if VERBOSE:  # pragma:nocover
                 response_display = json.dumps(response, indent=2)

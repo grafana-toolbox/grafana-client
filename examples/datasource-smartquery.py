@@ -13,12 +13,12 @@ Synopsis
 ::
 
     # Query the InfluxDB 1.x data source on `play.grafana.org`.
-    python examples/datasource-query.py --uid=000000002 --query="SHOW RETENTION POLICIES on _internal"
-    python examples/datasource-query.py --uid=000000002 --store=site --query="SHOW FIELD KEYS"
+    python examples/datasource-smartquery.py --uid=000000002 --query="SHOW RETENTION POLICIES on _internal"
+    python examples/datasource-smartquery.py --uid=000000002 --store=site --query="SHOW FIELD KEYS"
 
     # Query the Prometheus data source on `play.grafana.org`.
     # FIXME: Does not work yet.
-    python examples/datasource-query.py --uid=000000008 --store=node_boot_time --query='time() - node_boot_time_seconds{job="node", instance=~"demo.do.prometheus.io:.*"}'
+    python examples/datasource-smartquery.py --uid=000000008 --store=node_boot_time --query='time() - node_boot_time_seconds{job="node", instance=~"demo.do.prometheus.io:.*"}'
 
 """
 import json
@@ -46,7 +46,7 @@ def run(grafana: GrafanaApi):
         parser.error("Option --query required")
 
     # Query the data source by UID.
-    response = grafana.datasource.query(
+    response = grafana.datasource.smartquery(
         DatasourceIdentifier(uid=options.uid), expression=options.query, store=options.store
     )
 
