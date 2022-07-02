@@ -1,11 +1,10 @@
 # Backlog of grafana-client
 
 ## Iteration +1
-- [o] Community cherry-picking, see below.
-- [o] Documentation
-- [o] Release
+- [o] Release 3.0.0
 - [o] Announcement on https://community.grafana.com/
 - [o] Share `examples/grafanalib-upload-dashboard.py` with people at `grafanalib`
+- [o] Propagate features to `grafana-wtf`
 
 ## Iteration +2
 - [o] Unlock real data queries
@@ -16,6 +15,10 @@
   on a whole instance, instead of `examples/datasource-health-check.py`.
 - [o] Spawn Grafana instance without authentication?
   - https://github.com/joe-elliott/tempo-otel-example/blob/master/docker-compose.yaml#L42-L44
+- [o] The old & new alerting API
+- [o] Community cherry-picking, see below.
+
+## Iteration +3
 - [o] Add support for more data source health checks
   - https://github.com/yesoreyeram/grafana-infinity-datasource
   - https://github.com/scottlepp/grafana-sqlproxy-datasource
@@ -23,16 +26,10 @@
   - https://github.com/grafana/google-bigquery-datasource
   - https://github.com/orgs/grafana/repositories?q=datasource
   - https://github.com/search?q=grafana+datasource
-- [o] The new alerting API
 
 ## Community contributions
 - [o] Alerts
   - https://github.com/stephenlclarke/grafana_api/commit/606b58658e
-- [o] Dashboard versions
-  - https://github.com/DrMxxxxx/grafana_api/commit/fdf47a651be4
-- [o] Query range and series
-  - https://github.com/RalfHerzog/grafana_api/commit/57e1086a7
-  - https://github.com/RalfHerzog/grafana_api/commit/68d505e
 - [o] Test mocks
   - https://github.com/m0nhawk/grafana_api/commit/21104835
 - [o] Poetry
