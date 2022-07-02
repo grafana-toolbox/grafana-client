@@ -233,7 +233,9 @@ class DatasourceTestCase(unittest.TestCase):
             json={},
         )
         datasource = INFLUXDB1_DATASOURCE.copy()
-        response = self.grafana.datasource.smartquery(datasource, "SHOW RETENTION POLICIES on _internal", store="foobar")
+        response = self.grafana.datasource.smartquery(
+            datasource, "SHOW RETENTION POLICIES on _internal", store="foobar"
+        )
         # TODO: No response payload yet.
 
     @requests_mock.Mocker()
