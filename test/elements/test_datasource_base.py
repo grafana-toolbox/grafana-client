@@ -150,7 +150,7 @@ class DatasourceTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_datasource_proxy_data_query(self, m):
         # http://localhost:3000/api/datasources/proxy/1/api/v1/query?query=up%7binstance%3d%22localhost:9090%22%7d&time=1644164339
-        m.get(
+        m.post(
             "http://localhost/api/datasources/proxy/1/api/v1/query",
             json=PROMETHEUS_DATA_RESPONSE,
         )
@@ -167,7 +167,7 @@ class DatasourceTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_datasource_proxy_data_query_range(self, m):
         # http://localhost:3000/api/datasources/proxy/1/api/v1/query_range?query=up%7binstance%3d%22localhost:9090%22%7d&start=1644164339&end=1644164639&step=60
-        m.get(
+        m.post(
             "http://localhost/api/datasources/proxy/1/api/v1/query_range",
             json=PROMETHEUS_DATA_RESPONSE,
         )
@@ -178,6 +178,39 @@ class DatasourceTestCase(unittest.TestCase):
             start=1644164339,
             end=1644164639,
             step=60,
+        )
+        self.assertEqual(result["status"], "success")
+        self.assertEqual(result["data"]["result"][0]["metric"]["job"], "prometheus")
+        self.assertEqual(len(result["data"]["result"][0]["values"]), 6)
+
+    @requests_mock.Mocker()
+    def test_get_datasource_proxy_data_failure(self, m):
+        m.post(
+            "http://localhost/api/datasources/proxy/1/api/v1/query",
+            json=PROMETHEUS_DATA_RESPONSE,
+        )
+        with self.assertRaises(KeyError) as ctx:
+            self.grafana.datasource.get_datasource_proxy_data(
+                1,  # datasource_id
+                query_type="foobar",
+                expr='up{instance="localhost:9090"}',
+                time=1644164339,
+            )
+        self.assertEqual(str(ctx.exception), "'Unknown or invalid query type: foobar'")
+
+    @requests_mock.Mocker()
+    def test_series(self, m):
+        # TODO: Not sure if this emulates the right payloads.
+        #       It has been copied from the other test functions above.
+        m.post(
+            "http://localhost/api/datasources/proxy/1/api/v1/series",
+            json=PROMETHEUS_DATA_RESPONSE,
+        )
+        result = self.grafana.datasource.series(
+            datasource_id=1,
+            match="foo",
+            start=1644164339,
+            end=1644164639,
         )
         self.assertEqual(result["status"], "success")
         self.assertEqual(result["data"]["result"][0]["metric"]["job"], "prometheus")

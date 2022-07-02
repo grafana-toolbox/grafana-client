@@ -27,6 +27,8 @@
 * Data source health check: Clean up core implementation, add more tests
   Code coverage is now at 100%.
 * Add support for "Dashboard Versions" API. Thanks, @DrMxxxxx!
+* Add `datasource.query_range()` and `datasource.series()` functions
+  to retrieve metric values. Thanks, @RalfHerzog!
 
 
 ## 2.3.0 (2022-05-26)

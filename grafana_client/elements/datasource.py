@@ -1,6 +1,7 @@
 import json
 import logging
 import time
+import warnings
 from distutils.version import LooseVersion
 from typing import Dict, Optional, Tuple, Union
 
@@ -176,14 +177,18 @@ class Datasource(Base):
 
         :return: r (dict)
         """
-        get_datasource_path = "/datasources/proxy/{0}" "/api/{1}/{2}?query={3}".format(
-            datasource_id, version, query_type, expr
+        warnings.warn(
+            DeprecationWarning(
+                "The function `get_datasource_proxy_data()` will be removed in a future release. "
+                "Please use the functions `query()`, `query_range()`, or `series()` instead."
+            )
         )
-        if query_type == "query_range":
-            get_datasource_path = get_datasource_path + "&start={0}&end={1}&step={2}".format(start, end, step)
+        if query_type == "query":
+            return self.query(datasource_id=datasource_id, query=expr, timestamp=time)
+        elif query_type == "query_range":
+            return self.query_range(datasource_id=datasource_id, query=expr, start=start, end=end, step=step)
         else:
-            get_datasource_path = get_datasource_path + "&time={}".format(time)
-        r = self.client.GET(get_datasource_path)
+            raise KeyError(f"Unknown or invalid query type: {query_type}")
 
     def query(self, datasource_id, query, timestamp, access="proxy"):
         """
