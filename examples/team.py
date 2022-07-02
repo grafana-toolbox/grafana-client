@@ -1,5 +1,10 @@
 """
-Demo program for interacting with the Grafana Teams API.
+About
+=====
+
+Example program for interacting with the Grafana Teams API.
+It will need `teams:{create,read}` permissions to create a team and inquire the
+list of existing teams afterwards.
 
 Usage
 =====
