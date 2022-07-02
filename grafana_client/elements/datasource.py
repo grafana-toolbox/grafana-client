@@ -184,6 +184,24 @@ class Datasource(Base):
         else:
             get_datasource_path = get_datasource_path + "&time={}".format(time)
         r = self.client.GET(get_datasource_path)
+
+    def query(self, datasource_id, query, timestamp, access="proxy"):
+        """
+
+        :param datasource_id:
+        :param query:
+        :param timestamp:
+        :param access:
+        :return:
+        """
+        post_query_path = "/datasources/%s/%s/api/v1/query" % (access, datasource_id)
+        r = self.client.POST(
+            post_query_path,
+            data={
+                "query": query,
+                "time": timestamp,
+            },
+        )
         return r
 
     def query_range(self, datasource_id, query, start, end, step, access="proxy"):
