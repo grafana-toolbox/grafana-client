@@ -37,7 +37,7 @@ class Folder(Base):
             json_data["uid"] = uid
         return self.client.POST("/folders", json=json_data)
 
-    def update_folder(self, uid, title, version=None, overwrite=False):
+    def update_folder(self, uid, new_uid=None, title=None, version=None, overwrite=False):
         """
 
         :param uid:
@@ -46,8 +46,12 @@ class Folder(Base):
         :param overwrite:
         :return:
         """
-        body = {"title": title}
-        if version is not None:
+        body = {}
+        if new_uid:
+            body['uid'] = new_uid
+        if title:
+            body['title'] = title
+        if version:
             body["version"] = version
         if overwrite:
             body["overwrite"] = True
