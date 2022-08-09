@@ -2,6 +2,9 @@
 
 ## unreleased
 
+* Update the `update_folder` method of the folder API to allow changing
+  the UID of the folder. Thanks, @iNoahNothing.
+
 
 ## 3.0.0 (2022-07-02)
 
