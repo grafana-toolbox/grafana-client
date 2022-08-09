@@ -48,16 +48,18 @@ class Folder(Base):
         """
         body = {}
         if new_uid:
-            body['uid'] = new_uid
+            body["uid"] = new_uid
         if title:
-            body['title'] = title
+            body["title"] = title
         if version:
             body["version"] = version
         if overwrite:
             body["overwrite"] = True
+        print(body)
 
         path = "/folders/%s" % uid
         r = self.client.PUT(path, json=body)
+        print(r)
         return r
 
     def delete_folder(self, uid):

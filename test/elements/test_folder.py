@@ -108,8 +108,11 @@ class FolderTestCase(unittest.TestCase):
                 "version": 1,
             },
         )
-        folder = self.grafana.folder.update_folder(title="Departmenet DEF", uid="nErXDvCkzz", version=1, overwrite=True)
+        folder = self.grafana.folder.update_folder(
+            title="Departmenet DEF", uid="nErXDvCkzz", new_uid="nErXDvCkzz", version=1, overwrite=True
+        )
         self.assertEqual(folder["title"], "Departmenet DEF")
+        self.assertEqual(folder["uid"], "nErXDvCkzz")
 
     @requests_mock.Mocker()
     def test_update_folder_some_param(self, m):
