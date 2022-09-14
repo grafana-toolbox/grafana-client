@@ -24,16 +24,20 @@ jobs:
         ]
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
+
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+          architecture: x64
+          cache: 'pip'
+          cache-dependency-path: 'setup.cfg'
+
       - name: Install dependencies
         run: |
-          # Only needed for PyPy.
-          sudo apt install libxml2-dev libxslt-dev
+          sudo apt-get install libxml2-dev libxslt-dev  # Only needed for PyPy.
           python -m pip install --upgrade pip
-          python -m pip install .[test,develop]
+          python -m pip install --editable=.[test,develop]
 
       - name: Check code style
         run: |
