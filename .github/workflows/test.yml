@@ -33,9 +33,13 @@ jobs:
           cache: 'pip'
           cache-dependency-path: 'setup.cfg'
 
+      - name: Install dependencies for PyPy
+        if: startsWith(matrix.python-version, 'pypy')
+        run: |
+          sudo apt-get install libxml2-dev libxslt-dev
+
       - name: Install dependencies
         run: |
-          sudo apt-get install libxml2-dev libxslt-dev  # Only needed for PyPy.
           python -m pip install --upgrade pip
           python -m pip install --editable=.[test,develop]
 
