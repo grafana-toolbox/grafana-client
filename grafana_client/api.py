@@ -6,6 +6,7 @@ from typing import Tuple, Union
 from urllib.parse import parse_qs, urlparse
 
 import requests
+import requests.auth
 from urllib3.exceptions import InsecureRequestWarning
 
 from .client import GrafanaClient
@@ -88,7 +89,7 @@ class GrafanaApi:
         return version
 
     @classmethod
-    def from_url(cls, url: str = None, credential: Union[str, Tuple[str, str]] = None):
+    def from_url(cls, url: str = None, credential: Union[str, Tuple[str, str], requests.auth.AuthBase] = None):
         """
         Factory method to create a `GrafanaApi` instance from a URL.
 
@@ -100,7 +101,7 @@ class GrafanaApi:
         if url is None:
             url = "http://admin:admin@localhost:3000"
 
-        if credential is not None and not isinstance(credential, (str, Tuple)):
+        if credential is not None and not isinstance(credential, (str, Tuple, requests.auth.AuthBase)):
             raise TypeError(f"Argument 'credential' has wrong type: {type(credential)}")
 
         original_url = url

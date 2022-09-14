@@ -7,6 +7,7 @@ except ModuleNotFoundError:  # pragma:nocover
 
 warnings.filterwarnings("ignore", category=Warning, message="distutils Version classes are deprecated")
 from .api import GrafanaApi  # noqa:F401
+from .client import HeaderAuth, TokenAuth  # noqa:F401
 
 __appname__ = "grafana-client"
 

@@ -4,8 +4,7 @@ from unittest import mock
 
 import requests
 
-from grafana_client import GrafanaApi
-from grafana_client.client import TokenAuth
+from grafana_client import GrafanaApi, HeaderAuth, TokenAuth
 
 
 class TestGrafanaApiFactories(unittest.TestCase):
@@ -40,6 +39,12 @@ class TestGrafanaApiFactories(unittest.TestCase):
         grafana = GrafanaApi.from_url(credential="VerySecretToken")
         self.assertIsInstance(grafana.client.auth, TokenAuth)
         self.assertEqual(grafana.client.auth.token, "VerySecretToken")
+
+    def test_from_url_headerauth(self):
+        grafana = GrafanaApi.from_url(credential=HeaderAuth(name="X-WEBAUTH-USER", value="foobar"))
+        self.assertIsInstance(grafana.client.auth, HeaderAuth)
+        self.assertEqual(grafana.client.auth.name, "X-WEBAUTH-USER")
+        self.assertEqual(grafana.client.auth.value, "foobar")
 
     def test_from_url_auth_precedence(self):
         grafana = GrafanaApi.from_url("http://foo:bar@localhost:3000", credential="VerySecretToken")

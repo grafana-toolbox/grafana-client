@@ -9,7 +9,7 @@ else:
 import requests
 
 from grafana_client.api import GrafanaApi
-from grafana_client.client import GrafanaClientError, TokenAuth
+from grafana_client.client import GrafanaClientError, HeaderAuth, TokenAuth
 
 
 class MockResponse:
@@ -117,6 +117,12 @@ class TestGrafanaClient(unittest.TestCase):
         request = requests.Request()
         tokenauth(request)
         self.assertEqual(request.headers["Authorization"], "Bearer VerySecretToken")
+
+    def test_headerauth(self):
+        headerauth = HeaderAuth(name="X-WEBAUTH-USER", value="foobar")
+        request = requests.Request()
+        headerauth(request)
+        self.assertEqual(request.headers["X-WEBAUTH-USER"], "foobar")
 
     @patch("grafana_client.client.GrafanaClient.__getattr__")
     def test_grafana_client_connect_success(self, mock_get):
