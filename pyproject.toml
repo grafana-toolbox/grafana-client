@@ -15,8 +15,10 @@ line-length = 120
 profile = "black"
 multi_line_output = 3
 
-[tool.coverage.report]
+[tool.coverage.run]
 source = ["grafana_client"]
+
+[tool.coverage.report]
 show_missing = true
 fail_under = 0
 omit = [
