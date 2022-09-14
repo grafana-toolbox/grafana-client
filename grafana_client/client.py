@@ -54,6 +54,16 @@ class TokenAuth(requests.auth.AuthBase):
         return request
 
 
+class HeaderAuth(requests.auth.AuthBase):
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
+    def __call__(self, request):
+        request.headers.update({self.name: self.value})
+        return request
+
+
 class GrafanaClient:
     def __init__(
         self,
@@ -98,10 +108,12 @@ class GrafanaClient:
         self.s = requests.Session()
         self.s.headers["User-Agent"] = self.user_agent
         if self.auth is not None:
-            if not isinstance(self.auth, tuple):
-                self.auth = TokenAuth(self.auth)
-            else:
+            if isinstance(self.auth, requests.auth.AuthBase):
+                pass
+            elif isinstance(self.auth, tuple):
                 self.auth = requests.auth.HTTPBasicAuth(*self.auth)
+            else:
+                self.auth = TokenAuth(self.auth)
 
     def __getattr__(self, item):
         def __request_runner(url, json=None, data=None, headers=None):

@@ -84,28 +84,43 @@ exercises could be useful for others, don't hesitate to share them back.
 
 ## Authentication
 
-There are two ways to authenticate to the Grafana API. Either use an API token,
-or HTTP basic auth.
+There are several ways to authenticate to the Grafana HTTP API.
 
-To use the admin API, you need to use HTTP Basic Authentication, as stated at
-the [Grafana Admin API documentation].
+1. Anonymous access
+2. Grafana API token
+3. HTTP Basic Authentication
+4. HTTP Header Authentication
+
+The [Grafana Admin API] is a subset of the Grafana API. For accessing those API
+resources, you will need to use HTTP Basic Authentication.
 
 ```python
-from grafana_client import GrafanaApi
+from grafana_client import GrafanaApi, HeaderAuth, TokenAuth
 
-# Use Grafana API token.
+# 1. Anonymous access
 grafana = GrafanaApi.from_url(
     url="https://daq.example.org/grafana/",
-    credential="eyJrIjoiWHg...dGJpZCI6MX0=",
 )
 
-# Use HTTP basic authentication.
+# 2. Use Grafana API token.
+grafana = GrafanaApi.from_url(
+    url="https://daq.example.org/grafana/",
+    credential=TokenAuth(token="eyJrIjoiWHg...dGJpZCI6MX0="),
+)
+
+# 3. Use HTTP basic authentication.
 grafana = GrafanaApi.from_url(
     url="https://username:password@daq.example.org/grafana/",
 )
 grafana = GrafanaApi.from_url(
     url="https://daq.example.org/grafana/",
     credential=("username", "password")
+)
+
+# 4. Use HTTP Header authentication.
+grafana = GrafanaApi.from_url(
+    url="https://daq.example.org/grafana/",
+    credential=HeaderAuth(name="X-WEBAUTH-USER", value="foobar"),
 )
 
 # Optionally turn off TLS certificate verification.
@@ -116,6 +131,10 @@ grafana = GrafanaApi.from_url(
 # Use `GRAFANA_URL` and `GRAFANA_TOKEN` environment variables.
 grafana = GrafanaApi.from_env()
 ```
+
+Please note that, on top of the specific examples above, the object obtained by
+`credential` can be an arbitrary `requests.auth.AuthBase` instance.
+
 
 ## Proxy
 
@@ -265,6 +284,6 @@ poe test
 [examples folder]: https://github.com/panodata/grafana-client/tree/main/examples
 [future maintenance of `grafana_api`]: https://github.com/m0nhawk/grafana_api/issues/88
 [grafana_api]: https://github.com/m0nhawk/grafana_api
-[Grafana Admin API documentation]: https://grafana.com/docs/grafana/latest/http_api/admin/
+[Grafana Admin API]: https://grafana.com/docs/grafana/latest/http_api/admin/
 [Grafana HTTP API reference]: https://grafana.com/docs/grafana/latest/http_api/
 [LICENSE]: https://github.com/panodata/grafana-client/blob/main/LICENSE

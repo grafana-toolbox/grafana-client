@@ -5,6 +5,8 @@
 * Update the `update_folder` method of the folder API to allow changing
   the UID of the folder. Thanks, @iNoahNothing.
 * Add `update_datasource_by_uid` to the datasource API. Thanks, @mgreen-sm.
+* Add `HeaderAuth` authentication mechanism, using an arbitrary HTTP header for
+  authentication, where the user can specify both its name and value. Thanks, @l0tzi.
 
 
 ## 3.0.0 (2022-07-02)
