@@ -251,8 +251,8 @@ git clone https://github.com/panodata/grafana-client
 cd grafana-client
 python3 -m venv .venv
 source .venv/bin/activate
-pip install --editable=.[test]
-python -m unittest -vvv
+pip install --editable=.[test,develop]
+poe test
 ```
 
 ## License
