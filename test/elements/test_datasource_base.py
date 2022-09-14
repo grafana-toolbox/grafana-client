@@ -88,6 +88,16 @@ class DatasourceTestCase(unittest.TestCase):
         self.assertEqual(result["type"], "prometheus")
 
     @requests_mock.Mocker()
+    def test_update_datasource_by_uid(self, m):
+        m.put(
+            "http://localhost/api/datasources/uid/foo42",
+            json=PROMETHEUS_DATASOURCE,
+        )
+
+        result = self.grafana.datasource.update_datasource_by_uid("foo42", PROMETHEUS_DATASOURCE)
+        self.assertEqual(result["type"], "prometheus")
+
+    @requests_mock.Mocker()
     def test_delete_datasource_by_id(self, m):
         m.delete("http://localhost/api/datasources/42", json={"message": "Data source deleted"})
 

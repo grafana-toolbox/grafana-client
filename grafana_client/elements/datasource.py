@@ -124,6 +124,17 @@ class Datasource(Base):
         r = self.client.PUT(update_datasource, json=datasource)
         return r
 
+    def update_datasource_by_uid(self, datasource_uid, datasource):
+        """
+
+        :param datasource_uid:
+        :param datasource:
+        :return:
+        """
+        update_datasource = "/datasources/uid/%s" % datasource_uid
+        r = self.client.PUT(update_datasource, json=datasource)
+        return r
+
     def list_datasources(self):
         """
 
