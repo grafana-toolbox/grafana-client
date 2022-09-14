@@ -201,7 +201,7 @@ class TeamsTestCase(unittest.TestCase):
     def test_delete_team(self, m):
         m.delete("http://localhost/api/teams/3", json={"message": "Team deleted"})
         response = self.grafana.teams.delete_team(3)
-        self.assertEqual(response, True)
+        self.assertEqual(response, {"message": "Team deleted"})
 
     @requests_mock.Mocker()
     def test_get_team_members(self, m):
