@@ -18,7 +18,9 @@ Synopsis
 
     # Query the Prometheus data source on `play.grafana.org`.
     # FIXME: Does not work yet.
-    python examples/datasource-smartquery.py --uid=000000008 --store=node_boot_time --query='time() - node_boot_time_seconds{job="node", instance=~"demo.do.prometheus.io:.*"}'
+    python \
+        examples/datasource-smartquery.py --uid=000000008 --store=node_boot_time \
+        --query='time() - node_boot_time_seconds{job="node", instance=~"demo.do.prometheus.io:.*"}'
 
 """
 import json
@@ -63,7 +65,8 @@ if __name__ == "__main__":
 
     try:
         grafana_client.connect()
-    except requests.exceptions.ConnectionError as ex:
+    except requests.exceptions.ConnectionError:
+        logger.exception("Connecting to Grafana failed")
         raise SystemExit(1)
 
     run(grafana_client)

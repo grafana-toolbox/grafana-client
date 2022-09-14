@@ -1,6 +1,7 @@
 # Required for editable installs
 # https://discuss.python.org/t/specification-of-editable-installation/1564/
 from setuptools import setup
+
 setup(
     name="grafana-client",
     use_scm_version={

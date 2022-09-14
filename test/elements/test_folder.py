@@ -86,7 +86,7 @@ class FolderTestCase(unittest.TestCase):
     def test_create_folder_empty_uid(self, m):
         m.post("http://localhost/api/folders", json={"message": "Folder title cannot be empty"}, status_code=400)
         with self.assertRaises(GrafanaBadInputError):
-            folder = self.grafana.folder.create_folder(title="Departmenet ABC")
+            self.grafana.folder.create_folder(title="Departmenet ABC")
 
     @requests_mock.Mocker()
     def test_update_folder(self, m):

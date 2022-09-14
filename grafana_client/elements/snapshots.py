@@ -19,10 +19,12 @@ class Snapshots(Base):
 
         :param dashboard:  Required. The complete dashboard model.
         :param name: Optional. snapshot name
-        :param expires: Optional. When the snapshot should expire in seconds. 3600 is 1 hour, 86400 is 1 day. Default is never to expire.
+        :param expires: Optional. When the snapshot should expire in seconds. 3600 is 1 hour, 86400 is 1 day.
+                        Default is to never expire.
         :param external: Optional. Save the snapshot on an external server rather than locally. Default is false.
         :param key: Optional. Define the unique key. Required if external is true.
-        :param deleteKey: Optional. Unique key used to delete the snapshot. It is different from the key so that only the creator can delete the snapshot. Required if external is true.
+        :param deleteKey: Optional. Unique key used to delete the snapshot. It is different from the key so that only
+                          the creator can delete the snapshot. Required if external is true.
         :return:
         """
 

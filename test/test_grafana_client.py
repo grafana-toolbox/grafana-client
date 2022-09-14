@@ -141,9 +141,3 @@ class TestGrafanaClient(unittest.TestCase):
     def test_grafana_client_non_json_response(self):
         grafana = GrafanaApi.from_url("https://httpbin.org/html")
         self.assertRaises(GrafanaClientError, lambda: grafana.connect())
-
-
-if __name__ == "__main__":
-    import xmlrunner
-
-    unittest.main(testRunner=xmlrunner.XMLTestRunner(output="test-reports"))
