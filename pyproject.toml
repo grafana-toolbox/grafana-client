@@ -16,8 +16,41 @@ profile = "black"
 multi_line_output = 3
 
 [tool.coverage.report]
+source = ["grafana_client"]
 show_missing = true
 fail_under = 0
 omit = [
     "test/*",
 ]
+
+[tool.ruff]
+line-length = 120
+# ignore = ["F821"]
+exclude = [
+  "grafana_client/elements/__init__.py",
+]
+
+
+# ===================
+# Tasks configuration
+# ===================
+
+[tool.poe.tasks]
+format = [
+  {cmd="black ."},
+  {cmd="isort ."},
+]
+check-style = [
+  {cmd="ruff ."},
+  {cmd="black --check ."},
+  {cmd="isort --check ."},
+]
+test = [
+  {cmd="python -m unittest -vvv"},
+]
+test-coverage = [
+  {cmd="coverage run -m unittest discover -vvv"},
+  {cmd="coverage xml"},
+  {cmd="coverage report"},
+]
+build = {cmd="python -m build"}
