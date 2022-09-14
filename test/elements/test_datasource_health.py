@@ -845,7 +845,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
                 type="postgres",
                 success=False,
                 status="ERROR",
-                message="FATAL: Unable to decode result from dictionary-type response. TypeError: Invalid response format",
+                message="FATAL: Unable to decode result from dictionary-type response. "
+                "TypeError: Invalid response format",
                 duration=None,
                 response=None,
             ),
@@ -1183,7 +1184,8 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
                 type="prometheus",
                 success=False,
                 status="ERROR",
-                message="Unknown: Client Error 404: Something failed. Response: {'status': 'ERROR', 'message': 'Something failed'}",
+                message="Unknown: Client Error 404: Something failed. "
+                "Response: {'status': 'ERROR', 'message': 'Something failed'}",
                 duration=None,
                 response=None,
             ),

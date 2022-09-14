@@ -131,7 +131,8 @@ if __name__ == "__main__":
 
     try:
         grafana_client.connect()
-    except requests.exceptions.ConnectionError as ex:
+    except requests.exceptions.ConnectionError:
+        logger.exception("Connecting to Grafana failed")
         raise SystemExit(1)
 
     grafana_version = LooseVersion(grafana_client.version)

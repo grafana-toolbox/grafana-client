@@ -414,7 +414,7 @@ class Datasource(Base):
                 elif "data" in response:
                     success, message = self.parse_health_response_data(response=response)
                 else:
-                    message = f"Response lacks expected keys 'results' or 'data'"
+                    message = "Response lacks expected keys 'results' or 'data'"
 
         except (GrafanaBadInputError, GrafanaServerError, GrafanaClientError) as ex:
             success = False

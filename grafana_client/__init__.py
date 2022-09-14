@@ -6,7 +6,7 @@ except ModuleNotFoundError:  # pragma:nocover
     from importlib_metadata import PackageNotFoundError, version
 
 warnings.filterwarnings("ignore", category=Warning, message="distutils Version classes are deprecated")
-from .api import GrafanaApi
+from .api import GrafanaApi  # noqa:F401
 
 __appname__ = "grafana-client"
 

@@ -39,7 +39,7 @@ class AdminTestCase(unittest.TestCase):
                     "client_id": "some_client_id",
                     "client_secret": "************",
                     "enabled": "false",
-                    "scopes": "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
+                    "scopes": "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",  # noqa:E501
                     "token_url": "https://accounts.google.com/o/oauth2/token",
                 },
                 "auth.ldap": {"config_file": "/etc/grafana/ldap.toml", "enabled": "false"},
