@@ -97,7 +97,7 @@ class Teams(Base):
         """
         delete_team_path = "/teams/%s" % team_id
         r = self.client.DELETE(delete_team_path)
-        return True
+        return r
 
     def get_team_members(self, team_id):
         """
