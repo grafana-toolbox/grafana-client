@@ -2,6 +2,9 @@
 
 ## unreleased
 
+
+## 3.1.0 (2022-09-15)
+
 * Update the `update_folder` method of the folder API to allow changing
   the UID of the folder. Thanks, @iNoahNothing.
 * Add `update_datasource_by_uid` to the datasource API. Thanks, @mgreen-sm.
