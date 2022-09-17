@@ -1,6 +1,63 @@
 # CHANGELOG
 
-## in progress
+## unreleased
+
+
+## 3.1.0 (2022-09-15)
+
+* Update the `update_folder` method of the folder API to allow changing
+  the UID of the folder. Thanks, @iNoahNothing.
+* Add `update_datasource_by_uid` to the datasource API. Thanks, @mgreen-sm.
+* Add `HeaderAuth` authentication mechanism, using an arbitrary HTTP header for
+  authentication, where the user can specify both its name and value. Thanks, @l0tzi.
+
+
+## 3.0.0 (2022-07-02)
+
+* Add example program `examples/team.py`. Thanks, @ricmano!
+* Improve data source API by adding the `_by_uid` variants.
+* Improve data source API by adding universal `datasource.get()` method.
+* Improve data source API by adding a data source health-check probe.
+* Support data source health check endpoint introduced with Grafana 9.
+  Thanks, @jangaraj!
+* Add gracefulness when using the new data source health check endpoint.
+  Apparently, this is not implemented thoroughly for all data source types yet.
+* Add new factory methods `GrafanaApi.{from_url(),from_env()}`.
+* Add `GrafanaApi.connect()` and `GrafanaApi.version()`.
+* Data source health check subsystem refactoring, many software tests.
+* Improve example programs `datasource-health-*`
+* Add example program `datasource-query.py`
+* Add example program `grafanalib-upload-dashboard.py`
+* Fix endless-loop bug in the `search_teams` function. Thanks, @changdingfang!
+* Set the `User-Agent` header to `grafana-client/{version}`
+* Don't permit scalar value as JSON request body to the Grafana HTTP API,
+  it is always wrong. Thanks, @ricmano!
+* Example `datasource-health-check`: Without `--uid` option, scan the whole
+  Grafana instance
+* Data source health check: Be graceful on network read timeouts
+* Data source health check: Improve acceptance criteria when probing Prometheus
+* Data source health check: Clean up core implementation, add more tests
+  Code coverage is now at 100%.
+* Add support for "Dashboard Versions" API. Thanks, @DrMxxxxx!
+* Add `datasource.query_range()` and `datasource.series()` functions
+  to retrieve metric values. Thanks, @RalfHerzog!
+
+
+## 2.3.0 (2022-05-26)
+
+* Make `GrafanaApi(auth=)` an optional argument. This makes it easier to
+  connect to Grafana instances that do not require authentication.
+* Add basic example program, inquiring `play.grafana.org`.
+
+
+## 2.2.1 (2022-05-20)
+
+* Fix annotations query string parameter `dashboardId`. Thanks, @richbon75!
+
+
+## 2.2.0 (2022-03-16)
+
+* Retrieve dashboard by name/title. Thanks, @luixx!
 
 
 ## 2.1.0 (2022-02-07)

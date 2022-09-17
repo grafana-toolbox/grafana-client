@@ -3,12 +3,7 @@ import unittest
 import requests_mock
 
 from grafana_client import GrafanaApi
-from grafana_client.client import (
-    GrafanaBadInputError,
-    GrafanaClientError,
-    GrafanaServerError,
-    GrafanaUnauthorizedError,
-)
+from grafana_client.client import GrafanaBadInputError
 
 
 class AnnotationsTestCase(unittest.TestCase):
@@ -51,4 +46,4 @@ class AnnotationsTestCase(unittest.TestCase):
         m.get("http://localhost/api/search", json={"message": "Not found"}, status_code=400)
 
         with self.assertRaises(GrafanaBadInputError):
-            result = self.grafana.search.search_dashboards()
+            self.grafana.search.search_dashboards()

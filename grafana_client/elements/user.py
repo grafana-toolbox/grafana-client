@@ -35,7 +35,8 @@ class Users(Base):
 
         if iterate:
             while True:
-                users_on_page = self.client.GET(show_users_path % page)
+                url = show_users_path % page
+                users_on_page = self.client.GET(url)
                 if not users_on_page:
                     break
                 list_of_users += users_on_page

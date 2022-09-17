@@ -114,3 +114,6 @@ venv.bak/
 
 # visual code launch...
 .vscode/*
+
+# ruff
+.ruff_cache

@@ -54,6 +54,16 @@ class TokenAuth(requests.auth.AuthBase):
         return request
 
 
+class HeaderAuth(requests.auth.AuthBase):
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
+    def __call__(self, request):
+        request.headers.update({self.name: self.value})
+        return request
+
+
 class GrafanaClient:
     def __init__(
         self,
@@ -64,6 +74,7 @@ class GrafanaClient:
         protocol="http",
         verify=True,
         timeout=5.0,
+        user_agent: str = None,
     ):
         self.auth = auth
         self.verify = verify
@@ -90,19 +101,35 @@ class GrafanaClient:
 
         self.url = construct_api_url()
 
+        from grafana_client import __appname__, __version__
+
+        self.user_agent = user_agent or f"{__appname__}/{__version__}"
+
         self.s = requests.Session()
-        if not isinstance(self.auth, tuple):
-            self.auth = TokenAuth(self.auth)
-        else:
-            self.auth = requests.auth.HTTPBasicAuth(*self.auth)
+        self.s.headers["User-Agent"] = self.user_agent
+        if self.auth is not None:
+            if isinstance(self.auth, requests.auth.AuthBase):
+                pass
+            elif isinstance(self.auth, tuple):
+                self.auth = requests.auth.HTTPBasicAuth(*self.auth)
+            else:
+                self.auth = TokenAuth(self.auth)
 
     def __getattr__(self, item):
-        def __request_runnner(url, json=None, headers=None):
+        def __request_runner(url, json=None, data=None, headers=None):
             __url = "%s%s" % (self.url, url)
+            # Sanity checks.
+            if json is not None and not isinstance(json, (dict, list)):
+                raise TypeError(
+                    f"JSON request payload has invalid shape. "
+                    f"Accepted are dictionaries and lists. "
+                    f"The type is: {type(json)}"
+                )
             runner = getattr(self.s, item.lower())
             r = runner(
                 __url,
                 json=json,
+                data=data,
                 headers=headers,
                 auth=self.auth,
                 verify=self.verify,
@@ -131,6 +158,10 @@ class GrafanaClient:
                         response,
                         "Client Error {0}: {1}".format(r.status_code, message),
                     )
-            return r.json()
+            # The "Tempo" data source responds with text/plain.
+            if r.headers.get("Content-Type", "").startswith("text/"):
+                return r.text
+            else:
+                return r.json()
 
-        return __request_runnner
+        return __request_runner

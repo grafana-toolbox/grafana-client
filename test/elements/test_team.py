@@ -1,3 +1,4 @@
+import json
 import unittest
 
 import requests_mock
@@ -72,6 +73,15 @@ class TeamsTestCase(unittest.TestCase):
                 "perPage": 1,
             },
         )
+        m.get(
+            "http://localhost/api/teams/search?query=team&page=3&perpage=1",
+            json={
+                "totalCount": 2,
+                "teams": [],
+                "page": 3,
+                "perPage": 1,
+            },
+        )
         teams = self.grafana.teams.search_teams("team", perpage=1)
         self.assertEqual(teams[0]["name"], "MyTestTeam")
         self.assertEqual(teams[1]["name"], "SecondTeam")
@@ -100,6 +110,19 @@ class TeamsTestCase(unittest.TestCase):
         teams = self.grafana.teams.search_teams("my team", 2)
         self.assertEqual(teams[0]["name"], "MyTestTeam")
         self.assertEqual(len(teams), 1)
+
+    @requests_mock.Mocker()
+    def test_search_teams_perpage(self, m):
+        m.get(
+            "http://localhost/api/teams/search?query=my%20team&page=1&perpage=5",
+            json={"page": 1, "totalCount": 7, "teams": [{"name": "FirstTeam"}, {"name": "SecondTeam"}], "perPage": 5},
+        )
+        m.get(
+            "http://localhost/api/teams/search?query=my%20team&page=2&perpage=5",
+            json={"page": 2, "totalCount": 7, "teams": [], "perPage": 5},
+        )
+        teams = self.grafana.teams.search_teams("my team", perpage=5)
+        self.assertEqual(len(teams), 2)
 
     @requests_mock.Mocker()
     def test_get_team_by_name(self, m):
@@ -142,11 +165,30 @@ class TeamsTestCase(unittest.TestCase):
         self.assertEqual(team["name"], "MyTestTeam")
 
     @requests_mock.Mocker()
-    def test_add_team(self, m):
+    def test_add_team_success(self, m):
         m.post("http://localhost/api/teams", json={"message": "Team created", "teamId": 2})
         team = {"name": "MySecondTestTeam", "email": "email@example.org"}
         new_team = self.grafana.teams.add_team(team)
         self.assertEqual(new_team["teamId"], 2)
+
+    @requests_mock.Mocker()
+    def test_add_team_invalid_payload(self, m):
+        """
+        Accidentally send serialized JSON instead of a data structure.
+        """
+        m.post(
+            "http://localhost/api/teams",
+            json={"message": "bad request data", "traceID": "00000000000000000000000000000000"},
+            status_code=400,
+        )
+        team_as_json = json.dumps({"name": "MySecondTestTeam", "email": "email@example.org"})
+
+        with self.assertRaises(TypeError) as ex:
+            self.grafana.teams.add_team(team_as_json)
+        self.assertEqual(
+            "JSON request payload has invalid shape. Accepted are dictionaries and lists. The type is: <class 'str'>",
+            str(ex.exception),
+        )
 
     @requests_mock.Mocker()
     def test_update_team(self, m):
@@ -159,7 +201,7 @@ class TeamsTestCase(unittest.TestCase):
     def test_delete_team(self, m):
         m.delete("http://localhost/api/teams/3", json={"message": "Team deleted"})
         response = self.grafana.teams.delete_team(3)
-        self.assertEqual(response, True)
+        self.assertEqual(response, {"message": "Team deleted"})
 
     @requests_mock.Mocker()
     def test_get_team_members(self, m):

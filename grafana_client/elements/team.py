@@ -36,7 +36,7 @@ class Teams(Base):
             while True:
                 teams_on_page = self.client.GET(search_teams_path % page)
                 list_of_teams += teams_on_page["teams"]
-                if len(list_of_teams) == teams_on_page["totalCount"]:
+                if len(teams_on_page["teams"]) < teams_on_page["perPage"]:
                     break
                 page += 1
         else:
@@ -97,7 +97,7 @@ class Teams(Base):
         """
         delete_team_path = "/teams/%s" % team_id
         r = self.client.DELETE(delete_team_path)
-        return True
+        return r
 
     def get_team_members(self, team_id):
         """

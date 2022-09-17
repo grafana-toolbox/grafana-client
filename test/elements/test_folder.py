@@ -86,7 +86,7 @@ class FolderTestCase(unittest.TestCase):
     def test_create_folder_empty_uid(self, m):
         m.post("http://localhost/api/folders", json={"message": "Folder title cannot be empty"}, status_code=400)
         with self.assertRaises(GrafanaBadInputError):
-            folder = self.grafana.folder.create_folder(title="Departmenet ABC")
+            self.grafana.folder.create_folder(title="Departmenet ABC")
 
     @requests_mock.Mocker()
     def test_update_folder(self, m):
@@ -110,6 +110,33 @@ class FolderTestCase(unittest.TestCase):
         )
         folder = self.grafana.folder.update_folder(title="Departmenet DEF", uid="nErXDvCkzz", version=1, overwrite=True)
         self.assertEqual(folder["title"], "Departmenet DEF")
+        self.assertEqual(folder["uid"], "nErXDvCkzz")
+
+    @requests_mock.Mocker()
+    def test_update_folder_uid(self, m):
+        m.put(
+            "http://localhost/api/folders/nErXDvCkzz",
+            json={
+                "id": 1,
+                "uid": "oFsYEwDlaa",
+                "title": "Departmenet DEF",
+                "url": "/dashboards/f/oFsYEwDlaa/department-def",
+                "hasAcl": "false",
+                "canSave": "false",
+                "canEdit": "false",
+                "canAdmin": "false",
+                "createdBy": "admin",
+                "created": "2018-01-31T17:43:12+01:00",
+                "updatedBy": "admin",
+                "updated": "2018-01-31T17:43:12+01:00",
+                "version": 1,
+            },
+        )
+        folder = self.grafana.folder.update_folder(
+            title="Departmenet DEF", uid="nErXDvCkzz", new_uid="oFsYEwDlaa", version=1, overwrite=True
+        )
+        self.assertEqual(folder["title"], "Departmenet DEF")
+        self.assertEqual(folder["uid"], "oFsYEwDlaa")
 
     @requests_mock.Mocker()
     def test_update_folder_some_param(self, m):

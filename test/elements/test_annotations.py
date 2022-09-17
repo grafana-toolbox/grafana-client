@@ -19,7 +19,7 @@ class AnnotationsTestCase(unittest.TestCase):
     def test_annotations(self, m):
         m.get(
             "http://localhost/api/annotations?from=1563183710618&to=1563185212275"
-            "&alertId=11&dashboardID=111&panelId=22&tags=tags-test&limit=1",
+            "&alertId=11&dashboardId=111&panelId=22&userId=42&type=alert&tags=tags-test&limit=1",
             json=[
                 {
                     "id": 80,
@@ -27,7 +27,8 @@ class AnnotationsTestCase(unittest.TestCase):
                     "alertName": "",
                     "dashboardId": 111,
                     "panelId": 22,
-                    "userId": 0,
+                    "userId": 42,
+                    "type": "alert",
                     "newState": "",
                     "prevState": "",
                     "created": 1563280160455,
@@ -48,6 +49,8 @@ class AnnotationsTestCase(unittest.TestCase):
             alert_id=11,
             dashboard_id=111,
             panel_id=22,
+            user_id=42,
+            ann_type="alert",
             tags=["tags-test"],
             limit=1,
         )
@@ -55,6 +58,8 @@ class AnnotationsTestCase(unittest.TestCase):
         self.assertEqual(annotations[0]["alertId"], 11)
         self.assertEqual(annotations[0]["dashboardId"], 111)
         self.assertEqual(annotations[0]["panelId"], 22)
+        self.assertEqual(annotations[0]["userId"], 42)
+        self.assertEqual(annotations[0]["type"], "alert")
         self.assertEqual(annotations[0]["tags"][0], "tags-test")
 
         self.assertEqual(len(annotations), 1)
@@ -102,25 +107,25 @@ class AnnotationsTestCase(unittest.TestCase):
             status_code=500,
         )
         with self.assertRaises(GrafanaServerError):
-            response = self.grafana.annotations.delete_annotations_by_id(annotations_id=None)
+            self.grafana.annotations.delete_annotations_by_id(annotations_id=None)
 
     @requests_mock.Mocker()
     def test_delete_annotations_by_id_forbidden(self, m):
         m.delete("http://localhost/api/annotations/None", json={"message": "Forbidden"}, status_code=403)
         with self.assertRaises(GrafanaClientError):
-            response = self.grafana.annotations.delete_annotations_by_id(annotations_id=None)
+            self.grafana.annotations.delete_annotations_by_id(annotations_id=None)
 
     @requests_mock.Mocker()
     def test_delete_annotations_by_id_unauthorized(self, m):
         m.delete("http://localhost/api/annotations/None", json={"message": "Unauthorized"}, status_code=401)
         with self.assertRaises(GrafanaUnauthorizedError):
-            response = self.grafana.annotations.delete_annotations_by_id(annotations_id=None)
+            self.grafana.annotations.delete_annotations_by_id(annotations_id=None)
 
     @requests_mock.Mocker()
     def test_delete_annotations_by_id_bad_input(self, m):
         m.delete("http://localhost/api/annotations/None", json={"message": "Bad Input"}, status_code=400)
         with self.assertRaises(GrafanaBadInputError):
-            response = self.grafana.annotations.delete_annotations_by_id(annotations_id=None)
+            self.grafana.annotations.delete_annotations_by_id(annotations_id=None)
 
     @requests_mock.Mocker()
     def test_add_annotation(self, m):
