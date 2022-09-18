@@ -5,6 +5,7 @@ Knowledgebase module for filling the missing gaps to access the Grafana API
 more efficiently.
 """
 from typing import Dict, Optional, Union
+from datetime import datetime
 
 from grafana_client.model import DatasourceModel
 
@@ -114,7 +115,7 @@ def datasource_factory(datasource: DatasourceModel) -> DatasourceModel:
     return datasource
 
 
-def query_factory(datasource, expression: str, store: Optional[str] = None) -> Union[Dict, str]:
+def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
     """
     Create payload suitable for running a query against a Grafana data source.
 
@@ -123,7 +124,17 @@ def query_factory(datasource, expression: str, store: Optional[str] = None) -> U
 
     TODO: Complete the list for all popular databases.
     """
+    request = {
+        "method": "POST",
+        "data": None,
+        "params": None,
+    }
+    attrs = None
+
     datasource_type = datasource["type"]
+    expression = model.get("query")
+    if expression is None:
+        raise KeyError("query not set")
     if datasource_type == "__NEVER__":  # pragma:nocover
         raise NotImplementedError("__NEVER__")
     elif datasource_type == "elasticsearch":
@@ -132,17 +143,32 @@ def query_factory(datasource, expression: str, store: Optional[str] = None) -> U
         query = expression
     elif datasource_type == "grafana-simple-json-datasource":
         query = expression
+    #************************************************************************
     elif datasource_type == "graphite":
-        query = {"target": "constantLine(100)", "from": "-1h", "until": "now", "format": "json", "maxDataPoints": 300}
+        query = {
+            "target": expression,
+            "from": "-1h",
+            "until": "now",
+            "format": "json",
+            "maxDataPoints": 300
+        }
+        if 'time_from' in model:
+            query['from']=model['time_from']
+        if 'time_to' in model:
+            query['until']=model['time_to']
+
+        request["data"] = query
+
+    #************************************************************************
     elif datasource_type == "influxdb":
         dialect = datasource["jsonData"].get("version", "InfluxQL")
         query = {
             "refId": "test",
-            "datasource": {
-                "type": datasource["type"],
-                "uid": datasource.get("uid"),
-            },
-            "datasourceId": datasource.get("id"),
+            # "datasource": {
+            #     "type": datasource["type"],
+            #     "uid": datasource.get("uid"),
+            # },
+            # "datasourceId": datasource.get("id"),
         }
         if dialect == "InfluxQL":
             query.update(
@@ -150,6 +176,12 @@ def query_factory(datasource, expression: str, store: Optional[str] = None) -> U
                     "q": expression,
                 }
             )
+            # this drive the how timestamp are rendered in result (string by default, or in milliseconds ms)
+            request["params"] =  { "epoch": "ms" }
+            if 'database' in datasource:
+                request["params"].update({ "db": datasource['database'] })
+            request["data"] = query
+
         elif dialect == "Flux":
             query.update(
                 {
@@ -158,47 +190,59 @@ def query_factory(datasource, expression: str, store: Optional[str] = None) -> U
                     "query": expression,
                 }
             )
+            request["data"] = query
         else:
             raise KeyError(f"InfluxDB dialect '{dialect}' unknown")
+
     elif datasource_type == "jaeger":
         query = {}
+
+    #************************************************************************
     elif datasource_type == "loki":
-        query = {}
-    elif datasource_type == "mssql":
         query = {
-            "refId": "test",
             "datasource": {
                 "type": datasource["type"],
                 "uid": datasource.get("uid"),
             },
             "datasourceId": datasource.get("id"),
-            "format": "table",
-            "rawSql": expression,
+            # "exemplar": False,
+            "expr": expression,
         }
-    elif datasource_type == "mysql":
-        query = {
-            "refId": "test",
-            "datasource": {
-                "type": datasource["type"],
-                "uid": datasource.get("uid"),
-            },
-            "datasourceId": datasource.get("id"),
-            "format": "table",
-            "rawSql": expression,
-        }
+
+        attrs = [
+            { "name": "intervalMs", "default": 60000, },
+            { "name": "legendFormat", "default": "", },
+            { "name": "maxLines", "default": 1000, },
+            { "name": "maxDataPoints", "default": 1442, },
+            { "name": "queryType", "default": "range", },
+            { "name": "refId", "default": "test", },
+            { "name": "resolution", "default": 1, },
+        ]
+    
     elif datasource_type == "opentsdb":
         query = {}
-    elif datasource_type == "postgres":
+
+    #************************************************************************
+    elif datasource_type in ( "postgres", "mssql", "mysql" ):
         query = {
-            "refId": "test",
             "datasource": {
                 "type": datasource["type"],
                 "uid": datasource.get("uid"),
             },
             "datasourceId": datasource.get("id"),
-            "format": "table",
             "rawSql": expression,
         }
+        attrs = [
+            { "name": "format", "default": "time_series",
+                "choices": [ "time_series", "table"],
+                # "version": "8.0.0"
+            },
+            { "name": "intervalMs", "default": 15000, },
+            { "name": "maxDataPoints", "default": None, },
+            { "name": "refId", "default": None, },
+        ]
+
+    #************************************************************************
     elif datasource_type == "prometheus":
         query = {
             "datasource": {
@@ -208,20 +252,26 @@ def query_factory(datasource, expression: str, store: Optional[str] = None) -> U
             "datasourceId": datasource.get("id"),
             # "exemplar": False,
             "expr": expression,
-            # "format": "time_series",
-            # "instant": True,
-            # "interval": "",
-            # "intervalFactor": 10,
-            # "intervalMs": 30000,
-            # "legendFormat": "",
-            # "maxDataPoints": 100,
-            # "metric": store,
-            # "queryType": "timeSeriesQuery",
-            "refId": "test",
-            "requestId": "0test",
-            # "step": 300,
-            # "utcOffsetSec": 7200,
         }
+
+        attrs = [
+            { "name": "format", "default": "time_series",
+                "choices": [ "time_series", "table", "heatmap"],
+                # "version": "8.0.0"
+            },
+            { "name": "instant", "default": False, },
+            { "name": "interval", "default": "", },
+            { "name": "intervalFactor", "default": None, },
+            { "name": "intervalMs", "default": 15000, },
+            { "name": "legendFormat", "default": "", },
+            { "name": "maxDataPoints", "default": None, },
+            { "name": "queryType", "default": "timeSeriesQuery", },
+            { "name": "refId", "default": "test", },
+            { "name": "requestId", "default": "0test", },
+            { "name": "step", "default": 300, },
+            { "name": "utcOffsetSec", "default": 0, },
+        ]
+
     elif datasource_type == "simpod-json-datasource":
         query = expression
     elif datasource_type == "tempo":
@@ -232,7 +282,35 @@ def query_factory(datasource, expression: str, store: Optional[str] = None) -> U
         query = {}
     else:
         raise NotImplementedError(f"Unknown data source type: {datasource_type}")
-    return query
+
+    if attrs is not None:
+        for attr in attrs:
+            value = attr["default"]
+            if attr["name"] in model:
+                tmp_value = model[attr["name"]]
+                if "choices" in attr:
+                    if tmp_value in attr["choices"]:
+                        value = tmp_value
+                else:
+                    value = tmp_value
+            if value is not None:
+                query[attr["name"]] = value
+
+        if 'time_from' not in model or 'time_to' not in model:
+            now = datetime.now()
+            if 'time_from' not in model:
+                model['time_from'] = int( now.timestamp() ) - 5 *60
+            if 'time_to' not in model:
+                model['time_to'] = int( now.timestamp() )
+
+        payload = {
+            "queries": [query],
+            "from": str(model['time_from']*1000),
+            "to": str(model['time_to']*1000),
+        }
+        request["data"] = payload
+
+    return request
 
 
 # Define health-check status queries for all database types.
