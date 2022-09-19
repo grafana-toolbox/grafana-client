@@ -6,7 +6,6 @@ from .base import Base
 from .dashboard import Dashboard
 from .dashboard_versions import DashboardVersions
 from .datasource import Datasource
-from .health import Health
 from .folder import Folder
 from .health import Health
 from .notifications import Notifications
