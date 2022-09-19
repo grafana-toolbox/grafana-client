@@ -22,7 +22,7 @@ Synopsis
         --uid M3k6ZPrnz \
         --query "from(bucket: \"example-bucket\")\\n|> range(start: -1h)|> filter(fn: (r) => r._measurement == \"example-measurement\" and r._field == \"example-field\")"
 
-    // Query the Grafite
+    // Query the Grafite datasource on https://play.grafana.org
     python examples/datasource-smartquery.py --uid 000000001 --query "aliasByNode(apps.fakesite.web_server_02.counters.requests.count,2)"
 
     # Query the Prometheus data source on `play.grafana.org`.
