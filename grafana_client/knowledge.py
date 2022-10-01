@@ -319,12 +319,12 @@ HEALTHCHECK_EXPRESSION_MAP = {
     "elasticsearch": "url:///datasources/proxy/{datasource_id}/{database_name}/_mapping",
     "fetzerch-sunandmoon-datasource": "url:///datasources/uid/{datasource_uid}",
     "grafana-simple-json-datasource": "url:///datasources/proxy/{datasource_id}",
-    "graphite": "None",  # TODO: Allow real None's.
+    "graphite": "random-walk.count;dc=asia-1;app=collector;server=000",  # from play.grafana.org explore Grafite datasource.
     "influxdb": "SHOW RETENTION POLICIES on _internal",
     "influxdb+influxql": "SHOW RETENTION POLICIES on _internal",
     "influxdb+flux": "buckets()",
     "jaeger": "url:///datasources/proxy/{datasource_id}/api/services",
-    "loki": "url:///datasources/{datasource_id}/resources/labels?start=1656274994383000000&end=1656275594383000000",
+    "loki": "count_over_time({job=~\".+\"} [5m])",
     "mssql": "SELECT 1",
     "mysql": "SELECT 1",
     "opentsdb": "url:///datasources/proxy/{datasource_id}/api/suggest?type=metrics&q=cpu&max=100",
