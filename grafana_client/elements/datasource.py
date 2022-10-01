@@ -16,6 +16,7 @@ from .base import Base
 logger = logging.getLogger(__name__)
 
 VERSION_9 = LooseVersion("9")
+VERSION_7 = LooseVersion("7")
 VERBOSE = False
 
 
@@ -533,9 +534,14 @@ class Datasource(Base):
                     message = f"Invalid response. {reason}"
 
             elif datasource_type == "loki":
-                if "status" in response and response["status"] == "success":
-                    message = "Success"
-                    success = True
+                if self.api.version:
+                    if LooseVersion(self.api.version) == VERSION_7:
+                        if "status" in response and response["status"] == "success":
+                            message = "Success"
+                            success = True
+                    elif "results" in response and "test" in response["results"]:
+                        message = "Success"
+                        success = True
                 else:
                     message = response["message"]
 
