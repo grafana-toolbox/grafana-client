@@ -16,13 +16,13 @@ Synopsis
     python examples/datasource-smartquery.py --uid=000000002 --attr "database:site" --query="SHOW FIELD KEYS"
     python examples/datasource-smartquery.py --uid 000000002 --query "SELECT sum(\"value\") FROM \"logins.count\" WHERE time >= now() - 5m and time <= now() GROUP BY time(10s) fill(null)"
 
-    #Query the InfluxDB+flux on https://play.grafana.org
+    # Query the InfluxDB+flux on https://play.grafana.org
     # fix me : query invalid !
     python examples/datasource-smartquery.py \
         --uid M3k6ZPrnz \
         --query "from(bucket: \"example-bucket\")\\n|> range(start: -1h)|> filter(fn: (r) => r._measurement == \"example-measurement\" and r._field == \"example-field\")"
 
-    // Query the Grafite datasource on https://play.grafana.org
+    # Query the Grafite datasource on https://play.grafana.org
     python examples/datasource-smartquery.py --uid 000000001 --query "aliasByNode(apps.fakesite.web_server_02.counters.requests.count,2)"
 
     # Query the Prometheus data source on `play.grafana.org`.
