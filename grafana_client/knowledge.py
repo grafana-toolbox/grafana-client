@@ -147,7 +147,7 @@ def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
     elif datasource_type == "graphite":
         query = {
             "target": expression,
-            "from": "-1h",
+            "from": "-5m",
             "until": "now",
             "format": "json",
             "maxDataPoints": 300
