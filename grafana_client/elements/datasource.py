@@ -313,7 +313,8 @@ class Datasource(Base):
             send_request = self.client.GET
 
         elif datasource_type in ("prometheus", "loki") and LooseVersion(self.api.version) <= VERSION_7:
-            if request["data"]["format"] != "table":
+            if "queries" in request["data"] and len(request["data"]["queries"]) > 0 \
+                and "instant" in request["data"]["queries"][0] and request["data"]["queries"][0]["instant"]:
                 return self.query(
                     datasource.get("id"),
                     request["expr"],
