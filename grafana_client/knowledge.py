@@ -303,6 +303,9 @@ def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
             if 'time_to' not in model:
                 model['time_to'] = int( now.timestamp() )
 
+        if 'instant' in query and query['instant']:
+            model['time_from'] = model['time_to']
+
         payload = {
             "queries": [query],
             "from": str(model['time_from']*1000),
