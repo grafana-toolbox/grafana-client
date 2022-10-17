@@ -25,10 +25,10 @@ Synopsis
     export GRAFANA_URL=https://grafana.example.org/
     export GRAFANA_TOKEN=eyJrIjoiWHg...dGJpZCI6MX0=
 
-.. _example.upload-dashboard.py: https://github.com/weaveworks/grafanalib/blob/main/grafanalib/tests/examples/example.upload-dashboard.py  # noqa:E501
+.. _example.upload-dashboard.py: https://github.com/weaveworks/grafanalib/blob/main/grafanalib/tests/examples/example.upload-dashboard.py
 .. _grafana-client: https://github.com/panodata/grafana-client
 .. _grafanalib: https://github.com/weaveworks/grafanalib
-"""
+"""  # noqa:E501
 import json
 import logging
 from typing import Dict
