@@ -1,4 +1,5 @@
 from .admin import Admin
+from .alertingprovisioning import AlertingProvisioning
 from .annotations import Annotations
 from .base import Base
 from .dashboard import Dashboard
