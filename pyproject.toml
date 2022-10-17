@@ -27,8 +27,7 @@ omit = [
 
 [tool.ruff]
 line-length = 120
-# ignore = ["F821"]
-exclude = [
+extend-exclude = [
   "grafana_client/elements/__init__.py",
 ]
 
