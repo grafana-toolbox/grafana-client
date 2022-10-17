@@ -161,7 +161,8 @@ class GrafanaClient:
             # The "Tempo" data source responds with text/plain.
             if r.headers.get("Content-Type", "").startswith("text/"):
                 return r.text
+            elif not r.text: # Fix for alert rules
+                return r.status_code
             else:
                 return r.json()
-
         return __request_runner
