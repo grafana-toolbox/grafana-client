@@ -2,6 +2,9 @@
 
 ## unreleased
 
+* Implement foundation for accessing the Alerting Provisioning API.
+  Thanks, @bursztyn-pl.
+
 
 ## 3.1.0 (2022-09-15)
 
@@ -58,6 +61,7 @@
 ## 2.2.0 (2022-03-16)
 
 * Retrieve dashboard by name/title. Thanks, @luixx!
+* Fixed annotations tags and userid params. Thanks, @Lasica!
 
 
 ## 2.1.0 (2022-02-07)
