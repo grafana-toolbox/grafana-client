@@ -20,9 +20,11 @@ Synopsis
     # fix me : query invalid !
     python examples/datasource-smartquery.py \
         --uid M3k6ZPrnz \
-        --query "from(bucket: \"example-bucket\")\\n|> range(start: -1h)|> filter(fn: (r) => r._measurement == \"example-measurement\" and r._field == \"example-field\")"
+        --query "from(bucket: \"HyperEncabulator\")\\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\\n    |> filter(fn: (r) => r[\"_measurement\"] == \"TemperatureData\")\\n    |> filter(fn: (r) => r[\"MeasType\"] == \"setpoint\" or r[\"MeasType\"] == \"actual\")\\n    |> filter(fn: (r) => r[\"Tank\"] == \"A5\")\\n    |> filter(fn: (r) => r[\"_field\"] == \"Temperature\")\\n    |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\\n    |> yield(name: \"mean\")"
+    # fix-me
+        --query "from(bucket: \"example-bucket\")\\n  |> range(start: -1h)\\n  |> filter(fn: (r) => r._measurement == \"example-measurement\" and r._field == \"example-field\")"
 
-    # Query the Grafite datasource on https://play.grafana.org
+    # Query the Graphite datasource on https://play.grafana.org
     python examples/datasource-smartquery.py --uid 000000001 --query "aliasByNode(apps.fakesite.web_server_02.counters.requests.count,2)"
 
     # Query the Prometheus data source on `play.grafana.org`.
@@ -74,10 +76,12 @@ def run(grafana: GrafanaApi):
             (key, val) = attr.split(":")
             attributes[key] = val
 
+    # replace double backslash chars by their values \\n => \n
+    query = bytes(options.query, "utf-8").decode("unicode_escape")
     # Query the data source by UID.
     response = grafana.datasource.smartquery(
         DatasourceIdentifier(uid=options.uid),
-        options.query,
+        query,
         attrs=attributes,
     )
 
