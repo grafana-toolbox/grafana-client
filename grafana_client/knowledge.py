@@ -183,14 +183,22 @@ def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
             request["data"] = query
 
         elif dialect == "Flux":
-            query.update(
-                {
-                    # "intervalMs": 60000,
-                    "maxDataPoints": 1,
-                    "query": expression,
-                }
-            )
-            request["data"] = query
+
+            query = {
+                "datasource": {
+                    "type": datasource["type"],
+                    "uid": datasource.get("uid"),
+                },
+                "datasourceId": datasource.get("id"),
+                # "exemplar": False,
+                "query": expression,
+            }
+
+            attrs = [
+                { "name": "intervalMs", "default": 15000, },
+                { "name": "maxDataPoints", "default": None, },
+                { "name": "refId", "default": "test", },
+            ]
         else:
             raise KeyError(f"InfluxDB dialect '{dialect}' unknown")
 
@@ -283,7 +291,7 @@ def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
     else:
         raise NotImplementedError(f"Unknown data source type: {datasource_type}")
 
-    if attrs is not None:
+    if attrs is not None and query is not None and isinstance(query, dict):
         for attr in attrs:
             value = attr["default"]
             if attr["name"] in model:
