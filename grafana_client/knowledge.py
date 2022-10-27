@@ -195,8 +195,8 @@ def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
             }
 
             attrs = [
-                { "name": "intervalMs", "default": 15000, },
-                { "name": "maxDataPoints", "default": None, },
+                { "name": "intervalMs", "default": 30000, },
+                { "name": "maxDataPoints", "default": 1441, },
                 { "name": "refId", "default": "test", },
             ]
         else:
@@ -221,7 +221,7 @@ def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
             { "name": "intervalMs", "default": 60000, },
             { "name": "legendFormat", "default": "", },
             { "name": "maxLines", "default": 1000, },
-            { "name": "maxDataPoints", "default": 1442, },
+            { "name": "maxDataPoints", "default": 1441, },
             { "name": "queryType", "default": "range", },
             { "name": "refId", "default": "test", },
             { "name": "resolution", "default": 1, },
@@ -245,8 +245,8 @@ def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
                 "choices": [ "time_series", "table"],
                 # "version": "8.0.0"
             },
-            { "name": "intervalMs", "default": 15000, },
-            { "name": "maxDataPoints", "default": None, },
+            { "name": "intervalMs", "default": 30000, },
+            { "name": "maxDataPoints", "default": 1441, },
             { "name": "refId", "default": None, },
         ]
 
@@ -270,7 +270,7 @@ def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
             { "name": "instant", "default": False, },
             { "name": "interval", "default": "", },
             { "name": "intervalFactor", "default": None, },
-            { "name": "intervalMs", "default": 15000, },
+            { "name": "intervalMs", "default": 30000, },
             { "name": "legendFormat", "default": "", },
             { "name": "maxDataPoints", "default": None, },
             { "name": "queryType", "default": "timeSeriesQuery", },
