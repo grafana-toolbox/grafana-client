@@ -164,6 +164,7 @@ versions of Grafana might not support certain features or subsystems.
 | Admin | + |
 | Alerting | - |
 | Alerting Notification Channels | + |
+| Alerting Provisioning | + |
 | Annotations | + |
 | Authentication | +- |
 | Dashboard | + |
