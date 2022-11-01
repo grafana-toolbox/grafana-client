@@ -2,6 +2,9 @@
 
 ## unreleased
 
+
+## 3.2.0 (2022-11-01)
+
 * Implement foundation for accessing the Alerting Provisioning API.
   Thanks, @bursztyn-pl.
 
