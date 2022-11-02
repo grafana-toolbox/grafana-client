@@ -3,6 +3,11 @@
 ## unreleased
 
 
+## 3.2.1 (2022-11-01)
+
+* Fix handling `204 No Content` responses from Grafana HTTP API.
+
+
 ## 3.2.0 (2022-11-01)
 
 * Implement foundation for accessing the Alerting Provisioning API.
