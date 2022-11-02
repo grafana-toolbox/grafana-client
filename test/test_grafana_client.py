@@ -13,10 +13,10 @@ from grafana_client.client import GrafanaClientError, HeaderAuth, TokenAuth
 
 
 class MockResponse:
-    def __init__(self, json_data, status_code, headers=None):
-        self.json_data = json_data
+    def __init__(self, status_code, headers=None, json_data=None):
         self.status_code = status_code
         self.headers = headers or {"Content-Type": "application/json"}
+        self.json_data = json_data
 
     def json(self):
         return self.json_data
@@ -63,7 +63,8 @@ class TestGrafanaClient(unittest.TestCase):
         )
         grafana.client.s.get = Mock(name="get")
         grafana.client.s.get.return_value = MockResponse(
-            {
+            status_code=200,
+            json_data={
                 "email": "user@mygraf.com",
                 "name": "admin",
                 "login": "admin",
@@ -71,7 +72,6 @@ class TestGrafanaClient(unittest.TestCase):
                 "orgId": 1,
                 "isGrafanaAdmin": True,
             },
-            200,
         )
 
         basic_auth = requests.auth.HTTPBasicAuth("admin", "admin")
@@ -147,3 +147,12 @@ class TestGrafanaClient(unittest.TestCase):
     def test_grafana_client_non_json_response(self):
         grafana = GrafanaApi.from_url("https://httpbin.org/html")
         self.assertRaises(GrafanaClientError, lambda: grafana.connect())
+
+    def test_grafana_client_204_no_content_response(self):
+        grafana = GrafanaApi.from_url()
+        grafana.client.s.delete = Mock(name="get")
+        grafana.client.s.delete.return_value = MockResponse(
+            status_code=204,
+        )
+        response = grafana.alertingprovisioning.delete_alertrule("foobar")
+        assert response is None
