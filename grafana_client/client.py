@@ -158,6 +158,12 @@ class GrafanaClient:
                         response,
                         "Client Error {0}: {1}".format(r.status_code, message),
                     )
+
+            # `204 No Content` responses have an empty response body,
+            # so it doesn't decode well from JSON.
+            if r.status_code == 204:
+                return None
+
             # The "Tempo" data source responds with text/plain.
             if r.headers.get("Content-Type", "").startswith("text/"):
                 return r.text
