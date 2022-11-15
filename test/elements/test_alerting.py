@@ -35,7 +35,9 @@ class AlertingTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_delete_alertrule(self, m):
-        m.delete("http://localhost/api/ruler/grafana/api/v1/rules/alert-folder/alert-rule-test", json={"uid": "bUUGqLiVk"})
+        m.delete(
+            "http://localhost/api/ruler/grafana/api/v1/rules/alert-folder/alert-rule-test", json={"uid": "bUUGqLiVk"}
+        )
         response = self.grafana.alerting.delete_alertrule("alert-folder", "alert-rule-test")
         self.assertEqual(response["uid"], "bUUGqLiVk")
 
