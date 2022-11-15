@@ -162,7 +162,7 @@ versions of Grafana might not support certain features or subsystems.
 | API | Status |
 |---|---|
 | Admin | + |
-| Alerting | - |
+| Alerting | +- |
 | Alerting Notification Channels | + |
 | Alerting Provisioning | + |
 | Annotations | + |
