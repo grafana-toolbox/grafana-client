@@ -3,6 +3,7 @@ from test.elements.test_datasource_fixtures import (
     DATAFRAME_RESPONSE_HEALTH_PROMETHEUS,
     ELASTICSEARCH_DATASOURCE,
     INFLUXDB1_DATASOURCE,
+    PERMISSION_DATASOURCE,
     PROMETHEUS_DATA_RESPONSE,
     PROMETHEUS_DATASOURCE,
 )
@@ -117,6 +118,49 @@ class DatasourceTestCase(unittest.TestCase):
 
         result = self.grafana.datasource.delete_datasource_by_name("Prometheus")
         self.assertEqual(result, {"message": "Data source deleted"})
+
+    @requests_mock.Mocker()
+    def test_enable_datasource_permissions(self, m):
+        m.post(
+            "http://localhost/api/datasources/42/enable-permissions", json={"message": "Datasource permissions enabled"}
+        )
+
+        result = self.grafana.datasource.enable_datasource_permissions(42)
+        self.assertEqual(result, {"message": "Datasource permissions enabled"})
+
+    @requests_mock.Mocker()
+    def test_disable_datasource_permissions(self, m):
+        m.post(
+            "http://localhost/api/datasources/42/disable-permissions",
+            json={"message": "Datasource permissions disabled"},
+        )
+
+        result = self.grafana.datasource.disable_datasource_permissions(42)
+        self.assertEqual(result, {"message": "Datasource permissions disabled"})
+
+    @requests_mock.Mocker()
+    def test_get_datasource_permissions(self, m):
+        m.get(
+            "http://localhost/api/datasources/42/permissions",
+            json=PERMISSION_DATASOURCE,
+        )
+
+        result = self.grafana.datasource.get_datasource_permissions(42)
+        self.assertEqual(result["datasourceId"], 42)
+
+    @requests_mock.Mocker()
+    def test_add_datasource_permissions(self, m):
+        m.post("http://localhost/api/datasources/42/permissions", json={"message": "Datasource permission added"})
+
+        result = self.grafana.datasource.add_datasource_permissions(42, {"userId": 1, "permission": 1})
+        self.assertEqual(result, {"message": "Datasource permission added"})
+
+    @requests_mock.Mocker()
+    def test_delete_datasource_permissions(self, m):
+        m.delete("http://localhost/api/datasources/42/permissions/1", json={"message": "Datasource permission removed"})
+
+        result = self.grafana.datasource.delete_datasource_permissions(42, 1)
+        self.assertEqual(result, {"message": "Datasource permission removed"})
 
     @requests_mock.Mocker()
     def test_find_datasource(self, m):
