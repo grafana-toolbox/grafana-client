@@ -171,6 +171,7 @@ versions of Grafana might not support certain features or subsystems.
 | Dashboard Versions | + |
 | Dashboard Permissions | + |
 | Data Source | + |
+| Data Source Permissions | + |
 | Folder | + |
 | Folder Permissions | + |
 | Folder/Dashboard Search | +- |
