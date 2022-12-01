@@ -156,10 +156,10 @@ class DatasourceTestCase(unittest.TestCase):
         self.assertEqual(result, {"message": "Datasource permission added"})
 
     @requests_mock.Mocker()
-    def test_delete_datasource_permissions(self, m):
+    def test_remove_datasource_permissions(self, m):
         m.delete("http://localhost/api/datasources/42/permissions/1", json={"message": "Datasource permission removed"})
 
-        result = self.grafana.datasource.delete_datasource_permissions(42, 1)
+        result = self.grafana.datasource.remove_datasource_permissions(42, 1)
         self.assertEqual(result, {"message": "Datasource permission removed"})
 
     @requests_mock.Mocker()

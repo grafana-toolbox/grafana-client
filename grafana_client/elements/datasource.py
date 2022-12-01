@@ -221,7 +221,7 @@ class Datasource(Base):
         r = self.client.POST(get_datasource_path, json=permissions)
         return r
 
-    def delete_datasource_permissions(self, datasource_id, permission_id):
+    def remove_datasource_permissions(self, datasource_id, permission_id):
         """
         The Data Source Permissions is only available in Grafana Enterprise.
 
