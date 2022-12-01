@@ -176,6 +176,63 @@ class Datasource(Base):
         r = self.client.DELETE(delete_datasource)
         return r
 
+    def enable_datasource_permissions(self, datasource_id):
+        """
+        The Data Source Permissions is only available in Grafana Enterprise.
+
+        :param datasource_id:
+        :return:
+        """
+        get_datasource_path = "/datasources/%s/enable-permissions" % datasource_id
+        r = self.client.POST(get_datasource_path)
+        return r
+
+    def disable_datasource_permissions(self, datasource_id):
+        """
+        The Data Source Permissions is only available in Grafana Enterprise.
+
+        :param datasource_id:
+        :return:
+        """
+        get_datasource_path = "/datasources/%s/disable-permissions" % datasource_id
+        r = self.client.POST(get_datasource_path)
+        return r
+
+    def get_datasource_permissions(self, datasource_id):
+        """
+        The Data Source Permissions is only available in Grafana Enterprise.
+
+        :param datasource_id:
+        :return:
+        """
+        get_datasource_path = "/datasources/%s/permissions" % datasource_id
+        r = self.client.GET(get_datasource_path)
+        return r
+
+    def add_datasource_permissions(self, datasource_id, permissions):
+        """
+        The Data Source Permissions is only available in Grafana Enterprise.
+
+        :param datasource_id:
+        :param permissions:
+        :return:
+        """
+        get_datasource_path = "/datasources/%s/permissions" % datasource_id
+        r = self.client.POST(get_datasource_path, json=permissions)
+        return r
+
+    def delete_datasource_permissions(self, datasource_id, permission_id):
+        """
+        The Data Source Permissions is only available in Grafana Enterprise.
+
+        :param datasource_id:
+        :param permission_id:
+        :return:
+        """
+        get_datasource_path = "/datasources/%s/permissions/%s" % (datasource_id, permission_id)
+        r = self.client.DELETE(get_datasource_path)
+        return r
+
     def get_datasource_proxy_data(
         self, datasource_id, query_type="query", version="v1", expr=None, time=None, start=None, end=None, step=None
     ):
