@@ -152,3 +152,38 @@ class Teams(Base):
         update_team_preferences_path = "/teams/%s/preferences" % team_id
         r = self.client.PUT(update_team_preferences_path, json=preferences)
         return r
+
+    def get_team_external_group(self, team_id):
+        """
+        The Data Source Permissions is only available in Grafana Enterprise.
+
+        :param team_id:
+        :return:
+        """
+        team_group_path = "/teams/%s/groups" % team_id
+        r = self.client.GET(team_group_path)
+        return r
+
+    def add_team_external_group(self, team_id, group):
+        """
+        The Data Source Permissions is only available in Grafana Enterprise.
+
+        :param team_id:
+        :param group:
+        :return:
+        """
+        team_group_path = "/teams/%s/groups" % team_id
+        r = self.client.POST(team_group_path, json={"groupId": group})
+        return r
+
+    def remove_team_external_group(self, team_id, group_id):
+        """
+        The Data Source Permissions is only available in Grafana Enterprise.
+
+        :param team_id:
+        :param group_id:
+        :return:
+        """
+        team_group_path = "/teams/%s/groups/%s" % (team_id, group_id)
+        r = self.client.DELETE(team_group_path)
+        return r
