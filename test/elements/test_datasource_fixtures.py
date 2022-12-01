@@ -159,6 +159,24 @@ ZIPKIN_DATASOURCE = {
     "access": "proxy",
 }
 
+PERMISSION_DATASOURCE = {
+    "datasourceId": 42,
+    "enabled": True,
+    "permissions": [
+        {
+            "id": 42,
+            "datasourceId": 42,
+            "teamId": 32,
+            "teamAvatarUrl": "/avatar/c5e5ac09a2af1dec9a828d002c6bd4ea",
+            "team": "a12",
+            "permission": 1,
+            "permissionName": "Query",
+            "isManaged": True,
+            "created": "2022-11-30T15:57:58Z",
+            "updated": "2022-11-30T15:57:58Z",
+        }
+    ],
+}
 
 PROMETHEUS_DATA_RESPONSE = {
     "status": "success",
