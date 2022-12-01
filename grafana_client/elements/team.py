@@ -155,7 +155,7 @@ class Teams(Base):
 
     def get_team_external_group(self, team_id):
         """
-        The Data Source Permissions is only available in Grafana Enterprise.
+        The External Group Synchronization is only available in Grafana Enterprise.
 
         :param team_id:
         :return:
@@ -166,7 +166,7 @@ class Teams(Base):
 
     def add_team_external_group(self, team_id, group):
         """
-        The Data Source Permissions is only available in Grafana Enterprise.
+        The External Group Synchronization is only available in Grafana Enterprise.
 
         :param team_id:
         :param group:
@@ -178,7 +178,7 @@ class Teams(Base):
 
     def remove_team_external_group(self, team_id, group_id):
         """
-        The Data Source Permissions is only available in Grafana Enterprise.
+        The External Group Synchronization is only available in Grafana Enterprise.
 
         :param team_id:
         :param group_id:
