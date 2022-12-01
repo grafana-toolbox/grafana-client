@@ -263,3 +263,36 @@ class TeamsTestCase(unittest.TestCase):
         json_payload = history[0].json()
         self.assertEqual(json_payload["theme"], "light")
         self.assertEqual(updates["message"], "Preferences updated")
+
+    @requests_mock.Mocker()
+    def test_get_team_external_group(self, m):
+        m.get(
+            "http://localhost/api/teams/1/groups",
+            json=[
+                {
+                    "orgId": 1,
+                    "teamId": 1,
+                    "groupId": "group",
+                }
+            ],
+        )
+        groups = self.grafana.teams.get_team_external_group("1")
+        self.assertEqual(groups[0]["groupId"], "group")
+
+    @requests_mock.Mocker()
+    def test_add_team_external_group(self, m):
+        m.post(
+            "http://localhost/api/teams/1/groups",
+            json={"message": "Group added to Team"},
+        )
+        r = self.grafana.teams.add_team_external_group("1", "group")
+        self.assertEqual(r["message"], "Group added to Team")
+
+    @requests_mock.Mocker()
+    def test_remove_team_external_group(self, m):
+        m.delete(
+            "http://localhost/api/teams/42/groups/1",
+            json={"message": "Team group removed"},
+        )
+        r = self.grafana.teams.remove_team_external_group("42", "1")
+        self.assertEqual(r["message"], "Team group removed")

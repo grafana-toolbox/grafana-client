@@ -172,6 +172,7 @@ versions of Grafana might not support certain features or subsystems.
 | Dashboard Permissions | + |
 | Data Source | + |
 | Data Source Permissions | + |
+| External Group Sync | + |
 | Folder | + |
 | Folder Permissions | + |
 | Folder/Dashboard Search | +- |
