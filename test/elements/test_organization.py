@@ -32,26 +32,24 @@ class OrganizationTestCase(unittest.TestCase):
         self.assertEqual(preference["message"], "Preferences updated")
 
     @requests_mock.Mocker()
-    def test_organization_preferences_get(self, m):
+    def test_get_preferences(self, m):
         m.get("http://localhost/api/org/preferences", json={"theme": "", "homeDashboardId": 0, "timezone": ""})
 
-        result = self.grafana.organizations.organization_preferences_get()
+        result = self.grafana.organizations.get_preferences()
         self.assertEqual(result["homeDashboardId"], 0)
 
     @requests_mock.Mocker()
-    def test_organization_preferences_update(self, m):
+    def test_update_preferences(self, m):
         m.put("http://localhost/api/org/preferences", json={"message": "Preferences updated"})
-        preference = self.grafana.organizations.organization_preferences_update(
+        preference = self.grafana.organizations.update_preferences(
             PersonalPreferences(theme="", homeDashboardId=999, timezone="utc")
         )
         self.assertEqual(preference["message"], "Preferences updated")
 
     @requests_mock.Mocker()
-    def test_organization_preferences_patch(self, m):
+    def test_patch_preferences(self, m):
         m.patch("http://localhost/api/org/preferences", json={"message": "Preferences updated"})
-        preference = self.grafana.organizations.organization_preferences_patch(
-            PersonalPreferences(homeDashboardUID="zgjG8dKVz")
-        )
+        preference = self.grafana.organizations.patch_preferences(PersonalPreferences(homeDashboardUID="zgjG8dKVz"))
         self.assertEqual(preference["message"], "Preferences updated")
 
     @requests_mock.Mocker()

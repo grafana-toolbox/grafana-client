@@ -183,8 +183,8 @@ class Organizations(Base):
         """
         :return:
         """
-        warnings.warn("Deprecated, please use `organization_preferences_get`", DeprecationWarning)
-        return self.organization_preferences_get()
+        warnings.warn("This method is deprecated, please use `get_preferences`", DeprecationWarning)
+        return self.get_preferences()
 
     def organization_preference_update(self, theme="", home_dashboard_id=0, timezone="utc"):
         """
@@ -194,11 +194,11 @@ class Organizations(Base):
         :param timezone:
         :return:
         """
-        warnings.warn("Deprecated, please use `organization_preferences_update`", DeprecationWarning)
+        warnings.warn("This method is deprecated, please use `update_preferences`", DeprecationWarning)
         preferences = PersonalPreferences(theme=theme, homeDashboardId=home_dashboard_id, timezone=timezone)
-        return self.organization_preferences_update(preferences)
+        return self.update_preferences(preferences)
 
-    def organization_preferences_get(self):
+    def get_preferences(self):
         """
         Retrieve preferences of current organization.
 
@@ -208,7 +208,7 @@ class Organizations(Base):
         r = self.client.GET(update_preference)
         return r
 
-    def organization_preferences_update(self, preferences: PersonalPreferences):
+    def update_preferences(self, preferences: PersonalPreferences):
         """
         Update preferences of current organization as a whole.
 
@@ -216,7 +216,7 @@ class Organizations(Base):
         However, Grafana will reset all undefined attributes to its internal defaults.
 
         If you want to update specific preference attributes, without touching the others,
-        please use the `organization_preferences_patch` method.
+        please use the `patch_preferences` method.
 
         :param preferences:
         :return:
@@ -230,7 +230,7 @@ class Organizations(Base):
         )
         return r
 
-    def organization_preferences_patch(self, preferences: PersonalPreferences):
+    def patch_preferences(self, preferences: PersonalPreferences):
         """
         Update specific preferences of current organization.
 
