@@ -3,6 +3,16 @@
 ## unreleased
 
 
+## 3.4.0 (2022-12-03)
+
+* Add support for "Datasource Permissions" API. Thanks, @hamelg.
+* Add support for "External Group Sync" API. Thanks, @hamelg.
+* Add support for "User Preferences" API. Thanks, @autokilla47.
+* Improve "Organization and Teams Preferences" APIs. Thanks, @autokilla47.
+* Alerting Provisioning: Add support for `X-Disable-Provenance` header.
+  Thanks, @jyepesr1 and @alexmobo.
+
+
 ## 3.3.0 (2022-11-26)
 
 * Implement foundation for accessing the Alerting API.
