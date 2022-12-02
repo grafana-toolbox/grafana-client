@@ -70,9 +70,9 @@ class DatasourceHealthResponse:
 
 
 @dataclasses.dataclass
-class UserOrganizationPreferences:
+class PersonalPreferences:
     """
-    Request/response model for user- and organization-preferences.
+    Request/response model for user-, team- and organization-preferences.
 
     https://grafana.com/docs/grafana/latest/developers/http_api/preferences/
     """
