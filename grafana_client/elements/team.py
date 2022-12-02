@@ -1,4 +1,5 @@
 import typing as t
+import warnings
 
 from ..model import PersonalPreferences
 from .base import Base
@@ -135,7 +136,27 @@ class Teams(Base):
         r = self.client.DELETE(remove_team_member_path)
         return r
 
-    def get_team_preferences(self, team_id):
+    def get_team_preferences(self, team_id: int):
+        """
+
+        :param team_id:
+        :return:
+        """
+        warnings.warn("This method is deprecated, please use `get_preferences`", DeprecationWarning)
+        return self.get_preferences(team_id=team_id)
+
+    def update_team_preferences(self, team_id: int, preferences: t.Dict):
+        """
+
+        :param team_id:
+        :param preferences:
+        :return:
+        """
+        warnings.warn("This method is deprecated, please use `update_preferences`", DeprecationWarning)
+        preferences = PersonalPreferences(**preferences)
+        return self.update_preferences(team_id=team_id, preferences=preferences)
+
+    def get_preferences(self, team_id: int):
         """
 
         :param team_id:
@@ -145,7 +166,7 @@ class Teams(Base):
         r = self.client.GET(get_team_preferences_path)
         return r
 
-    def update_team_preferences(self, team_id, preferences: t.Union[PersonalPreferences, t.Dict]):
+    def update_preferences(self, team_id: int, preferences: PersonalPreferences):
         """
 
         :param team_id:
@@ -153,14 +174,12 @@ class Teams(Base):
         :return:
         """
         update_team_preferences_path = "/teams/%s/preferences" % team_id
-        if isinstance(preferences, dict):
-            data = preferences
-        elif isinstance(preferences, PersonalPreferences):
+        if isinstance(preferences, PersonalPreferences):
             data = preferences.asdict(filter_none=True)
         else:
             raise TypeError(
                 f"Unable to use data type '{type(preferences)}' for updating preferences. "
-                f"Use `PersonalPreferences` or `dict`."
+                f"Please use `PersonalPreferences` instead."
             )
         r = self.client.PUT(update_team_preferences_path, json=data)
         return r
