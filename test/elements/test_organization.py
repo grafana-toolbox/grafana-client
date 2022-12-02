@@ -3,7 +3,7 @@ import unittest
 import requests_mock
 
 from grafana_client import GrafanaApi
-from grafana_client.model import UserOrganizationPreferences
+from grafana_client.model import PersonalPreferences
 
 
 class OrganizationTestCase(unittest.TestCase):
@@ -42,7 +42,7 @@ class OrganizationTestCase(unittest.TestCase):
     def test_organization_preferences_update(self, m):
         m.put("http://localhost/api/org/preferences", json={"message": "Preferences updated"})
         preference = self.grafana.organizations.organization_preferences_update(
-            UserOrganizationPreferences(theme="", homeDashboardId=999, timezone="utc")
+            PersonalPreferences(theme="", homeDashboardId=999, timezone="utc")
         )
         self.assertEqual(preference["message"], "Preferences updated")
 
@@ -50,7 +50,7 @@ class OrganizationTestCase(unittest.TestCase):
     def test_organization_preferences_patch(self, m):
         m.patch("http://localhost/api/org/preferences", json={"message": "Preferences updated"})
         preference = self.grafana.organizations.organization_preferences_patch(
-            UserOrganizationPreferences(homeDashboardUID="zgjG8dKVz")
+            PersonalPreferences(homeDashboardUID="zgjG8dKVz")
         )
         self.assertEqual(preference["message"], "Preferences updated")
 

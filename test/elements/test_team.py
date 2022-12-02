@@ -4,6 +4,7 @@ import unittest
 import requests_mock
 
 from grafana_client import GrafanaApi
+from grafana_client.model import PersonalPreferences
 
 
 class TeamsTestCase(unittest.TestCase):
@@ -251,12 +252,26 @@ class TeamsTestCase(unittest.TestCase):
         self.assertEqual(prefs["homeDashboardId"], 0)
 
     @requests_mock.Mocker()
-    def test_update_team_preferences(self, m):
+    def test_update_team_preferences_dict(self, m):
         m.put(
             "http://localhost/api/teams/1/preferences",
             json={"message": "Preferences updated"},
         )
-        prefs = {"theme": "light", "homeDashboardId": 0, "timezone": ""}
+        prefs = {"theme": "light", "homeDashboardId": 0, "timezone": "utc"}
+
+        updates = self.grafana.teams.update_team_preferences("1", prefs)
+        history = m.request_history
+        json_payload = history[0].json()
+        self.assertEqual(json_payload["theme"], "light")
+        self.assertEqual(updates["message"], "Preferences updated")
+
+    @requests_mock.Mocker()
+    def test_update_team_preferences_model(self, m):
+        m.put(
+            "http://localhost/api/teams/1/preferences",
+            json={"message": "Preferences updated"},
+        )
+        prefs = PersonalPreferences(theme="light", homeDashboardId=0, timezone="utc")
 
         updates = self.grafana.teams.update_team_preferences("1", prefs)
         history = m.request_history

@@ -1,3 +1,6 @@
+import typing as t
+
+from ..model import PersonalPreferences
 from .base import Base
 
 
@@ -142,7 +145,7 @@ class Teams(Base):
         r = self.client.GET(get_team_preferences_path)
         return r
 
-    def update_team_preferences(self, team_id, preferences):
+    def update_team_preferences(self, team_id, preferences: t.Union[PersonalPreferences, t.Dict]):
         """
 
         :param team_id:
@@ -150,7 +153,16 @@ class Teams(Base):
         :return:
         """
         update_team_preferences_path = "/teams/%s/preferences" % team_id
-        r = self.client.PUT(update_team_preferences_path, json=preferences)
+        if isinstance(preferences, dict):
+            data = preferences
+        elif isinstance(preferences, PersonalPreferences):
+            data = preferences.asdict(filter_none=True)
+        else:
+            raise TypeError(
+                f"Unable to use data type '{type(preferences)}' for updating preferences. "
+                f"Use `PersonalPreferences` or `dict`."
+            )
+        r = self.client.PUT(update_team_preferences_path, json=data)
         return r
 
     def get_team_external_group(self, team_id):

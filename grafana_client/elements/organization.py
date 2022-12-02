@@ -1,6 +1,6 @@
 import warnings
 
-from ..model import UserOrganizationPreferences
+from ..model import PersonalPreferences
 from .base import Base
 
 
@@ -195,7 +195,7 @@ class Organizations(Base):
         :return:
         """
         warnings.warn("Deprecated, please use `organization_preferences_update`", DeprecationWarning)
-        preferences = UserOrganizationPreferences(theme=theme, homeDashboardId=home_dashboard_id, timezone=timezone)
+        preferences = PersonalPreferences(theme=theme, homeDashboardId=home_dashboard_id, timezone=timezone)
         return self.organization_preferences_update(preferences)
 
     def organization_preferences_get(self):
@@ -208,7 +208,7 @@ class Organizations(Base):
         r = self.client.GET(update_preference)
         return r
 
-    def organization_preferences_update(self, preferences: UserOrganizationPreferences):
+    def organization_preferences_update(self, preferences: PersonalPreferences):
         """
         Update preferences of current organization as a whole.
 
@@ -230,7 +230,7 @@ class Organizations(Base):
         )
         return r
 
-    def organization_preferences_patch(self, preferences: UserOrganizationPreferences):
+    def organization_preferences_patch(self, preferences: PersonalPreferences):
         """
         Update specific preferences of current organization.
 
