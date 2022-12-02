@@ -16,25 +16,31 @@ class AlertingProvisioning(Base):
         r = self.client.GET(get_alertrule_path)
         return r
 
-    def create_alertrule(self, alertrule):
+    def create_alertrule(self, alertrule, disable_provenance=False):
         """
         :param alertrule:
+        :param disable_provenance:
         :return:
         """
-
         create_alertrule_path = "/v1/provisioning/alert-rules"
-        r = self.client.POST(create_alertrule_path, json=alertrule)
+        headers = {}
+        if disable_provenance:
+            headers["X-Disable-Provenance"] = "true"
+        r = self.client.POST(create_alertrule_path, json=alertrule, headers=headers)
         return r
 
-    def update_alertrule(self, alertrule_uid, alertrule):
+    def update_alertrule(self, alertrule_uid, alertrule, disable_provenance=False):
         """
-        @param alertrule_uid:
-        @param alertrule:
-        @return:
+        :param alertrule_uid:
+        :param alertrule:
+        :param disable_provenance:
+        :return:
         """
-
         update_alertrule_path = "/v1/provisioning/alert-rules/%s" % alertrule_uid
-        r = self.client.PUT(update_alertrule_path, json=alertrule)
+        headers = {}
+        if disable_provenance:
+            headers["X-Disable-Provenance"] = "true"
+        r = self.client.PUT(update_alertrule_path, json=alertrule, headers=headers)
         return r
 
     def update_rule_group_interval(self, folder_uid, group_uid, alertrule_group):
