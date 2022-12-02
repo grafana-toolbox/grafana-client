@@ -1,3 +1,4 @@
+from ..model import PersonalPreferences
 from .base import Base
 
 
@@ -171,4 +172,55 @@ class User(Base):
         """
         unstar_dashboard = "/user/stars/dashboard/%s" % dashboard_id
         r = self.client.DELETE(unstar_dashboard)
+        return r
+
+    def get_preferences(self):
+        """
+        Retrieve preferences of current user.
+
+        :return:
+        """
+        update_preference = "/user/preferences"
+        r = self.client.GET(update_preference)
+        return r
+
+    def update_preferences(self, preferences: PersonalPreferences):
+        """
+        Update preferences of current user as a whole.
+
+        From the `preferences` instance, only attributes with values `not None` will be submitted.
+        However, Grafana will reset all undefined attributes to its internal defaults.
+
+        If you want to update specific preference attributes, without touching the others,
+        please use the `patch_preferences` method.
+
+        :param preferences:
+        :return:
+        """
+        update_preference = "/user/preferences"
+        data = preferences.asdict(filter_none=True)
+
+        r = self.client.PUT(
+            update_preference,
+            json=data,
+        )
+        return r
+
+    def patch_preferences(self, preferences: PersonalPreferences):
+        """
+        Update specific preferences of current user.
+
+        From the `preferences` instance, only attributes with values `not None` will be submitted
+        and updated.
+
+        :param preferences:
+        :return:
+        """
+        update_preference = "/user/preferences"
+        data = preferences.asdict(filter_none=True)
+
+        r = self.client.PATCH(
+            update_preference,
+            json=data,
+        )
         return r
