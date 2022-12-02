@@ -244,6 +244,9 @@ class TeamsTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_get_team_preferences(self, m):
+        """
+        Legacy method.
+        """
         m.get(
             "http://localhost/api/teams/1/preferences",
             json={"theme": "", "homeDashboardId": 0, "timezone": ""},
@@ -252,7 +255,10 @@ class TeamsTestCase(unittest.TestCase):
         self.assertEqual(prefs["homeDashboardId"], 0)
 
     @requests_mock.Mocker()
-    def test_update_team_preferences_dict(self, m):
+    def test_update_team_preferences(self, m):
+        """
+        Legacy method, using a dictionary.
+        """
         m.put(
             "http://localhost/api/teams/1/preferences",
             json={"message": "Preferences updated"},
@@ -266,14 +272,29 @@ class TeamsTestCase(unittest.TestCase):
         self.assertEqual(updates["message"], "Preferences updated")
 
     @requests_mock.Mocker()
-    def test_update_team_preferences_model(self, m):
+    def test_get_preferences(self, m):
+        """
+        Modern method.
+        """
+        m.get(
+            "http://localhost/api/teams/1/preferences",
+            json={"theme": "", "homeDashboardId": 0, "timezone": ""},
+        )
+        prefs = self.grafana.teams.get_preferences("1")
+        self.assertEqual(prefs["homeDashboardId"], 0)
+
+    @requests_mock.Mocker()
+    def test_update_preferences(self, m):
+        """
+        Modern method, using a `PersonalPreferences` instance.
+        """
         m.put(
             "http://localhost/api/teams/1/preferences",
             json={"message": "Preferences updated"},
         )
         prefs = PersonalPreferences(theme="light", homeDashboardId=0, timezone="utc")
 
-        updates = self.grafana.teams.update_team_preferences("1", prefs)
+        updates = self.grafana.teams.update_preferences("1", prefs)
         history = m.request_history
         json_payload = history[0].json()
         self.assertEqual(json_payload["theme"], "light")
