@@ -66,7 +66,7 @@ class GrafanaApi:
         self.folder = Folder(self.client)
         self.health = Health(self.client)
         self.organization = Organization(self.client)
-        self.organizations = Organizations(self.client)
+        self.organizations = Organizations(self.client, self)
         self.search = Search(self.client)
         self.user = User(self.client)
         self.users = Users(self.client)

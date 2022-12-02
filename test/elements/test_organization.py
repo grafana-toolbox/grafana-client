@@ -35,13 +35,13 @@ class OrganizationTestCase(unittest.TestCase):
     def test_get_preferences(self, m):
         m.get("http://localhost/api/org/preferences", json={"theme": "", "homeDashboardId": 0, "timezone": ""})
 
-        result = self.grafana.organizations.get_preferences()
+        result = self.grafana.organization.get_preferences()
         self.assertEqual(result["homeDashboardId"], 0)
 
     @requests_mock.Mocker()
     def test_update_preferences(self, m):
         m.put("http://localhost/api/org/preferences", json={"message": "Preferences updated"})
-        preference = self.grafana.organizations.update_preferences(
+        preference = self.grafana.organization.update_preferences(
             PersonalPreferences(theme="", homeDashboardId=999, timezone="utc")
         )
         self.assertEqual(preference["message"], "Preferences updated")
@@ -49,7 +49,7 @@ class OrganizationTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_patch_preferences(self, m):
         m.patch("http://localhost/api/org/preferences", json={"message": "Preferences updated"})
-        preference = self.grafana.organizations.patch_preferences(PersonalPreferences(homeDashboardUID="zgjG8dKVz"))
+        preference = self.grafana.organization.patch_preferences(PersonalPreferences(homeDashboardUID="zgjG8dKVz"))
         self.assertEqual(preference["message"], "Preferences updated")
 
     @requests_mock.Mocker()
