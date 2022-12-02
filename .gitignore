@@ -115,5 +115,8 @@ venv.bak/
 # visual code launch...
 .vscode/*
 
+# pytest
+.pytest_cache
+
 # ruff
 .ruff_cache
