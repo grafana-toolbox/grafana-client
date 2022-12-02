@@ -1,0 +1,10 @@
+coverage:
+  status:
+
+    project:
+      default:
+        target: 85%
+
+    patch:
+      default:
+        informational: true
