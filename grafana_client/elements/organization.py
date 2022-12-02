@@ -1,3 +1,6 @@
+import warnings
+
+from ..model import UserOrganizationPreferences
 from .base import Base
 
 
@@ -180,9 +183,8 @@ class Organizations(Base):
         """
         :return:
         """
-        update_preference = "/org/preferences"
-        r = self.client.GET(update_preference)
-        return r
+        warnings.warn("Deprecated, please use `organization_preferences_get`", DeprecationWarning)
+        return self.organization_preferences_get()
 
     def organization_preference_update(self, theme="", home_dashboard_id=0, timezone="utc"):
         """
@@ -192,13 +194,57 @@ class Organizations(Base):
         :param timezone:
         :return:
         """
+        warnings.warn("Deprecated, please use `organization_preferences_update`", DeprecationWarning)
+        preferences = UserOrganizationPreferences(theme=theme, homeDashboardId=home_dashboard_id, timezone=timezone)
+        return self.organization_preferences_update(preferences)
+
+    def organization_preferences_get(self):
+        """
+        Retrieve preferences of current organization.
+
+        :return:
+        """
         update_preference = "/org/preferences"
+        r = self.client.GET(update_preference)
+        return r
+
+    def organization_preferences_update(self, preferences: UserOrganizationPreferences):
+        """
+        Update preferences of current organization as a whole.
+
+        From the `preferences` instance, only attributes with values `not None` will be submitted.
+        However, Grafana will reset all undefined attributes to its internal defaults.
+
+        If you want to update specific preference attributes, without touching the others,
+        please use the `organization_preferences_patch` method.
+
+        :param preferences:
+        :return:
+        """
+        update_preference = "/org/preferences"
+        data = preferences.asdict(filter_none=True)
+
         r = self.client.PUT(
             update_preference,
-            json={
-                "theme": theme,
-                "homeDashboardId": home_dashboard_id,
-                "timezone": timezone,
-            },
+            json=data,
+        )
+        return r
+
+    def organization_preferences_patch(self, preferences: UserOrganizationPreferences):
+        """
+        Update specific preferences of current organization.
+
+        From the `preferences` instance, only attributes with values `not None` will be submitted
+        and updated.
+
+        :param preferences:
+        :return:
+        """
+        update_preference = "/org/preferences"
+        data = preferences.asdict(filter_none=True)
+
+        r = self.client.PATCH(
+            update_preference,
+            json=data,
         )
         return r
