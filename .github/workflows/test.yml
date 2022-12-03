@@ -1,18 +1,28 @@
 name: Test
 
 on:
+
   pull_request:
     branches: [ main ]
     paths:
       - '.github/workflows/test.yml'
       - 'setup.cfg'
       - '**.py'
+
   push:
     branches: [ main ]
     paths:
       - '.github/workflows/test.yml'
       - 'setup.cfg'
       - '**.py'
+
+  # Allow job to be triggered manually.
+  workflow_dispatch:
+
+# Cancel in-progress jobs when pushing to the same branch.
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   test:
