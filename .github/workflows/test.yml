@@ -5,11 +5,13 @@ on:
     branches: [ main ]
     paths:
       - '.github/workflows/test.yml'
+      - 'setup.cfg'
       - '**.py'
   push:
     branches: [ main ]
     paths:
       - '.github/workflows/test.yml'
+      - 'setup.cfg'
       - '**.py'
 
 jobs:
