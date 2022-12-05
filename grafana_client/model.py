@@ -19,6 +19,9 @@ class DatasourceModel:
     """
     Represent the minimum required fields to create a JSON payload suitable for
     submitting to the Grafana HTTP API.
+
+    TODO: Field `database` will be deprecated.
+          https://github.com/grafana/grafana/issues/59115
     """
 
     name: str
