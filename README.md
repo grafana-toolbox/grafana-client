@@ -180,6 +180,7 @@ versions of Grafana might not support certain features or subsystems.
 | Organisation | + |
 | Other | + |
 | Preferences | + |
+| Rbac | +- |
 | Snapshot | + |
 | Teams | + |
 | User | + |

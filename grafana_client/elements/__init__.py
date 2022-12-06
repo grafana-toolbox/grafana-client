@@ -10,6 +10,7 @@ from .folder import Folder
 from .health import Health
 from .notifications import Notifications
 from .organization import Organization, Organizations
+from .rbac import Rbac
 from .search import Search
 from .snapshots import Snapshots
 from .team import Teams

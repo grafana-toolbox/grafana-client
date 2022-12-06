@@ -23,6 +23,7 @@ from .elements import (
     Notifications,
     Organization,
     Organizations,
+    Rbac,
     Search,
     Snapshots,
     Teams,
@@ -70,6 +71,7 @@ class GrafanaApi:
         self.search = Search(self.client)
         self.user = User(self.client)
         self.users = Users(self.client)
+        self.rbac = Rbac(self.client)
         self.teams = Teams(self.client)
         self.annotations = Annotations(self.client)
         self.snapshots = Snapshots(self.client)
