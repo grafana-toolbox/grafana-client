@@ -27,10 +27,10 @@ jobs:
     - name: version
       id: version
       run: |
-        echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+        echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
     - name: install
       run: |
-        go get github.com/github-release/github-release
+        go install github.com/github-release/github-release@100e8554
     - name: release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
