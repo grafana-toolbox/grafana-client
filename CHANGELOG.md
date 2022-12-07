@@ -3,6 +3,11 @@
 ## unreleased
 
 
+## 3.5.0 (2022-12-07)
+
+* Add support for a subset of the "RBAC" API. Thanks, @hamelg.
+
+
 ## 3.4.0 (2022-12-03)
 
 * Add support for "Datasource Permissions" API. Thanks, @hamelg.
