@@ -326,7 +326,6 @@ class DatasourceTestCase(unittest.TestCase):
 
     @patch("grafana_client.client.GrafanaClient.__getattr__")
     def test_query_client_error_failure(self, mock_get):
-
         mock_get.return_value = Mock()
         mock_get.return_value.side_effect = GrafanaClientError(status_code=400, response={}, message="Something failed")
 
@@ -335,7 +334,6 @@ class DatasourceTestCase(unittest.TestCase):
 
     @patch("grafana_client.client.GrafanaClient.__getattr__")
     def test_query_server_error_failure(self, mock_get):
-
         mock_get.return_value = Mock()
         mock_get.return_value.side_effect = GrafanaServerError(
             status_code=500, response={}, message="Something serious failed"

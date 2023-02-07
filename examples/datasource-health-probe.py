@@ -41,7 +41,6 @@ def ensure_datasource(grafana: GrafanaApi, datasource: DatasourceModel):
         logger.info(f"Creating data source '{datasource_name}'")
         datasource = grafana.datasource.create_datasource(datasource)["datasource"]
     except GrafanaClientError as ex:
-
         # When data source already exists, update data source.
         if ex.status_code == 409:
             logger.info(f"Data source already exists: {ex.response}. Updating.")
@@ -83,7 +82,6 @@ def prometheus_demo(grafana: GrafanaApi):
 
 
 def run(grafana: GrafanaApi, grafana_version: LooseVersion = None):
-
     # When called without options, invoke the Prometheus demo.
     if len(sys.argv) == 1:
         if grafana_version < VERSION_8:
@@ -123,7 +121,6 @@ def run(grafana: GrafanaApi, grafana_version: LooseVersion = None):
 
 
 if __name__ == "__main__":
-
     setup_logging(level=logging.DEBUG)
 
     # Connect to Grafana instance and run health probe.

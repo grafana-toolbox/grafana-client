@@ -18,7 +18,6 @@ class Annotations(Base):
         tags=None,
         limit=None,
     ):
-
         """
         https://grafana.com/docs/grafana/latest/http_api/annotations/#find-annotations
 
@@ -80,7 +79,6 @@ class Annotations(Base):
         tags=[],
         text=None,
     ):
-
         """
         https://grafana.com/docs/grafana/latest/http_api/annotations/#create-annotation
 
@@ -183,7 +181,6 @@ class Annotations(Base):
         return r
 
     def delete_annotations_by_id(self, annotations_id=None):
-
         """
         https://grafana.com/docs/grafana/latest/http_api/annotations/#delete-annotation-by-id
 

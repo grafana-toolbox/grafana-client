@@ -20,7 +20,6 @@ from grafana_client import GrafanaApi
 
 
 def main():
-
     # Connect to public Grafana instance of Grafana Labs fame.
     grafana = GrafanaApi(host="play.grafana.org")
 
