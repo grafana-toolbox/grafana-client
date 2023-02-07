@@ -42,7 +42,7 @@ format = [
   {cmd="black ."},
   {cmd="isort ."},
 ]
-check-style = [
+lint = [
   {cmd="ruff ."},
   {cmd="black --check ."},
   {cmd="isort --check ."},

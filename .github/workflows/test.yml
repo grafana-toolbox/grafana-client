@@ -58,7 +58,7 @@ jobs:
       - name: Check code style
         if: matrix.python-version != '3.6' && matrix.python-version != 'pypy-3.6'
         run: |
-          poe check-style
+          poe lint
 
       - name: Run tests
         run: |
