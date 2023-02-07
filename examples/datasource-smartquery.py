@@ -57,7 +57,6 @@ def run(grafana: GrafanaApi):
 
 
 if __name__ == "__main__":
-
     setup_logging(level=logging.DEBUG)
 
     # Connect to Grafana instance and run health check.

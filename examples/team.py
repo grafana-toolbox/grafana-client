@@ -27,7 +27,6 @@ from grafana_client.client import GrafanaClientError
 
 
 def run_conversation(grafana: GrafanaApi):
-
     print("Grafana address")
     print(grafana.client.url)
 
@@ -58,7 +57,6 @@ def jd(data):
 
 
 if __name__ == "__main__":
-
     # Connect to custom Grafana instance.
     grafana = GrafanaApi(
         auth=("admin", "admin"),

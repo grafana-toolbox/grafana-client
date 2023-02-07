@@ -634,7 +634,6 @@ class Datasource(Base):
         results = response["results"]
         if isinstance(results, dict):
             try:
-
                 # The `refId` currently used is always `test`, see `knowledge.py`.
                 # TODO: Change to `gcX`.
                 result = results["test"]

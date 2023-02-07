@@ -39,7 +39,6 @@ def run(grafana: GrafanaApi):
     success = True
     statistics = {"ok": 0, "error": 0, "fatal": 0, "unknown": 0}
     for datasource in datasources:
-
         logger.info(f"Discovered datasource with uid={datasource['uid']} and type={datasource['type']}")
 
         # Invoke the health check.
@@ -72,7 +71,6 @@ def run(grafana: GrafanaApi):
 
 
 if __name__ == "__main__":
-
     setup_logging(level=logging.DEBUG)
 
     # Connect to Grafana instance and run health check.
