@@ -238,7 +238,9 @@ A list of applications based on `grafana-client`.
 - [nixops-grafana](https://github.com/tewfik-ghariani/nixops-grafana)
 
 
-## History
+## Project information
+
+### History
 
 The library was originally conceived by [Andrew Prokhorenkov] and contributors
 as [grafana_api]. Thank you very much for your efforts!
@@ -249,13 +251,13 @@ While forking it, we renamed the package to `grafana-client` and slightly
 trimmed the module namespace.
 
 
-## Acknowledgements
+### Acknowledgements
 
 Thanks to the original authors and all [contributors] who helped to co-create
 and conceive this software in one way or another. You know who you are.
 
 
-## Contributing
+### Contributing
 
 Any kind of contribution and feedback are very much welcome! Just create an
 issue or submit a patch if you think we should include a new feature, or to 
@@ -264,33 +266,20 @@ report or fix a bug.
 The issue tracker URL is: https://github.com/panodata/grafana-client/issues
 
 
-## Development
+### Development
 
-In order to create a development sandbox, you may want to follow this list of
-commands. When you see the software tests succeed, you should be ready to start
-hacking.
+In order to set up a development environment for `grafana-client`, please
+follow the [development documentation].
 
-```shell
-git clone https://github.com/panodata/grafana-client
-cd grafana-client
-python3 -m venv .venv
-source .venv/bin/activate
-pip install --editable=.[test,develop]
 
-# Run all tests.
-poe test
-
-# Run specific tests.
-python -m unittest -k preference -vvv
-```
-
-## License
+### License
 
 `grafana-client` is licensed under the terms of the MIT License, see [LICENSE] file.
 
 
 [Andrew Prokhorenkov]: https://github.com/m0nhawk/grafana_api
 [contributors]: https://github.com/panodata/grafana-client/graphs/contributors
+[development documentation]: https://github.com/panodata/grafana-client/blob/main/docs/development.md
 [examples folder]: https://github.com/panodata/grafana-client/tree/main/examples
 [future maintenance of `grafana_api`]: https://github.com/m0nhawk/grafana_api/issues/88
 [grafana_api]: https://github.com/m0nhawk/grafana_api
