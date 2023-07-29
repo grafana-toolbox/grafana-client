@@ -26,6 +26,12 @@ class AlertingProvisioningTestCase(unittest.TestCase):
         self.grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="http")
 
     @requests_mock.Mocker()
+    def test_get_alertrules_all(self, m):
+        m.get("http://localhost/api/v1/provisioning/alert-rules", json=[ALERTRULE])
+        response = self.grafana.alertingprovisioning.get_alertrules_all()
+        self.assertEqual(response[0]["uid"], "bUUGqLiVk")
+
+    @requests_mock.Mocker()
     def test_get_alertrule(self, m):
         m.get("http://localhost/api/v1/provisioning/alert-rules/bUUGqLiVk", json=ALERTRULE)
         response = self.grafana.alertingprovisioning.get_alertrule("bUUGqLiVk")
