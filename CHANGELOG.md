@@ -2,6 +2,9 @@
 
 ## unreleased
 
+* Add missing argument `dashboard_uid` to `get_annotation` method.
+  Thanks, @nikita-b.
+
 
 ## 3.5.0 (2022-12-07)
 

@@ -12,6 +12,7 @@ class Annotations(Base):
         time_to=None,
         alert_id=None,
         dashboard_id=None,
+        dashboard_uid=None,
         panel_id=None,
         user_id=None,
         ann_type=None,
@@ -25,6 +26,7 @@ class Annotations(Base):
         :param time_to:
         :param alert_id:
         :param dashboard_id:
+        :param dashboard_uid:
         :param panel_id:
         :param user_id:
         :param ann_type: Annotation type. On of alert|annotation
@@ -46,6 +48,9 @@ class Annotations(Base):
 
         if dashboard_id:
             params.append("dashboardId=%s" % dashboard_id)
+
+        if dashboard_uid:
+            params.append("dashboardUID=%s" % dashboard_uid)
 
         if panel_id:
             params.append("panelId=%s" % panel_id)
