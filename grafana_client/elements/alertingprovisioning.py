@@ -6,6 +6,15 @@ class AlertingProvisioning(Base):
         super(AlertingProvisioning, self).__init__(client)
         self.client = client
 
+    def get_alertrules_all(self):
+        """
+        Gets all alert rules
+        @return:
+        """
+        get_alertrules_all_path = "/v1/provisioning/alert-rules"
+        r = self.client.GET(get_alertrules_all_path)
+        return r
+
     def get_alertrule(self, alertrule_uid):
         """
 
