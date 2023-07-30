@@ -2,6 +2,9 @@
 
 ## unreleased
 
+
+## 3.6.0 (2023-07-30)
+
 * Add missing argument `dashboard_uid` to `get_annotation` method.
   Thanks, @nikita-b.
 * Add API method `get_alertrules_all`. Thanks, @harish422.
