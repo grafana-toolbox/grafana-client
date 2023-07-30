@@ -1,10 +1,11 @@
 # Backlog of grafana-client
 
 ## Iteration +1
-- [o] Release 3.0.0
-- [o] Announcement on https://community.grafana.com/
+- [x] Release 3.0.0
+- [x] Announcement on https://community.grafana.com/
 - [o] Share `examples/grafanalib-upload-dashboard.py` with people at `grafanalib`
 - [o] Propagate features to `grafana-wtf`
+- [o] Improve error output on `404 Not found`. See https://github.com/panodata/grafana-client/issues/72
 
 ## Iteration +2
 - [o] Unlock real data queries
