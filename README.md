@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/github/license/panodata/grafana-client.svg?style=flat-square)](https://github.com/panodata/grafana-client/blob/main/LICENSE) 
 
 [![Python versions](https://img.shields.io/pypi/pyversions/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
-[![Grafana versions](https://img.shields.io/badge/Grafana-5.x%20--%209.x-blue.svg?style=flat-square)](https://github.com/grafana/grafana)
+[![Grafana versions](https://img.shields.io/badge/Grafana-5.x%20--%2010.x-blue.svg?style=flat-square)](https://github.com/grafana/grafana)
 
 [![Status](https://img.shields.io/pypi/status/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
 [![PyPI](https://img.shields.io/pypi/v/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
@@ -163,7 +163,7 @@ are supported, and to which degree. See also [Grafana HTTP API reference].
 
 ### Compatibility
 
-`grafana-client` is largely compatible with Grafana 5.x-9.x. However, earlier
+`grafana-client` is largely compatible with Grafana 5.x-10.x. However, earlier
 versions of Grafana might not support certain features or subsystems.
 
 ### Overview
