@@ -66,6 +66,14 @@ class TestGrafanaApiFactories(unittest.TestCase):
         self.assertEqual(grafana.client.verify, False)
         self.assertEqual(grafana.client.timeout, 5.0)
 
+    def test_from_url_with_timeout_value(self):
+        grafana = GrafanaApi.from_url(timeout=42.42)
+        self.assertEqual(grafana.client.timeout, 42.42)
+
+    def test_from_url_with_timeout_tuple(self):
+        grafana = GrafanaApi.from_url(timeout=(3.05, 27))
+        self.assertEqual(grafana.client.timeout, (3.05, 27))
+
     def test_from_env_default(self):
         grafana = GrafanaApi.from_env()
         self.assertIsInstance(grafana.client.auth, requests.auth.HTTPBasicAuth)
@@ -114,3 +122,22 @@ class TestGrafanaApiFactories(unittest.TestCase):
         self.assertEqual(grafana.client.url_protocol, "https")
         self.assertEqual(grafana.client.verify, False)
         self.assertEqual(grafana.client.timeout, 5.0)
+
+    @mock.patch.dict(os.environ, {"GRAFANA_TIMEOUT": "84.84"})
+    def test_from_env_with_timeout_from_env_valid(self):
+        grafana = GrafanaApi.from_env()
+        self.assertEqual(grafana.client.timeout, 84.84)
+
+    @mock.patch.dict(os.environ, {"GRAFANA_TIMEOUT": "foobar"})
+    def test_from_env_with_timeout_from_env_invalid(self):
+        with self.assertRaises(ValueError) as ctx:
+            GrafanaApi.from_env()
+        self.assertEqual(
+            str(ctx.exception),
+            "Unable to parse invalid `float` value from `GRAFANA_TIMEOUT` "
+            "environment variable: could not convert string to float: 'foobar'",
+        )
+
+    def test_from_env_with_timeout_tuple(self):
+        grafana = GrafanaApi.from_env(timeout=(3.05, 27))
+        self.assertEqual(grafana.client.timeout, (3.05, 27))

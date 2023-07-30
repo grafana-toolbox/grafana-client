@@ -9,7 +9,7 @@ import requests
 import requests.auth
 from urllib3.exceptions import InsecureRequestWarning
 
-from .client import GrafanaClient
+from .client import DEFAULT_TIMEOUT, GrafanaClient
 from .elements import (
     Admin,
     Alerting,
@@ -44,7 +44,7 @@ class GrafanaApi:
         url_path_prefix="",
         protocol="http",
         verify=True,
-        timeout=5.0,
+        timeout=DEFAULT_TIMEOUT,
         user_agent: str = None,
     ):
         self.client = GrafanaClient(
@@ -95,7 +95,12 @@ class GrafanaApi:
         return version
 
     @classmethod
-    def from_url(cls, url: str = None, credential: Union[str, Tuple[str, str], requests.auth.AuthBase] = None):
+    def from_url(
+        cls,
+        url: str = None,
+        credential: Union[str, Tuple[str, str], requests.auth.AuthBase] = None,
+        timeout: Union[float, Tuple[float, float]] = DEFAULT_TIMEOUT,
+    ):
         """
         Factory method to create a `GrafanaApi` instance from a URL.
 
@@ -129,14 +134,27 @@ class GrafanaApi:
             port=url.port,
             url_path_prefix=url.path.lstrip("/"),
             verify=verify,
+            timeout=timeout,
         )
         grafana.url = original_url
 
         return grafana
 
     @classmethod
-    def from_env(cls):
+    def from_env(cls, timeout: Union[float, Tuple[float, float]] = None):
         """
         Factory method to create a `GrafanaApi` instance from environment variables.
         """
-        return cls.from_url(url=os.environ.get("GRAFANA_URL"), credential=os.environ.get("GRAFANA_TOKEN"))
+        if timeout is None:
+            if "GRAFANA_TIMEOUT" in os.environ:
+                try:
+                    timeout = float(os.environ["GRAFANA_TIMEOUT"])
+                except Exception as ex:
+                    raise ValueError(
+                        f"Unable to parse invalid `float` value from " f"`GRAFANA_TIMEOUT` environment variable: {ex}"
+                    )
+        if timeout is None:
+            timeout = DEFAULT_TIMEOUT
+        return cls.from_url(
+            url=os.environ.get("GRAFANA_URL"), credential=os.environ.get("GRAFANA_TOKEN"), timeout=timeout
+        )

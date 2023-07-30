@@ -5,6 +5,8 @@
 * Add missing argument `dashboard_uid` to `get_annotation` method.
   Thanks, @nikita-b.
 * Add API method `get_alertrules_all`. Thanks, @harish422.
+* Improve usability and documentation for changing timeout settings.
+  Thanks, @bukem and @dheeg.
 
 
 ## 3.5.0 (2022-12-07)
