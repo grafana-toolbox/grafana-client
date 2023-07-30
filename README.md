@@ -136,6 +136,15 @@ Please note that, on top of the specific examples above, the object obtained by
 `credential` can be an arbitrary `requests.auth.AuthBase` instance.
 
 
+## Timeout settings
+
+The default timeout value is five seconds, used for both connect and read timeout.
+
+The constructors of `GrafanaApi` and `GrafanaClient`, as well as the factory methods
+`from_url` and `from_env` accept the `timeout` argument, which can be obtained as a
+scalar `float` value, or as a tuple of `(<read timeout>, <connect timeout>)`.
+
+
 ## Proxy
 
 The underlying `requests` library honors the `HTTP_PROXY` and `HTTPS_PROXY`

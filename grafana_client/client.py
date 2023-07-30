@@ -1,6 +1,8 @@
 import requests
 import requests.auth
 
+DEFAULT_TIMEOUT: float = 5.0
+
 
 class GrafanaException(Exception):
     def __init__(self, status_code, response, message):
@@ -73,7 +75,7 @@ class GrafanaClient:
         url_path_prefix="",
         protocol="http",
         verify=True,
-        timeout=5.0,
+        timeout=DEFAULT_TIMEOUT,
         user_agent: str = None,
     ):
         self.auth = auth
