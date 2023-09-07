@@ -52,15 +52,35 @@ class AlertingProvisioning(Base):
         r = self.client.PUT(update_alertrule_path, json=alertrule, headers=headers)
         return r
 
-    def update_rule_group_interval(self, folder_uid, group_uid, alertrule_group):
+    def get_rule_group(self, folder_uid, group_uid):
         """
         :param folder_uid:
         :param group_uid:
         :return:
         """
+        get_rule_group_path = "/v1/provisioning/folder/%s/rule-groups/%s" % (folder_uid, group_uid)
+        r = self.client.GET(get_rule_group_path)
+        return r
+
+    def update_rule_group(self, folder_uid, group_uid, alertrule_group, disable_provenance=True):
+        """
+        :param folder_uid:
+        :param group_uid:
+        :param alertrule_group:
+        :return:
+        """
         update_rule_group_interval_path = "/v1/provisioning/folder/%s/rule-groups/%s" % (folder_uid, group_uid)
         r = self.client.PUT(update_rule_group_interval_path, json=alertrule_group)
         return r
+
+    def update_rule_group_interval(self, folder_uid, group_uid, alertrule_group):
+        """
+        :param folder_uid:
+        :param group_uid:
+        :param alertrule_group:
+        :return:
+        """
+        return self.update_rule_group(folder_uid, group_uid, alertrule_group)
 
     def delete_alertrule(self, alertrule_uid):
         """
