@@ -56,31 +56,35 @@ class AlertingProvisioning(Base):
         """
         :param folder_uid:
         :param group_uid:
+        :param disable_provenance:
         :return:
         """
         get_rule_group_path = "/v1/provisioning/folder/%s/rule-groups/%s" % (folder_uid, group_uid)
         r = self.client.GET(get_rule_group_path)
         return r
 
-    def update_rule_group(self, folder_uid, group_uid, alertrule_group):
+    def update_rule_group(self, folder_uid, group_uid, alertrule_group, disable_provenance=False):
         """
         :param folder_uid:
         :param group_uid:
         :param alertrule_group:
         :return:
         """
-        update_rule_group_interval_path = "/v1/provisioning/folder/%s/rule-groups/%s" % (folder_uid, group_uid)
-        r = self.client.PUT(update_rule_group_interval_path, json=alertrule_group)
+        headers = {}
+        if disable_provenance:
+            headers["X-Disable-Provenance"] = "true"
+        update_rule_group_path = "/v1/provisioning/folder/%s/rule-groups/%s" % (folder_uid, group_uid)
+        r = self.client.PUT(update_rule_group_path, json=alertrule_group, headers=headers)
         return r
 
-    def update_rule_group_interval(self, folder_uid, group_uid, alertrule_group):
+    def update_rule_group_interval(self, folder_uid, group_uid, alertrule_group, disable_provenance=False):
         """
         :param folder_uid:
         :param group_uid:
         :param alertrule_group:
         :return:
         """
-        return self.update_rule_group(folder_uid, group_uid, alertrule_group)
+        return self.update_rule_group(folder_uid, group_uid, alertrule_group, disable_provenance)
 
     def delete_alertrule(self, alertrule_uid):
         """
@@ -101,14 +105,19 @@ class AlertingProvisioning(Base):
         get_contactpoints_path = "/v1/provisioning/contact-points"
         return self.client.GET(get_contactpoints_path)
 
-    def create_contactpoint(self, contactpoint):
+    def create_contactpoint(self, contactpoint, disable_provenance=False):
         """
         Creates single contact point
         @param contactpoint:
+        @param disable_provenance:
         @return:
         """
+        headers = {}
+        if disable_provenance:
+            headers["X-Disable-Provenance"] = "true"
+
         create_contactpoint_path = "/v1/provisioning/contact-points"
-        return self.client.POST(create_contactpoint_path, json=contactpoint)
+        return self.client.POST(create_contactpoint_path, json=contactpoint, headers=headers)
 
     def update_contactpoint(self, contactpoint_uid, contactpoint):
         """
@@ -137,14 +146,19 @@ class AlertingProvisioning(Base):
         get_notification_policy_tree_path = "/v1/provisioning/policies"
         return self.client.GET(get_notification_policy_tree_path)
 
-    def set_notification_policy_tree(self, notification_policy_tree):
+    def set_notification_policy_tree(self, notification_policy_tree, disable_provenance=False):
         """
         Sets notification policy tree
         @param notification_policy_tree:
+        @param disable_provenance:
         @return:
         """
+        headers = {}
+        if disable_provenance:
+            headers["X-Disable-Provenance"] = "true"
+
         set_notification_policy_tree_path = "/v1/provisioning/policies"
-        return self.client.PUT(set_notification_policy_tree_path, json=notification_policy_tree)
+        return self.client.PUT(set_notification_policy_tree_path, json=notification_policy_tree, headers=headers)
 
     def get_mute_timings(self):
         """
@@ -162,13 +176,18 @@ class AlertingProvisioning(Base):
         get_mute_timing_path = "/v1/provisioning/mute-timings/%s" % mutetiming_name
         return self.client.GET(get_mute_timing_path)
 
-    def create_mute_timing(self, mutetiming):
+    def create_mute_timing(self, mutetiming, disable_provenance=False):
         """
         Creates single mute timing
+        @param mutetiming:
+        @param disable_provenance:
         @return:
         """
+        headers = {}
+        if disable_provenance:
+            headers["X-Disable-Provenance"] = "true"
         create_mute_timing_path = "/v1/provisioning/mute-timings"
-        return self.client.POST(create_mute_timing_path, json=mutetiming)
+        return self.client.POST(create_mute_timing_path, json=mutetiming, headers=headers)
 
     def update_mute_timing(self, mutetiming_name, mutetiming):
         """
@@ -203,15 +222,19 @@ class AlertingProvisioning(Base):
         get_template_path = "/v1/provisioning/templates/%s" % template_name
         return self.client.GET(get_template_path)
 
-    def create_or_update_template(self, template_name, template):
+    def create_or_update_template(self, template_name, template, disable_provenance=False):
         """
         Creates or updates (if given template_name exists) template
         @param template_name:
         @param template:
+        @param disable_provenance:
         @return:
         """
+        headers = {}
+        if disable_provenance:
+            headers["X-Disable-Provenance"] = "true"
         create_template_path = "/v1/provisioning/templates/%s" % template_name
-        return self.client.PUT(create_template_path, json=template)
+        return self.client.PUT(create_template_path, json=template, headers=headers)
 
     def delete_template(self, template_name):
         """
