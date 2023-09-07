@@ -61,7 +61,7 @@ class GrafanaApi:
         self.admin = Admin(self.client)
         self.alerting = Alerting(self.client)
         self.alertingprovisioning = AlertingProvisioning(self.client)
-        self.dashboard = Dashboard(self.client)
+        self.dashboard = Dashboard(self.client, self)
         self.dashboard_versions = DashboardVersions(self.client)
         self.datasource = Datasource(self.client, self)
         self.folder = Folder(self.client)

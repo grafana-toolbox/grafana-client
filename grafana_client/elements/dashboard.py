@@ -1,10 +1,13 @@
+from distutils.version import LooseVersion
+
 from .base import Base
 
 
 class Dashboard(Base):
-    def __init__(self, client):
+    def __init__(self, client, api):
         super(Dashboard, self).__init__(client)
         self.client = client
+        self.api = api
 
     def get_dashboard(self, dashboard_uid):
         """
@@ -22,6 +25,8 @@ class Dashboard(Base):
         :param dashboard_name:
         :return:
         """
+        if self.api.version and LooseVersion(self.api.version) >= LooseVersion("8"):
+            raise DeprecationWarning("Grafana 8 and higher does not support getting dashboards by slug")
         get_dashboard_path = "/dashboards/db/%s" % dashboard_name
         r = self.client.GET(get_dashboard_path)
         return r
