@@ -115,7 +115,6 @@ class AlertingProvisioning(Base):
         headers = {}
         if disable_provenance:
             headers["X-Disable-Provenance"] = "true"
-
         create_contactpoint_path = "/v1/provisioning/contact-points"
         return self.client.POST(create_contactpoint_path, json=contactpoint, headers=headers)
 
@@ -156,7 +155,6 @@ class AlertingProvisioning(Base):
         headers = {}
         if disable_provenance:
             headers["X-Disable-Provenance"] = "true"
-
         set_notification_policy_tree_path = "/v1/provisioning/policies"
         return self.client.PUT(set_notification_policy_tree_path, json=notification_policy_tree, headers=headers)
 
