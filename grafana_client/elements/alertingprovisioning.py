@@ -62,7 +62,7 @@ class AlertingProvisioning(Base):
         r = self.client.GET(get_rule_group_path)
         return r
 
-    def update_rule_group(self, folder_uid, group_uid, alertrule_group, disable_provenance=True):
+    def update_rule_group(self, folder_uid, group_uid, alertrule_group):
         """
         :param folder_uid:
         :param group_uid:
