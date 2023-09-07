@@ -34,7 +34,11 @@ class DashboardTestCase(unittest.TestCase):
         self.assertEqual(dashboard["dashboard"]["uid"], "cIBgcSjkk")
 
     @requests_mock.Mocker()
-    def test_get_dashboard_by_name(self, m):
+    def test_get_dashboard_by_name_grafana7(self, m):
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "6f8c1d9fe4", "database": "ok", "version": "7.5.11"},
+        )
         m.get(
             "http://localhost/api/dashboards/db/Production Overview",
             json={
@@ -56,6 +60,19 @@ class DashboardTestCase(unittest.TestCase):
         )
         dashboard = self.grafana.dashboard.get_dashboard_by_name("Production Overview")
         self.assertEqual(dashboard["dashboard"]["title"], "Production Overview")
+
+    @requests_mock.Mocker()
+    def test_get_dashboard_by_name_grafana8(self, m):
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "unknown", "database": "ok", "version": "8.0.2"},
+        )
+        with self.assertRaises(DeprecationWarning) as ex:
+            self.grafana.dashboard.get_dashboard_by_name("foobar")
+        self.assertEqual(
+            "Grafana 8 and higher does not support getting dashboards by slug",
+            str(ex.exception),
+        )
 
     @requests_mock.Mocker()
     def test_update_dashboard(self, m):
