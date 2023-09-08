@@ -2,6 +2,9 @@
 
 ## unreleased
 
+
+## 3.7.0 (2023-09-08)
+
 * Deprecate `get_dashboard_by_name` on Grafana 8 and higher, as it no longer
   supports getting dashboards by slug. Thanks, @oz123.
 * Add `disable_provenance` parameter to applicable method calls. Thanks, @beeradb.
