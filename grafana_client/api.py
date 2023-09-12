@@ -23,6 +23,7 @@ from .elements import (
     Notifications,
     Organization,
     Organizations,
+    Plugin,
     Rbac,
     Search,
     Snapshots,
@@ -76,6 +77,7 @@ class GrafanaApi:
         self.annotations = Annotations(self.client)
         self.snapshots = Snapshots(self.client)
         self.notifications = Notifications(self.client)
+        self.plugin = Plugin(self.client)
 
     def connect(self):
         try:
