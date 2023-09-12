@@ -168,31 +168,32 @@ versions of Grafana might not support certain features or subsystems.
 
 ### Overview
 
-| API | Status |
-|---|---|
-| Admin | + |
-| Alerting | +- |
+| API                            | Status |
+|--------------------------------|---|
+| Admin                          | + |
+| Alerting                       | +- |
 | Alerting Notification Channels | + |
-| Alerting Provisioning | + |
-| Annotations | + |
-| Authentication | +- |
-| Dashboard | + |
-| Dashboard Versions | + |
-| Dashboard Permissions | + |
-| Data Source | + |
-| Data Source Permissions | + |
-| External Group Sync | + |
-| Folder | + |
-| Folder Permissions | + |
-| Folder/Dashboard Search | +- |
-| Health | + |
-| Organisation | + |
-| Other | + |
-| Preferences | + |
-| Rbac | +- |
-| Snapshot | + |
-| Teams | + |
-| User | + |
+| Alerting Provisioning          | + |
+| Annotations                    | + |
+| Authentication                 | +- |
+| Dashboard                      | + |
+| Dashboard Versions             | + |
+| Dashboard Permissions          | + |
+| Data Source                    | + |
+| Data Source Permissions        | + |
+| External Group Sync            | + |
+| Folder                         | + |
+| Folder Permissions             | + |
+| Folder/Dashboard Search        | +- |
+| Health                         | + |
+| Organisation                   | + |
+| Other                          | + |
+| Plugin                         | + |
+| Preferences                    | + |
+| Rbac                           | +- |
+| Snapshot                       | + |
+| Teams                          | + |
+| User                           | + |
 
 
 ### Data source health check
