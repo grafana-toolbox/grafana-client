@@ -20,8 +20,8 @@ python -m unittest -k preference -vvv
 ```
 
 ### Formatting
-When Creating a PR you can run `poe format` which will help remove code style issues and keep the repo clean.
 
+Before creating a PR, you can run `poe format`, in order to resolve code style issues.
 
 ## Run Grafana
 ```
