@@ -9,15 +9,15 @@ class Plugin(Base):
         self.client = client
         self.logger = logging.getLogger(__name__)
 
-    def health_check_plugin(self):
+    def health_check_plugin(self, pluginId):
         """
         :return:
         """
-        path = "/healthz"
+        path = "/plugins/%s/health" % pluginId
         r = self.client.GET(path)
         return r
 
-    def get_plugins(self):
+    def get_installed_plugins(self):
         """
         :return:
         """
@@ -25,7 +25,7 @@ class Plugin(Base):
         r = self.client.GET(path)
         return r
 
-    def install_plugins(self, pluginId, version):
+    def install_plugin(self, pluginId, version):
         """
         : return:
         """
@@ -37,7 +37,7 @@ class Plugin(Base):
             self.logger.info("Skipped installing %s and err = %s", pluginId, ex)
         return None
 
-    def uninstall_plugins(self, pluginId):
+    def uninstall_plugin(self, pluginId):
         """
         : return:
         """
@@ -50,6 +50,9 @@ class Plugin(Base):
         return None
 
     def get_plugin_metrics(self, pluginId):
+        """
+        : return:
+        """
         try:
             path = "/plugins/%s/metrics" % pluginId
             r = self.client.GET(path)
