@@ -1,5 +1,4 @@
 import unittest
-
 from test.elements.test_datasource_fixtures import (
     DATAFRAME_RESPONSE_HEALTH_PROMETHEUS,
     ELASTICSEARCH_DATASOURCE,
@@ -288,7 +287,9 @@ class DatasourceTestCase(unittest.TestCase):
             json={},
         )
         datasource = INFLUXDB1_DATASOURCE.copy()
-        _ = self.grafana.datasource.smartquery(datasource, "SHOW RETENTION POLICIES on _internal", attrs={ "database": "foobar"})
+        _ = self.grafana.datasource.smartquery(
+            datasource, "SHOW RETENTION POLICIES on _internal", attrs={"database": "foobar"}
+        )
         # TODO: No response payload yet.
 
     @requests_mock.Mocker()
@@ -298,9 +299,7 @@ class DatasourceTestCase(unittest.TestCase):
             json={},
         )
         datasource = ELASTICSEARCH_DATASOURCE.copy()
-        _ = self.grafana.datasource.smartquery(
-            datasource, "url:///datasources/proxy/44/bazqux/_mapping"
-        )
+        _ = self.grafana.datasource.smartquery(datasource, "url:///datasources/proxy/44/bazqux/_mapping")
         # TODO: No response payload yet.
 
     @requests_mock.Mocker()
