@@ -16,6 +16,7 @@ from .base import Base
 logger = logging.getLogger(__name__)
 
 VERSION_9 = LooseVersion("9")
+VERSION_8 = LooseVersion("8")
 VERSION_7 = LooseVersion("7")
 VERBOSE = False
 
@@ -394,6 +395,7 @@ class Datasource(Base):
                     request["data"]["to"],
                     request["data"]["step"],
                 )
+
         # For all others, use the generic data source communication endpoint.
         elif access_type in ["server", "proxy"]:
             url = "/ds/query"
@@ -438,6 +440,7 @@ class Datasource(Base):
         expression = get_healthcheck_expression(datasource_type, datasource_dialect)
 
         start = time.time()
+        message = "Unknown error"
         try:
             response = self.smartquery(datasource, expression)
             response_display = response
@@ -487,15 +490,16 @@ class Datasource(Base):
                     message = f"Invalid response. {reason}"
 
             elif datasource_type == "loki":
-                if self.api.version:
-                    if LooseVersion(self.api.version) == VERSION_7:
-                        if "status" in response and response["status"] == "success":
-                            message = "Success"
-                            success = True
-                    elif "results" in response and "test" in response["results"]:
+                if self.api.version and VERSION_7 <= LooseVersion(self.api.version) < VERSION_8:
+                    if "status" in response and response["status"] == "success":
                         message = "Success"
                         success = True
-                else:
+                    else:
+                        message = response.get("message", "Unknown error")
+                elif "results" in response and "test" in response["results"]:
+                    message = "Success"
+                    success = True
+                elif "message" in response:
                     message = response["message"]
 
             # With OpenTSDB, a 200 OK response with empty body is just fine.

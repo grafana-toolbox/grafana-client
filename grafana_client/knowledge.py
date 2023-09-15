@@ -115,7 +115,7 @@ def datasource_factory(datasource: DatasourceModel) -> DatasourceModel:
     return datasource
 
 
-def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
+def query_factory(datasource, model: Optional[dict] = None, expression: Optional[str] = None) -> Union[Dict, str]:
     """
     Create payload suitable for running a query against a Grafana data source.
 
@@ -124,6 +124,11 @@ def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
 
     TODO: Complete the list for all popular databases.
     """
+
+    model = model or {}
+    if "query" not in model and expression:
+        model["query"] = expression
+
     request = {
         "method": "POST",
         "data": None,
