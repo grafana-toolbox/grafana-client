@@ -1,5 +1,6 @@
 import unittest
 from test.elements.test_datasource_fixtures import (
+    DATAFRAME_RESPONSE_HEALTH_ELASTICSEARCH_VALID,
     DATAFRAME_RESPONSE_HEALTH_PROMETHEUS,
     ELASTICSEARCH_DATASOURCE,
     INFLUXDB1_DATASOURCE,
@@ -271,7 +272,29 @@ class DatasourceTestCase(unittest.TestCase):
         self.assertEqual(len(result["data"]["result"][0]["values"]), 6)
 
     @requests_mock.Mocker()
-    def test_query_with_datasource_prometheus(self, m):
+    def test_query_with_datasource_prometheus_grafana7(self, m):
+        # Mock the version inquiry request, because `smartquery` needs
+        # it, as Prometheus responses differ between versions.
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "unknown", "database": "ok", "version": "7.0.1"},
+        )
+        m.post(
+            "http://localhost/api/ds/query",
+            json=DATAFRAME_RESPONSE_HEALTH_PROMETHEUS,
+        )
+        datasource = PROMETHEUS_DATASOURCE.copy()
+        response = self.grafana.datasource.smartquery(datasource, "1+1")
+        self.assertEqual(response, DATAFRAME_RESPONSE_HEALTH_PROMETHEUS)
+
+    @requests_mock.Mocker()
+    def test_query_with_datasource_prometheus_grafana9(self, m):
+        # Mock the version inquiry request, because `smartquery` needs
+        # it, as Prometheus responses differ between versions.
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
+        )
         m.post(
             "http://localhost/api/ds/query",
             json=DATAFRAME_RESPONSE_HEALTH_PROMETHEUS,
@@ -298,12 +321,22 @@ class DatasourceTestCase(unittest.TestCase):
             "http://localhost/api/datasources/proxy/44/bazqux/_mapping",
             json={},
         )
+        m.post(
+            "http://localhost/api/ds/query",
+            json=DATAFRAME_RESPONSE_HEALTH_ELASTICSEARCH_VALID,
+        )
         datasource = ELASTICSEARCH_DATASOURCE.copy()
         _ = self.grafana.datasource.smartquery(datasource, "url:///datasources/proxy/44/bazqux/_mapping")
-        # TODO: No response payload yet.
+        # TODO: Response payload not reflected and validated yet.
 
     @requests_mock.Mocker()
     def test_query_with_datasource_identifier(self, m):
+        # Mock the version inquiry request, because `smartquery` needs
+        # it, as Prometheus responses differ between versions.
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
+        )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
             json=PROMETHEUS_DATASOURCE,
@@ -315,7 +348,14 @@ class DatasourceTestCase(unittest.TestCase):
         response = self.grafana.datasource.smartquery(DatasourceIdentifier(uid="h8KkCLt7z"), "1+1")
         self.assertEqual(response, DATAFRAME_RESPONSE_HEALTH_PROMETHEUS)
 
-    def test_query_unknown_access_type_failure(self):
+    @requests_mock.Mocker()
+    def test_query_unknown_access_type_failure(self, m):
+        # Mock the version inquiry request, because `smartquery` needs
+        # it, as Prometheus responses differ between versions.
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
+        )
         datasource = PROMETHEUS_DATASOURCE.copy()
         datasource["access"] = "__UNKNOWN__"
         self.assertRaises(NotImplementedError, lambda: self.grafana.datasource.smartquery(datasource, expression="1+1"))

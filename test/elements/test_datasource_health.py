@@ -24,6 +24,7 @@ from test.elements.test_datasource_fixtures import (
 )
 
 import requests_mock
+from parameterized import parameterized
 
 from grafana_client import GrafanaApi
 from grafana_client.client import GrafanaClientError, GrafanaServerError
@@ -51,8 +52,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             "http://localhost/api/datasources/uid/34inf2sdc",
             json=ELASTICSEARCH_DATASOURCE,
         )
-        m.get(
-            "http://localhost/api/datasources/proxy/44/bazqux/_mapping",
+        m.post(
+            "http://localhost/api/ds/query",
             json={"bazqux": {"mappings": {"properties": "something"}}},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="34inf2sdc"))
@@ -77,8 +78,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             "http://localhost/api/datasources/uid/34inf2sdc",
             json=ELASTICSEARCH_DATASOURCE,
         )
-        m.get(
-            "http://localhost/api/datasources/proxy/44/bazqux/_mapping",
+        m.post(
+            "http://localhost/api/ds/query",
             json={},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="34inf2sdc"))
@@ -103,8 +104,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             "http://localhost/api/datasources/uid/34inf2sdc",
             json=ELASTICSEARCH_DATASOURCE,
         )
-        m.get(
-            "http://localhost/api/datasources/proxy/44/bazqux/_mapping",
+        m.post(
+            "http://localhost/api/ds/query",
             json={"bazqux": {}},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="34inf2sdc"))
@@ -129,8 +130,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             "http://localhost/api/datasources/uid/34inf2sdc",
             json=ELASTICSEARCH_DATASOURCE,
         )
-        m.get(
-            "http://localhost/api/datasources/proxy/44/bazqux/_mapping",
+        m.post(
+            "http://localhost/api/ds/query",
             json={"error": "This failed!", "status": 400},
             status_code=400,
         )
@@ -156,8 +157,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             "http://localhost/api/datasources/uid/34inf2sdc",
             json=ELASTICSEARCH_DATASOURCE,
         )
-        m.get(
-            "http://localhost/api/datasources/proxy/44/bazqux/_mapping",
+        m.post(
+            "http://localhost/api/ds/query",
             json={"error": {"root_cause": [{"type": "foo", "reason": "bar"}]}, "status": 400},
             status_code=400,
         )
@@ -273,8 +274,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             "http://localhost/api/datasources/uid/DbtFe237k",
             json=JAEGER_DATASOURCE,
         )
-        m.get(
-            "http://localhost/api/datasources/proxy/53/api/services",
+        m.post(
+            "http://localhost/api/ds/query",
             json={"data": ["jaeger-query"], "total": 1, "limit": 0, "offset": 0, "errors": None},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="DbtFe237k"))
@@ -299,8 +300,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             "http://localhost/api/datasources/uid/DbtFe237k",
             json=JAEGER_DATASOURCE,
         )
-        m.get(
-            "http://localhost/api/datasources/proxy/53/api/services",
+        m.post(
+            "http://localhost/api/ds/query",
             json={
                 "data": ["jaeger-query"],
                 "total": 1,
@@ -326,13 +327,19 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         )
 
     @requests_mock.Mocker()
-    def test_health_check_loki_success(self, m):
+    def test_health_check_loki_success_grafana7(self, m):
+        # Mock the version inquiry request, because `smartquery` needs
+        # it, as Loki responses differ between versions.
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "unknown", "database": "ok", "version": "7.0.1"},
+        )
         m.get(
             "http://localhost/api/datasources/uid/vCyglaq7z",
             json=LOKI_DATASOURCE,
         )
-        m.get(
-            "http://localhost/api/datasources/54/resources/labels",
+        m.post(
+            "http://localhost/api/ds/query",
             json={"status": "success", "data": ["__name__"]},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="vCyglaq7z"))
@@ -352,13 +359,83 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         )
 
     @requests_mock.Mocker()
-    def test_health_check_loki_error_response_failure(self, m):
+    def test_health_check_loki_success_grafana9(self, m):
+        # Mock the version inquiry request, because `smartquery` needs
+        # it, as Loki responses differ between versions.
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
+        )
         m.get(
             "http://localhost/api/datasources/uid/vCyglaq7z",
             json=LOKI_DATASOURCE,
         )
+        m.post(
+            "http://localhost/api/ds/query",
+            json={"results": {"test": True}},
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="vCyglaq7z"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="vCyglaq7z",
+                type="loki",
+                success=True,
+                status="OK",
+                message="Success",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_loki_error_response_failure_grafana7(self, m):
+        # Mock the version inquiry request, because `smartquery` needs
+        # it, as Loki responses differ between versions.
         m.get(
-            "http://localhost/api/datasources/54/resources/labels",
+            "http://localhost/api/health",
+            json={"commit": "unknown", "database": "ok", "version": "7.0.1"},
+        )
+        m.get(
+            "http://localhost/api/datasources/uid/vCyglaq7z",
+            json=LOKI_DATASOURCE,
+        )
+        m.post(
+            "http://localhost/api/ds/query",
+            json={"message": "Failed to call resource", "traceID": "00000000000000000000000000000000"},
+        )
+        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="vCyglaq7z"))
+        response.duration = None
+        response.response = None
+        self.assertEqual(
+            response,
+            DatasourceHealthResponse(
+                uid="vCyglaq7z",
+                type="loki",
+                success=False,
+                status="ERROR",
+                message="Failed to call resource",
+                duration=None,
+                response=None,
+            ),
+        )
+
+    @requests_mock.Mocker()
+    def test_health_check_loki_error_response_failure_grafana9(self, m):
+        # Mock the version inquiry request, because `smartquery` needs
+        # it, as Loki responses differ between versions.
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
+        )
+        m.get(
+            "http://localhost/api/datasources/uid/vCyglaq7z",
+            json=LOKI_DATASOURCE,
+        )
+        m.post(
+            "http://localhost/api/ds/query",
             json={"message": "Failed to call resource", "traceID": "00000000000000000000000000000000"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="vCyglaq7z"))
@@ -435,8 +512,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             "http://localhost/api/datasources/uid/hkuk5h3nk",
             json=OPENTSDB_DATASOURCE,
         )
-        m.get(
-            "http://localhost/api/datasources/proxy/51/api/suggest",
+        m.post(
+            "http://localhost/api/ds/query",
             json="",
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="hkuk5h3nk"))
@@ -481,8 +558,15 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             ),
         )
 
-    @requests_mock.Mocker()
-    def test_health_check_prometheus_healthy_success(self, m):
+    @parameterized.expand(["7.0.1", "9.0.1"])
+    def test_health_check_prometheus_healthy_success(self, grafana_version):
+        m = requests_mock.Mocker()
+        # Mock the version inquiry request, because `smartquery` needs
+        # it, as Prometheus responses differ between versions.
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "unknown", "database": "ok", "version": grafana_version},
+        )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
             json=PROMETHEUS_DATASOURCE,
@@ -491,24 +575,32 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             "http://localhost/api/ds/query",
             json=DATAFRAME_RESPONSE_HEALTH_PROMETHEUS,
         )
-        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="h8KkCLt7z"))
-        response.duration = None
-        response.response = None
-        self.assertEqual(
-            response,
-            DatasourceHealthResponse(
-                uid="h8KkCLt7z",
-                type="prometheus",
-                success=True,
-                status="OK",
-                message="Expr: 1+1\nStep: 15s",
-                duration=None,
-                response=None,
-            ),
-        )
+        with m:
+            response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="h8KkCLt7z"))
+            response.duration = None
+            response.response = None
+            self.assertEqual(
+                response,
+                DatasourceHealthResponse(
+                    uid="h8KkCLt7z",
+                    type="prometheus",
+                    success=True,
+                    status="OK",
+                    message="Expr: 1+1\nStep: 15s",
+                    duration=None,
+                    response=None,
+                ),
+            )
 
-    @requests_mock.Mocker()
-    def test_health_check_prometheus_empty_dataframe_success(self, m):
+    @parameterized.expand(["7.0.1", "9.0.1"])
+    def test_health_check_prometheus_empty_dataframe_success(self, grafana_version):
+        m = requests_mock.Mocker()
+        # Mock the version inquiry request, because `smartquery` needs
+        # it, as Prometheus responses differ between versions.
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "unknown", "database": "ok", "version": grafana_version},
+        )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
             json=PROMETHEUS_DATASOURCE,
@@ -517,24 +609,32 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             "http://localhost/api/ds/query",
             json=DATAFRAME_RESPONSE_EMPTY,
         )
-        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="h8KkCLt7z"))
-        response.duration = None
-        response.response = None
-        self.assertEqual(
-            response,
-            DatasourceHealthResponse(
-                uid="h8KkCLt7z",
-                type="prometheus",
-                success=True,
-                status="OK",
-                message="Success",
-                duration=None,
-                response=None,
-            ),
-        )
+        with m:
+            response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="h8KkCLt7z"))
+            response.duration = None
+            response.response = None
+            self.assertEqual(
+                response,
+                DatasourceHealthResponse(
+                    uid="h8KkCLt7z",
+                    type="prometheus",
+                    success=True,
+                    status="OK",
+                    message="Success",
+                    duration=None,
+                    response=None,
+                ),
+            )
 
-    @requests_mock.Mocker()
-    def test_health_check_prometheus_invalid_dataframe_failure(self, m):
+    @parameterized.expand(["7.0.1", "9.0.1"])
+    def test_health_check_prometheus_invalid_dataframe_failure(self, grafana_version):
+        m = requests_mock.Mocker()
+        # Mock the version inquiry request, because `smartquery` needs
+        # it, as Prometheus responses differ between versions.
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "unknown", "database": "ok", "version": grafana_version},
+        )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
             json=PROMETHEUS_DATASOURCE,
@@ -543,22 +643,23 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             "http://localhost/api/ds/query",
             json=DATAFRAME_RESPONSE_INVALID,
         )
-        response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="h8KkCLt7z"))
-        response.duration = None
-        response.response = None
-        self.assertEqual(
-            response,
-            DatasourceHealthResponse(
-                uid="h8KkCLt7z",
-                type="prometheus",
-                success=False,
-                status="ERROR",
-                message="FATAL: Unable to decode result from dictionary-type response. "
-                "TypeError: DataFrame response detected, but 'frames' is not a list",
-                duration=None,
-                response=None,
-            ),
-        )
+        with m:
+            response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="h8KkCLt7z"))
+            response.duration = None
+            response.response = None
+            self.assertEqual(
+                response,
+                DatasourceHealthResponse(
+                    uid="h8KkCLt7z",
+                    type="prometheus",
+                    success=False,
+                    status="ERROR",
+                    message="FATAL: Unable to decode result from dictionary-type response. "
+                    "TypeError: DataFrame response detected, but 'frames' is not a list",
+                    duration=None,
+                    response=None,
+                ),
+            )
 
     @requests_mock.Mocker()
     def test_health_check_simplejson(self, m):
@@ -566,8 +667,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             "http://localhost/api/datasources/uid/rw783ds3e",
             json=SIMPLE_JSON_DATASOURCE,
         )
-        m.get(
-            "http://localhost/api/datasources/proxy/47",
+        m.post(
+            "http://localhost/api/ds/query",
             json={"results": {"test": {"error": "Resource not found: /metadata"}}},
             status_code=404,
         )
@@ -593,8 +694,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             "http://localhost/api/datasources/uid/oie238af3",
             json=SIMPOD_JSON_DATASOURCE,
         )
-        m.get(
-            "http://localhost/api/datasources/proxy/49",
+        m.post(
+            "http://localhost/api/ds/query",
             json={"results": [{"statement_id": "ID", "series": []}]},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="oie238af3"))
@@ -619,6 +720,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             "http://localhost/api/datasources/uid/239fasva4",
             json=SUNANDMOON_DATASOURCE,
         )
+        m.post(
+            "http://localhost/api/ds/query",
+            json=SUNANDMOON_DATASOURCE,
+        )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="239fasva4"))
         response.duration = None
         response.response = None
@@ -639,6 +744,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
     def test_health_check_sunandmoon_incomplete_failure(self, m):
         m.get(
             "http://localhost/api/datasources/uid/239fasva4",
+            json=SUNANDMOON_DATASOURCE_INCOMPLETE,
+        )
+        m.post(
+            "http://localhost/api/ds/query",
             json=SUNANDMOON_DATASOURCE_INCOMPLETE,
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="239fasva4"))
@@ -663,8 +772,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             "http://localhost/api/datasources/uid/aTk86s3nk",
             json=TEMPO_DATASOURCE,
         )
-        m.get(
-            "http://localhost/api/datasources/proxy/55/api/echo",
+        m.post(
+            "http://localhost/api/ds/query",
             headers={"Content-Type": "text/plain"},
             text="echo",
         )
@@ -690,8 +799,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             "http://localhost/api/datasources/uid/aTk86s3nk",
             json=TEMPO_DATASOURCE,
         )
-        m.get(
-            "http://localhost/api/datasources/proxy/55/api/echo",
+        m.post(
+            "http://localhost/api/ds/query",
             status_code=502,
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="aTk86s3nk"))
@@ -716,6 +825,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             "http://localhost/api/datasources/uid/439fngqr2",
             json=TESTDATA_DATASOURCE,
         )
+        m.post(
+            "http://localhost/api/ds/query",
+            json={"id": "test", "uid": "test"},
+        )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="439fngqr2"))
         response.duration = None
         response.response = None
@@ -738,8 +851,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
             "http://localhost/api/datasources/uid/3sXIv8q7k",
             json=ZIPKIN_DATASOURCE,
         )
-        m.get(
-            "http://localhost/api/datasources/proxy/57/api/v2/services",
+        m.post(
+            "http://localhost/api/ds/query",
             json=[],
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="3sXIv8q7k"))

@@ -205,6 +205,9 @@ DATAFRAME_RESPONSE_HEALTH_SELECT1 = {
     "results": {"test": {"frames": [{"schema": {"meta": {"executedQueryString": "SELECT 1"}}}]}}
 }
 
+# TODO: Reflect a real Grafana response for Elasticsearch here.
+DATAFRAME_RESPONSE_HEALTH_ELASTICSEARCH_VALID = {"bazqux": {}}
+
 DATAFRAME_RESPONSE_HEALTH_PROMETHEUS = {
     "results": {
         "test": {
