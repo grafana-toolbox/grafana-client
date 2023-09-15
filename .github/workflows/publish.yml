@@ -18,7 +18,7 @@ jobs:
 
     steps:
     - name: Acquire sources
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
       # Fixup for `setuptools_scm`
       # https://github.com/pypa/setuptools_scm/issues/480
