@@ -42,7 +42,7 @@ Synopsis
         --query "sum by (status) (count_over_time({filename=~\".+/json_access.+\", job=~\".*\", instance=~\".*\"} | json |  __error__=\"\" [5m]))" \
         --attr "legendFormat:HTTP Status {{status}}"
 
-"""
+"""  # noqa: E501
 import json
 import logging
 from optparse import OptionParser
@@ -69,9 +69,8 @@ def run(grafana: GrafanaApi):
     if not options.query:
         parser.error("Option --query required")
 
-    attributes = {
-    }
-    if options.attrs is not None and len(options.attrs) > 0 :
+    attributes = {}
+    if options.attrs is not None and len(options.attrs) > 0:
         for attr in options.attrs:
             (key, val) = attr.split(":")
             attributes[key] = val

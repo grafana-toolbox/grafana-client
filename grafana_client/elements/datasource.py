@@ -308,8 +308,13 @@ class Datasource(Base):
         r = self.client.POST(post_series_path, data={"match[]": match, "start": start, "end": end})
         return r
 
-#**********************************************************************************
-    def smartquery(self, datasource: Union[DatasourceIdentifier, Dict], expression: str, attrs: Optional[dict] = None, request: Optional[dict] = None):
+    def smartquery(
+        self,
+        datasource: Union[DatasourceIdentifier, Dict],
+        expression: str,
+        attrs: Optional[dict] = None,
+        request: Optional[dict] = None,
+    ):
         """
         Send a query to the designated data source and return its response.
 
@@ -333,15 +338,15 @@ class Datasource(Base):
             model = {
                 "refId": "test",
             }
-            if expression is not None and ( attrs is None or (attrs is not None and 'query' not in attrs)):
-                model['query'] = expression
+            if expression is not None and (attrs is None or (attrs is not None and "query" not in attrs)):
+                model["query"] = expression
             if attrs is not None:
                 model.update(attrs)
             request = query_factory(datasource, model)
 
         # Compute request method, body, and endpoint.
         if "method" in request and isinstance(request["method"], str):
-            if request['method'] == 'POST':
+            if request["method"] == "POST":
                 send_request = self.client.POST
             else:
                 send_request = self.client.GET
@@ -351,7 +356,7 @@ class Datasource(Base):
         # Certain data sources like InfluxDB 1.x, still use the `/datasources/proxy` route.
         if datasource_type == "influxdb" and datasource_dialect == "InfluxQL":
             url = f"/datasources/proxy/{datasource_id}/query"
-            url += '?' + urlencode(request['params'])
+            url += "?" + urlencode(request["params"])
             request_kwargs = {"data": request["data"]}
 
         elif datasource_type == "graphite":
@@ -359,8 +364,8 @@ class Datasource(Base):
             request_kwargs = {"data": request["data"]}
 
         # This case is very special. It is used for Elasticsearch and Testdata.
-        elif 'url' in request and model['url'].startswith("url://"):
-            url = model['url'].replace("url://", "")
+        elif "url" in request and model["url"].startswith("url://"):
+            url = model["url"].replace("url://", "")
             url = url.format(
                 datasource_id=datasource.get("id"),
                 datasource_uid=datasource.get("uid"),
@@ -370,8 +375,12 @@ class Datasource(Base):
             send_request = self.client.GET
 
         elif datasource_type in ("prometheus", "loki") and LooseVersion(self.api.version) <= VERSION_7:
-            if "queries" in request["data"] and len(request["data"]["queries"]) > 0 \
-                and "instant" in request["data"]["queries"][0] and request["data"]["queries"][0]["instant"]:
+            if (
+                "queries" in request["data"]
+                and len(request["data"]["queries"]) > 0
+                and "instant" in request["data"]["queries"][0]
+                and request["data"]["queries"][0]["instant"]
+            ):
                 return self.query(
                     datasource.get("id"),
                     request["expr"],

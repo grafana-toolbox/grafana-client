@@ -4,8 +4,8 @@ About
 Knowledgebase module for filling the missing gaps to access the Grafana API
 more efficiently.
 """
-from typing import Dict, Optional, Union
 from datetime import datetime
+from typing import Dict, Optional, Union
 
 from grafana_client.model import DatasourceModel
 
@@ -143,23 +143,16 @@ def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
         query = expression
     elif datasource_type == "grafana-simple-json-datasource":
         query = expression
-    #************************************************************************
+
     elif datasource_type == "graphite":
-        query = {
-            "target": expression,
-            "from": "-5m",
-            "until": "now",
-            "format": "json",
-            "maxDataPoints": 300
-        }
-        if 'time_from' in model:
-            query['from']=model['time_from']
-        if 'time_to' in model:
-            query['until']=model['time_to']
+        query = {"target": expression, "from": "-5m", "until": "now", "format": "json", "maxDataPoints": 300}
+        if "time_from" in model:
+            query["from"] = model["time_from"]
+        if "time_to" in model:
+            query["until"] = model["time_to"]
 
         request["data"] = query
 
-    #************************************************************************
     elif datasource_type == "influxdb":
         dialect = datasource["jsonData"].get("version", "InfluxQL")
         query = {
@@ -177,13 +170,12 @@ def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
                 }
             )
             # this drive the how timestamp are rendered in result (string by default, or in milliseconds ms)
-            request["params"] =  { "epoch": "ms" }
-            if 'database' in datasource:
-                request["params"].update({ "db": datasource['database'] })
+            request["params"] = {"epoch": "ms"}
+            if "database" in datasource:
+                request["params"].update({"db": datasource["database"]})
             request["data"] = query
 
         elif dialect == "Flux":
-
             query = {
                 "datasource": {
                     "type": datasource["type"],
@@ -195,9 +187,18 @@ def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
             }
 
             attrs = [
-                { "name": "intervalMs", "default": 30000, },
-                { "name": "maxDataPoints", "default": 1441, },
-                { "name": "refId", "default": "test", },
+                {
+                    "name": "intervalMs",
+                    "default": 30000,
+                },
+                {
+                    "name": "maxDataPoints",
+                    "default": 1441,
+                },
+                {
+                    "name": "refId",
+                    "default": "test",
+                },
             ]
         else:
             raise KeyError(f"InfluxDB dialect '{dialect}' unknown")
@@ -205,7 +206,6 @@ def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
     elif datasource_type == "jaeger":
         query = {}
 
-    #************************************************************************
     elif datasource_type == "loki":
         query = {
             "datasource": {
@@ -218,20 +218,40 @@ def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
         }
 
         attrs = [
-            { "name": "intervalMs", "default": 60000, },
-            { "name": "legendFormat", "default": "", },
-            { "name": "maxLines", "default": 1000, },
-            { "name": "maxDataPoints", "default": 1441, },
-            { "name": "queryType", "default": "range", },
-            { "name": "refId", "default": "test", },
-            { "name": "resolution", "default": 1, },
+            {
+                "name": "intervalMs",
+                "default": 60000,
+            },
+            {
+                "name": "legendFormat",
+                "default": "",
+            },
+            {
+                "name": "maxLines",
+                "default": 1000,
+            },
+            {
+                "name": "maxDataPoints",
+                "default": 1441,
+            },
+            {
+                "name": "queryType",
+                "default": "range",
+            },
+            {
+                "name": "refId",
+                "default": "test",
+            },
+            {
+                "name": "resolution",
+                "default": 1,
+            },
         ]
-    
+
     elif datasource_type == "opentsdb":
         query = {}
 
-    #************************************************************************
-    elif datasource_type in ( "postgres", "mssql", "mysql" ):
+    elif datasource_type in ("postgres", "mssql", "mysql"):
         query = {
             "datasource": {
                 "type": datasource["type"],
@@ -241,16 +261,26 @@ def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
             "rawSql": expression,
         }
         attrs = [
-            { "name": "format", "default": "time_series",
-                "choices": [ "time_series", "table"],
+            {
+                "name": "format",
+                "default": "time_series",
+                "choices": ["time_series", "table"],
                 # "version": "8.0.0"
             },
-            { "name": "intervalMs", "default": 30000, },
-            { "name": "maxDataPoints", "default": 1441, },
-            { "name": "refId", "default": None, },
+            {
+                "name": "intervalMs",
+                "default": 30000,
+            },
+            {
+                "name": "maxDataPoints",
+                "default": 1441,
+            },
+            {
+                "name": "refId",
+                "default": None,
+            },
         ]
 
-    #************************************************************************
     elif datasource_type == "prometheus":
         query = {
             "datasource": {
@@ -263,21 +293,56 @@ def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
         }
 
         attrs = [
-            { "name": "format", "default": "time_series",
-                "choices": [ "time_series", "table", "heatmap"],
+            {
+                "name": "format",
+                "default": "time_series",
+                "choices": ["time_series", "table", "heatmap"],
                 # "version": "8.0.0"
             },
-            { "name": "instant", "default": False, },
-            { "name": "interval", "default": "", },
-            { "name": "intervalFactor", "default": None, },
-            { "name": "intervalMs", "default": 30000, },
-            { "name": "legendFormat", "default": "", },
-            { "name": "maxDataPoints", "default": None, },
-            { "name": "queryType", "default": "timeSeriesQuery", },
-            { "name": "refId", "default": "test", },
-            { "name": "requestId", "default": "0test", },
-            { "name": "step", "default": 300, },
-            { "name": "utcOffsetSec", "default": 0, },
+            {
+                "name": "instant",
+                "default": False,
+            },
+            {
+                "name": "interval",
+                "default": "",
+            },
+            {
+                "name": "intervalFactor",
+                "default": None,
+            },
+            {
+                "name": "intervalMs",
+                "default": 30000,
+            },
+            {
+                "name": "legendFormat",
+                "default": "",
+            },
+            {
+                "name": "maxDataPoints",
+                "default": None,
+            },
+            {
+                "name": "queryType",
+                "default": "timeSeriesQuery",
+            },
+            {
+                "name": "refId",
+                "default": "test",
+            },
+            {
+                "name": "requestId",
+                "default": "0test",
+            },
+            {
+                "name": "step",
+                "default": 300,
+            },
+            {
+                "name": "utcOffsetSec",
+                "default": 0,
+            },
         ]
 
     elif datasource_type == "simpod-json-datasource":
@@ -304,20 +369,20 @@ def query_factory(datasource, model: Optional[dict]) -> Union[Dict, str]:
             if value is not None:
                 query[attr["name"]] = value
 
-        if 'time_from' not in model or 'time_to' not in model:
+        if "time_from" not in model or "time_to" not in model:
             now = datetime.now()
-            if 'time_from' not in model:
-                model['time_from'] = int( now.timestamp() ) - 5 *60
-            if 'time_to' not in model:
-                model['time_to'] = int( now.timestamp() )
+            if "time_from" not in model:
+                model["time_from"] = int(now.timestamp()) - 5 * 60
+            if "time_to" not in model:
+                model["time_to"] = int(now.timestamp())
 
-        if 'instant' in query and query['instant']:
-            model['time_from'] = model['time_to']
+        if "instant" in query and query["instant"]:
+            model["time_from"] = model["time_to"]
 
         payload = {
             "queries": [query],
-            "from": str(model['time_from']*1000),
-            "to": str(model['time_to']*1000),
+            "from": str(model["time_from"] * 1000),
+            "to": str(model["time_to"] * 1000),
         }
         request["data"] = payload
 
@@ -330,12 +395,13 @@ HEALTHCHECK_EXPRESSION_MAP = {
     "elasticsearch": "url:///datasources/proxy/{datasource_id}/{database_name}/_mapping",
     "fetzerch-sunandmoon-datasource": "url:///datasources/uid/{datasource_uid}",
     "grafana-simple-json-datasource": "url:///datasources/proxy/{datasource_id}",
-    "graphite": "random-walk.count;dc=asia-1;app=collector;server=000",  # from play.grafana.org explore Grafite datasource.
+    # From play.grafana.org, to explore Graphite datasource.
+    "graphite": "random-walk.count;dc=asia-1;app=collector;server=000",
     "influxdb": "SHOW RETENTION POLICIES on _internal",
     "influxdb+influxql": "SHOW RETENTION POLICIES on _internal",
     "influxdb+flux": "buckets()",
     "jaeger": "url:///datasources/proxy/{datasource_id}/api/services",
-    "loki": "count_over_time({job=~\".+\"} [5m])",
+    "loki": 'count_over_time({job=~".+"} [5m])',
     "mssql": "SELECT 1",
     "mysql": "SELECT 1",
     "opentsdb": "url:///datasources/proxy/{datasource_id}/api/suggest?type=metrics&q=cpu&max=100",
