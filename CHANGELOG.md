@@ -3,6 +3,13 @@
 ## unreleased
 
 
+## 3.8.0 (2023-09-15)
+
+* Add API wrapper for "Plugins". Thanks, @bhks.
+* Improve `smartquery` and `query_factory` beyond data source health checks.
+  Thanks, @peekjef72.
+
+
 ## 3.7.0 (2023-09-08)
 
 * Deprecate `get_dashboard_by_name` on Grafana 8 and higher, as it no longer
