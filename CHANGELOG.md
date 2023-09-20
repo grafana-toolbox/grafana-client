@@ -3,6 +3,11 @@
 ## unreleased
 
 
+## 3.8.2 (2023-09-20)
+
+* Fix release workflow
+
+
 ## 3.8.1 (2023-09-20)
 
 * Refine API wrapper for "Plugins"
