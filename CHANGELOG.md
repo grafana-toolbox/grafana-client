@@ -2,6 +2,9 @@
 
 ## unreleased
 
+
+## 3.8.1 (2023-09-20)
+
 * Refine API wrapper for "Plugins"
 
 
