@@ -9,14 +9,6 @@ class Plugin(Base):
         self.client = client
         self.logger = logging.getLogger(__name__)
 
-    def health_check_plugin(self, pluginId):
-        """
-        :return:
-        """
-        path = "/plugins/%s/health" % pluginId
-        r = self.client.GET(path)
-        return r
-
     def get_installed_plugins(self):
         """
         :return:
@@ -25,7 +17,7 @@ class Plugin(Base):
         r = self.client.GET(path)
         return r
 
-    def install_plugin(self, pluginId, version):
+    def install_plugin(self, pluginId, version, errors="raise"):
         """
         : return:
         """
@@ -34,10 +26,15 @@ class Plugin(Base):
             r = self.client.POST(path, json={"version": version})
             return r
         except Exception as ex:
-            self.logger.info("Skipped installing %s and err = %s", pluginId, ex)
+            if errors == "raise":
+                raise
+            elif errors == "ignore":
+                self.logger.info(f"Skipped installing plugin {pluginId}: {ex}")
+            else:
+                raise ValueError(f"error={errors} is invalid")
         return None
 
-    def uninstall_plugin(self, pluginId):
+    def uninstall_plugin(self, pluginId, errors="raise"):
         """
         : return:
         """
@@ -46,17 +43,26 @@ class Plugin(Base):
             r = self.client.POST(path)
             return r
         except Exception as ex:
-            self.logger.info("Skipped uninstalling %s and error = %s", pluginId, ex)
+            if errors == "raise":
+                raise
+            elif errors == "ignore":
+                self.logger.info(f"Skipped uninstalling plugin {pluginId}: {ex}")
+            else:
+                raise ValueError(f"error={errors} is invalid")
         return None
+
+    def health_check_plugin(self, pluginId):
+        """
+        :return:
+        """
+        path = "/plugins/%s/health" % pluginId
+        r = self.client.GET(path)
+        return r
 
     def get_plugin_metrics(self, pluginId):
         """
         : return:
         """
-        try:
-            path = "/plugins/%s/metrics" % pluginId
-            r = self.client.GET(path)
-            return r
-        except Exception as ex:
-            self.logger.info("Got error in fetching metrics for plugin %s and error = %s", pluginId, ex)
-        return None
+        path = "/plugins/%s/metrics" % pluginId
+        r = self.client.GET(path)
+        return r
