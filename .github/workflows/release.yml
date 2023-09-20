@@ -30,7 +30,7 @@ jobs:
         echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
     - name: install
       run: |
-        go install github.com/github-release/github-release
+        go install github.com/github-release/github-release@latest
     - name: release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
