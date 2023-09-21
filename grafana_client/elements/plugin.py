@@ -1,5 +1,7 @@
 import logging
 
+from grafana_client.client import GrafanaClientError
+
 from .base import Base
 
 
@@ -9,60 +11,83 @@ class Plugin(Base):
         self.client = client
         self.logger = logging.getLogger(__name__)
 
-    def get_installed_plugins(self):
+    def list(self):
         """
-        :return:
+        Return list of all installed plugins.
         """
         path = "/plugins?embedded=0"
         r = self.client.GET(path)
         return r
 
-    def install_plugin(self, pluginId, version, errors="raise"):
+    def by_id(self, plugin_id):
         """
-        : return:
+        Return single plugin item selected by plugin identifier.
+        """
+        plugins = self.list()
+        return get_plugin_by_id(plugin_list=plugins, plugin_id=plugin_id)
+
+    def install(self, plugin_id, version=None, errors="raise"):
+        """
+        Install a 3rd-party plugin from the plugin store.
         """
         try:
-            path = "/plugins/%s/install" % pluginId
-            r = self.client.POST(path, json={"version": version})
+            path = "/plugins/%s/install" % plugin_id
+            # Unfortunately, this endpoint may respond with an empty JSON,
+            # which needs compensation, because it does not decode well.
+            r = self.client.POST(path, json={"version": version}, accept_empty_json=True)
             return r
+        except GrafanaClientError as ex:
+            # Ignore `Client Error 409: Plugin already installed`.
+            if "409" not in str(ex):
+                raise
         except Exception as ex:
             if errors == "raise":
                 raise
             elif errors == "ignore":
-                self.logger.info(f"Skipped installing plugin {pluginId}: {ex}")
+                self.logger.warning(f"Problem installing plugin {plugin_id}: {ex}")
             else:
                 raise ValueError(f"error={errors} is invalid")
         return None
 
-    def uninstall_plugin(self, pluginId, errors="raise"):
+    def uninstall(self, plugin_id, errors="raise"):
         """
-        : return:
+        Uninstall a 3rd-party plugin from the Grafana instance.
         """
         try:
-            path = "/plugins/%s/uninstall" % pluginId
+            path = "/plugins/%s/uninstall" % plugin_id
             r = self.client.POST(path)
             return r
         except Exception as ex:
             if errors == "raise":
                 raise
             elif errors == "ignore":
-                self.logger.info(f"Skipped uninstalling plugin {pluginId}: {ex}")
+                self.logger.warning(f"Problem uninstalling plugin {plugin_id}: {ex}")
             else:
                 raise ValueError(f"error={errors} is invalid")
         return None
 
-    def health_check_plugin(self, pluginId):
+    def health(self, plugin_id):
         """
-        :return:
+        Run a health check probe on the designated plugin.
         """
-        path = "/plugins/%s/health" % pluginId
+        path = "/plugins/%s/health" % plugin_id
         r = self.client.GET(path)
         return r
 
-    def get_plugin_metrics(self, pluginId):
+    def metrics(self, plugin_id):
         """
-        : return:
+        Inquire metrics of the designated plugin.
         """
-        path = "/plugins/%s/metrics" % pluginId
+        path = "/plugins/%s/metrics" % plugin_id
         r = self.client.GET(path)
         return r
+
+
+def get_plugin_by_id(plugin_list, plugin_id):
+    """
+    Helper function to filter plugin list by identifier.
+    """
+    try:
+        return next(item for item in plugin_list if item["id"] == plugin_id)
+    except StopIteration:
+        raise KeyError(f"Plugin not found: {plugin_id}")

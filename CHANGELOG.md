@@ -2,6 +2,10 @@
 
 ## unreleased
 
+* Refine API wrapper for "Plugins" once more. Please note this adjustment changes
+  all the method names of the recently added "plugins" API wrappers, so it is
+  effectively a BREAKING CHANGE, if you used it already.
+
 
 ## 3.8.2 (2023-09-20)
 
