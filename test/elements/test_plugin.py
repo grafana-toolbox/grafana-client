@@ -10,7 +10,7 @@ class PluginTestCase(unittest.TestCase):
         self.grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="http")
 
     @requests_mock.Mocker()
-    def test_get_installed_plugins(self, m):
+    def test_list(self, m):
         m.get(
             "http://localhost/api/plugins?embedded=0",
             json=[
@@ -186,29 +186,29 @@ class PluginTestCase(unittest.TestCase):
                 },
             ],
         )
-        plugins = self.grafana.plugin.get_installed_plugins()
+        plugins = self.grafana.plugin.list()
         self.assertTrue(len(plugins), 6)
 
     @requests_mock.Mocker()
-    def test_install_plugin(self, m):
+    def test_install(self, m):
         m.post("http://localhost/api/plugins/alertlist/install", json={"message": "Plugin alertlist installed"})
-        response = self.grafana.plugin.install_plugin(pluginId="alertlist", version="1.3.12")
+        response = self.grafana.plugin.install(plugin_id="alertlist", version="1.3.12")
         self.assertEqual(response["message"], "Plugin alertlist installed")
 
     @requests_mock.Mocker()
-    def test_uninstall_plugin(self, m):
+    def test_uninstall(self, m):
         m.post("http://localhost/api/plugins/alertlist/uninstall", json={"message": "Plugin alertlist uninstalled"})
-        response = self.grafana.plugin.uninstall_plugin(pluginId="alertlist")
+        response = self.grafana.plugin.uninstall(plugin_id="alertlist")
         self.assertEqual(response["message"], "Plugin alertlist uninstalled")
 
     @requests_mock.Mocker()
-    def test_get_plugin_health(self, m):
+    def test_health(self, m):
         m.get("http://localhost/api/plugins/alertlist/health", json={"message": "Plugin alertlist healthy"})
-        response = self.grafana.plugin.health_check_plugin(pluginId="alertlist")
+        response = self.grafana.plugin.health(plugin_id="alertlist")
         self.assertEqual(response["message"], "Plugin alertlist healthy")
 
     @requests_mock.Mocker()
-    def test_get_plugin_metrics(self, m):
+    def test_metrics(self, m):
         m.get("http://localhost/api/plugins/grafana-timestream-datasource/metrics", json={"message": "Not found"})
-        response = self.grafana.plugin.get_plugin_metrics(pluginId="grafana-timestream-datasource")
+        response = self.grafana.plugin.metrics(plugin_id="grafana-timestream-datasource")
         self.assertEqual(response["message"], "Not found")

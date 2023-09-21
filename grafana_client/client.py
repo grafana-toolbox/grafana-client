@@ -1,3 +1,5 @@
+from json import JSONDecodeError
+
 import requests
 import requests.auth
 
@@ -118,7 +120,7 @@ class GrafanaClient:
                 self.auth = TokenAuth(self.auth)
 
     def __getattr__(self, item):
-        def __request_runner(url, json=None, data=None, headers=None):
+        def __request_runner(url, json=None, data=None, headers=None, accept_empty_json=False):
             __url = "%s%s" % (self.url, url)
             # Sanity checks.
             if json is not None and not isinstance(json, (dict, list)):
@@ -167,9 +169,15 @@ class GrafanaClient:
                 return None
 
             # The "Tempo" data source responds with text/plain.
-            if r.headers.get("Content-Type", "").startswith("text/"):
+            content_type = r.headers.get("Content-Type", "")
+            if content_type.startswith("text/"):
                 return r.text
-            else:
+            try:
                 return r.json()
+            except JSONDecodeError:
+                if accept_empty_json and r.text == "":
+                    return ""
+                else:
+                    raise
 
         return __request_runner
