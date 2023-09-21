@@ -55,7 +55,9 @@ class Plugin(Base):
         """
         try:
             path = "/plugins/%s/uninstall" % plugin_id
-            r = self.client.POST(path)
+            # Unfortunately, this endpoint may respond with an empty JSON,
+            # which needs compensation, because it does not decode well.
+            r = self.client.POST(path, accept_empty_json=True)
             return r
         except Exception as ex:
             if errors == "raise":
