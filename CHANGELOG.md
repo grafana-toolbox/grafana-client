@@ -2,6 +2,9 @@
 
 ## unreleased
 
+
+## 3.9.1 (2023-09-21)
+
 * Plugins: Accept empty JSON response on plugin uninstall
 
 
