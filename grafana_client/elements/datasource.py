@@ -2,11 +2,11 @@ import json
 import logging
 import time
 import warnings
-from distutils.version import LooseVersion
 from typing import Dict, Optional, Tuple, Union
 from urllib.parse import urlencode
 
 from requests import ReadTimeout
+from verlib2 import Version
 
 from ..client import GrafanaBadInputError, GrafanaClientError, GrafanaServerError
 from ..knowledge import get_healthcheck_expression, query_factory
@@ -15,9 +15,9 @@ from .base import Base
 
 logger = logging.getLogger(__name__)
 
-VERSION_9 = LooseVersion("9")
-VERSION_8 = LooseVersion("8")
-VERSION_7 = LooseVersion("7")
+VERSION_9 = Version("9")
+VERSION_8 = Version("8")
+VERSION_7 = Version("7")
 VERBOSE = False
 
 
@@ -375,7 +375,7 @@ class Datasource(Base):
             request_kwargs = {}
             send_request = self.client.GET
 
-        elif datasource_type in ("prometheus", "loki") and LooseVersion(self.api.version) <= VERSION_7:
+        elif datasource_type in ("prometheus", "loki") and Version(self.api.version) <= VERSION_7:
             if (
                 "queries" in request["data"]
                 and len(request["data"]["queries"]) > 0
@@ -490,7 +490,7 @@ class Datasource(Base):
                     message = f"Invalid response. {reason}"
 
             elif datasource_type == "loki":
-                if self.api.version and VERSION_7 <= LooseVersion(self.api.version) < VERSION_8:
+                if self.api.version and VERSION_7 <= Version(self.api.version) < VERSION_8:
                     if "status" in response and response["status"] == "success":
                         message = "Success"
                         success = True
@@ -607,7 +607,7 @@ class Datasource(Base):
         start = time.time()
         raised = True
         noop = False
-        if self.api.version and LooseVersion(self.api.version) >= VERSION_9:
+        if self.api.version and Version(self.api.version) >= VERSION_9:
             try:
                 health_native = self.health(datasource_uid=datasource_uid)
                 logger.debug(f"Response from native data source health check: {health_native}")

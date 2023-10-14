@@ -1,6 +1,8 @@
-from distutils.version import LooseVersion
+from verlib2 import Version
 
 from .base import Base
+
+VERSION_8 = Version("8")
 
 
 class Dashboard(Base):
@@ -25,7 +27,7 @@ class Dashboard(Base):
         :param dashboard_name:
         :return:
         """
-        if self.api.version and LooseVersion(self.api.version) >= LooseVersion("8"):
+        if self.api.version and Version(self.api.version) >= VERSION_8:
             raise DeprecationWarning("Grafana 8 and higher does not support getting dashboards by slug")
         get_dashboard_path = "/dashboards/db/%s" % dashboard_name
         r = self.client.GET(get_dashboard_path)

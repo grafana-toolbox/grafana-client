@@ -6,10 +6,10 @@ Documentation: https://github.com/panodata/grafana-client/blob/main/examples/dat
 import json
 import logging
 import sys
-from distutils.version import LooseVersion
 from optparse import OptionParser
 
 import requests
+from verlib2 import Version
 
 from grafana_client import GrafanaApi
 from grafana_client.model import DatasourceHealthResponse
@@ -17,7 +17,7 @@ from grafana_client.util import setup_logging
 
 logger = logging.getLogger(__name__)
 
-VERSION_7 = LooseVersion("7")
+VERSION_7 = Version("7")
 
 
 def run(grafana: GrafanaApi):
@@ -82,7 +82,7 @@ if __name__ == "__main__":
         logger.exception("Connecting to Grafana failed")
         raise SystemExit(1)
 
-    grafana_version = LooseVersion(grafana_client.version)
+    grafana_version = Version(grafana_client.version)
     if grafana_version < VERSION_7:
         raise NotImplementedError(f"Data source health check subsystem not ready for Grafana version {grafana_version}")
 
