@@ -2,6 +2,9 @@
 
 ## unreleased
 
+
+## 3.9.2 (2023-10-14)
+
 * Add support for Python 3.12, remove use of deprecated `distutils`.
   Thanks, @foreverhy.
 
