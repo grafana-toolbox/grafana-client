@@ -56,3 +56,4 @@ test-coverage = [
   {cmd="coverage report"},
 ]
 build = {cmd="python -m build"}
+check = ["lint", "test"]

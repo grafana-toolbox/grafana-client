@@ -33,7 +33,7 @@ jobs:
       matrix:
         os: ["ubuntu-20.04"]
         python-version: [
-          '3.6', '3.11',
+          '3.6', '3.12',
           'pypy-3.6', 'pypy-3.10',
         ]
     steps:
