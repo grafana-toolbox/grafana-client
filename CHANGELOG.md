@@ -2,6 +2,9 @@
 
 ## unreleased
 
+* Add methods `get_permissions_by_uid` and `update_permissions_by_uid` for dashboards.
+  Thanks, @meyerder.
+
 
 ## 3.9.2 (2023-10-14)
 
