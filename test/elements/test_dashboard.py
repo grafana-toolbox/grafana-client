@@ -194,67 +194,117 @@ class DashboardTestCase(unittest.TestCase):
         self.assertEqual(len(tags), 2)
         self.assertEqual(tags[0]["term"], "tag1")
 
+    def mocker_provision_permissions(self, mock):
+        response_data = [
+            {
+                "id": 1,
+                "dashboardId": 1,
+                "created": "2017-06-20T02:00:00+02:00",
+                "updated": "2017-06-20T02:00:00+02:00",
+                "userId": 0,
+                "userLogin": "",
+                "userEmail": "",
+                "teamId": 0,
+                "team": "",
+                "role": "Viewer",
+                "permission": 1,
+                "permissionName": "View",
+                "uid": "foobar",
+                "title": "",
+                "slug": "",
+                "isFolder": "false",
+                "url": "",
+            },
+            {
+                "id": 2,
+                "dashboardId": 1,
+                "created": "2017-06-20T02:00:00+02:00",
+                "updated": "2017-06-20T02:00:00+02:00",
+                "userId": 0,
+                "userLogin": "",
+                "userEmail": "",
+                "teamId": 0,
+                "team": "",
+                "role": "Editor",
+                "permission": 2,
+                "permissionName": "Edit",
+                "uid": "bazqux",
+                "title": "",
+                "slug": "",
+                "isFolder": "false",
+                "url": "",
+            },
+        ]
+        mock.get(
+            "http://localhost/api/dashboards/id/1/permissions",
+            json=response_data,
+        )
+        mock.get(
+            "http://localhost/api/dashboards/uid/foobar/permissions",
+            json=response_data,
+        )
+        mock.post(
+            "http://localhost/api/dashboards/id/1/permissions",
+            json={"message": "Dashboard permissions updated"},
+        )
+        mock.post(
+            "http://localhost/api/dashboards/uid/foobar/permissions",
+            json={"message": "Dashboard permissions updated"},
+        )
+
     @requests_mock.Mocker()
     def test_get_dashboard_permissions(self, m):
-        m.get(
-            "http://localhost/api/dashboards/id/1/permissions",
-            json=[
-                {
-                    "id": 1,
-                    "dashboardId": 1,
-                    "created": "2017-06-20T02:00:00+02:00",
-                    "updated": "2017-06-20T02:00:00+02:00",
-                    "userId": 0,
-                    "userLogin": "",
-                    "userEmail": "",
-                    "teamId": 0,
-                    "team": "",
-                    "role": "Viewer",
-                    "permission": 1,
-                    "permissionName": "View",
-                    "uid": "",
-                    "title": "",
-                    "slug": "",
-                    "isFolder": "false",
-                    "url": "",
-                },
-                {
-                    "id": 2,
-                    "dashboardId": 1,
-                    "created": "2017-06-20T02:00:00+02:00",
-                    "updated": "2017-06-20T02:00:00+02:00",
-                    "userId": 0,
-                    "userLogin": "",
-                    "userEmail": "",
-                    "teamId": 0,
-                    "team": "",
-                    "role": "Editor",
-                    "permission": 2,
-                    "permissionName": "Edit",
-                    "uid": "",
-                    "title": "",
-                    "slug": "",
-                    "isFolder": "false",
-                    "url": "",
-                },
-            ],
-        )
+        self.mocker_provision_permissions(m)
         permissions = self.grafana.dashboard.get_dashboard_permissions(1)
         self.assertEqual(len(permissions), 2)
         self.assertEqual(permissions[0]["dashboardId"], 1)
 
     @requests_mock.Mocker()
+    def test_get_dashboard_permissions_by_id(self, m):
+        self.mocker_provision_permissions(m)
+        permissions = self.grafana.dashboard.get_permissions_by_id(1)
+        self.assertEqual(len(permissions), 2)
+        self.assertEqual(permissions[0]["dashboardId"], 1)
+
+    @requests_mock.Mocker()
+    def test_get_dashboard_permissions_by_uid(self, m):
+        self.mocker_provision_permissions(m)
+        permissions = self.grafana.dashboard.get_permissions_by_uid("foobar")
+        self.assertEqual(len(permissions), 2)
+        self.assertEqual(permissions[0]["uid"], "foobar")
+
+    permission_data = {
+        "items": [
+            {"role": "Viewer", "permission": 1},
+            {"role": "Editor", "permission": 2},
+            {"teamId": 1, "permission": 1},
+            {"userId": 11, "permission": 4},
+        ]
+    }
+
+    @requests_mock.Mocker()
     def test_update_dashboard_permissions(self, m):
-        m.post("http://localhost/api/dashboards/id/1/permissions", json={"message": "Dashboard permissions updated"})
+        self.mocker_provision_permissions(m)
         permissions = self.grafana.dashboard.update_dashboard_permissions(
             1,
-            {
-                "items": [
-                    {"role": "Viewer", "permission": 1},
-                    {"role": "Editor", "permission": 2},
-                    {"teamId": 1, "permission": 1},
-                    {"userId": 11, "permission": 4},
-                ]
-            },
+            self.permission_data,
+        )
+        self.assertEqual(permissions["message"], "Dashboard permissions updated")
+
+    @requests_mock.Mocker()
+    def test_update_dashboard_permissions_by_id(self, m):
+        self.mocker_provision_permissions(m)
+        permissions = self.grafana.dashboard.update_permissions_by_id(
+            1,
+            self.permission_data,
+        )
+        self.assertEqual(permissions["message"], "Dashboard permissions updated")
+
+    @requests_mock.Mocker()
+    def test_update_dashboard_permissions_by_uid(self, m):
+        self.mocker_provision_permissions(m)
+        permissions = self.grafana.dashboard.update_permissions_by_uid(
+            "foobar",
+            self.permission_data,
         )
         self.assertEqual(permissions["message"], "Dashboard permissions updated")

@@ -1,3 +1,5 @@
+import warnings
+
 from verlib2 import Version
 
 from .base import Base
@@ -80,22 +82,35 @@ class Dashboard(Base):
         return r
 
     def get_dashboard_permissions(self, dashboard_id):
-        """
-
-        :param dashboard_id:
-        :return:
-        """
-        get_dashboard_permissions_path = "/dashboards/id/%s/permissions" % dashboard_id
-        r = self.client.GET(get_dashboard_permissions_path)
-        return r
+        warnings.warn(
+            "get_dashboard_permissions is deprecated, " "use corresponding _by_id or _by_uid methods",
+            DeprecationWarning,
+        )
+        return self.get_permissions_by_id(dashboard_id)
 
     def update_dashboard_permissions(self, dashboard_id, items):
-        """
+        warnings.warn(
+            "update_dashboard_permissions is deprecated, " "use corresponding _by_id or _by_uid methods",
+            DeprecationWarning,
+        )
+        return self.update_permissions_by_id(dashboard_id, items)
 
-        :param dashboard_id:
-        :param items:
-        :return:
-        """
-        update_dashboard_permissions_path = "/dashboards/id/%s/permissions" % dashboard_id
-        r = self.client.POST(update_dashboard_permissions_path, json=items)
-        return r
+    def get_permissions_by_id(self, dashboard_id):
+        return self.get_permissions_generic(dashboard_id, idtype="id")
+
+    def update_permissions_by_id(self, dashboard_id, items):
+        return self.update_permissions_generic(dashboard_id, items, idtype="id")
+
+    def get_permissions_by_uid(self, dashboard_id):
+        return self.get_permissions_generic(dashboard_id)
+
+    def update_permissions_by_uid(self, dashboard_id, items):
+        return self.update_permissions_generic(dashboard_id, items)
+
+    def get_permissions_generic(self, identifier, idtype="uid"):
+        permissions_path = f"/dashboards/{idtype}/{identifier}/permissions"
+        return self.client.GET(permissions_path)
+
+    def update_permissions_generic(self, identifier, items, idtype="uid"):
+        permissions_path = f"/dashboards/{idtype}/{identifier}/permissions"
+        return self.client.POST(permissions_path, json=items)
