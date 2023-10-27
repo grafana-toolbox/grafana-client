@@ -4,6 +4,8 @@
 
 * Add methods `get_permissions_by_uid` and `update_permissions_by_uid` for dashboards.
   Thanks, @meyerder.
+* Add `GrafanaApi.organization_id` for targeting all requests to a Grafana organization
+  Thanks, @lilatomic
 
 
 ## 3.9.2 (2023-10-14)

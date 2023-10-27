@@ -79,6 +79,7 @@ class GrafanaClient:
         verify=True,
         timeout=DEFAULT_TIMEOUT,
         user_agent: str = None,
+        organization_id: int = None,
     ):
         self.auth = auth
         self.verify = verify
@@ -111,6 +112,12 @@ class GrafanaClient:
 
         self.s = requests.Session()
         self.s.headers["User-Agent"] = self.user_agent
+
+        self.organization_id = organization_id
+        if self.organization_id:
+            # orgId is defined in the openapi3 spec as an int64, but headers need to be a str
+            self.s.headers["X-Grafana-Org-Id"] = str(self.organization_id)
+
         if self.auth is not None:
             if isinstance(self.auth, requests.auth.AuthBase):
                 pass
