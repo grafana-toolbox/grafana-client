@@ -47,6 +47,7 @@ class GrafanaApi:
         verify=True,
         timeout=DEFAULT_TIMEOUT,
         user_agent: str = None,
+        organization_id: int = None,
     ):
         self.client = GrafanaClient(
             auth,
@@ -57,6 +58,7 @@ class GrafanaApi:
             verify=verify,
             timeout=timeout,
             user_agent=user_agent,
+            organization_id=organization_id,
         )
         self.url = None
         self.admin = Admin(self.client)

@@ -39,6 +39,19 @@ class TestGrafanaClient(unittest.TestCase):
         )
         self.assertEqual(grafana.client.s.headers["User-Agent"], "foobar/3000")
 
+    def test_grafana_client_no_org(self):
+        grafana = GrafanaApi(
+            ("admin", "admin"), host="localhost", url_path_prefix="", protocol="https", organization_id=None
+        )
+        self.assertNotIn("X-Grafana-Org-Id", grafana.client.s.headers)
+
+    def test_grafana_client_org(self):
+        org_id = 2
+        grafana = GrafanaApi(
+            ("admin", "admin"), host="localhost", url_path_prefix="", protocol="https", organization_id=org_id
+        )
+        self.assertEqual(grafana.client.s.headers["X-Grafana-Org-Id"], str(org_id))
+
     @patch("grafana_client.client.GrafanaClient.__getattr__")
     def test_grafana_client(self, mock_get):
         mock_get.return_value = Mock()
