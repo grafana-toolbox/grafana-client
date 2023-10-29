@@ -135,6 +135,25 @@ grafana = GrafanaApi.from_env()
 Please note that, on top of the specific examples above, the object obtained by
 `credential` can be an arbitrary `requests.auth.AuthBase` instance.
 
+## Selecting Organizations
+
+If the Grafana API is authenticated as a user (for example, with HTTP Basic Authentication),
+it will use the user's current organization context.
+That context can be changed with the `GrafanaApi.user.switch_actual_user_organisation` function.
+
+```python
+grafana.user.switch_actual_user_organisation(1)
+```
+
+An instance of `GrafanaApi` can also be bound to a single organization with the `organization_id` parameter,
+ensuring that all requests will be made to that organization.
+This parameter will cause `GrafanaClient` to use the [X-Grafana-Org-Id header].
+
+```python
+grafana = GrafanaApi(..., organization_id=1)
+```
+
+API Tokens are bound to a single organization, so the `organization_id` parameter does not need to be specified.
 
 ## Timeout settings
 
@@ -294,5 +313,6 @@ follow the [development documentation].
 [future maintenance of `grafana_api`]: https://github.com/m0nhawk/grafana_api/issues/88
 [grafana_api]: https://github.com/m0nhawk/grafana_api
 [Grafana Admin API]: https://grafana.com/docs/grafana/latest/http_api/admin/
+[X-Grafana-Org-Id header]: https://grafana.com/docs/grafana/latest/developers/http_api/auth/#x-grafana-org-id-header
 [Grafana HTTP API reference]: https://grafana.com/docs/grafana/latest/http_api/
 [LICENSE]: https://github.com/panodata/grafana-client/blob/main/LICENSE
