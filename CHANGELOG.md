@@ -2,10 +2,14 @@
 
 ## unreleased
 
-* Add methods `get_permissions_by_uid` and `update_permissions_by_uid` for dashboards.
+
+## 3.10.0 (2023-10-30)
+
+* Add dashboard methods `get_permissions_by_uid` and `update_permissions_by_uid`.
   Thanks, @meyerder.
-* Add `GrafanaApi.organization_id` for targeting all requests to a Grafana organization
-  Thanks, @lilatomic
+* Add `organization_id` argument to `GrafanaApi` and `GrafanaClient`, for targeting all
+  requests to a Grafana organization using the `X-Grafana-Org-Id` HTTP header.
+  Thanks, @lilatomic.
 
 
 ## 3.9.2 (2023-10-14)
