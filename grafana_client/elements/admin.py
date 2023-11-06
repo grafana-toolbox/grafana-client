@@ -83,7 +83,7 @@ class Admin(Base):
         :param enabled:
         :return:
         """
-        action = 'enable' if enabled else 'disable'
-        set_user_enabled = '/admin/users/%s/%s' % (user_id, action)
+        action = "enable" if enabled else "disable"
+        set_user_enabled = "/admin/users/%s/%s" % (user_id, action)
         r = self.client.POST(set_user_enabled)
         return r
