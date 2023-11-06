@@ -184,18 +184,12 @@ class AdminTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_enable_user(self, m):
-        m.post(
-            "http://localhost/api/admin/users/2/enable",
-            json={"message": "User enabled"}
-        )
+        m.post("http://localhost/api/admin/users/2/enable", json={"message": "User enabled"})
         user = self.grafana.admin.set_user_enabled(user_id=2, enabled=True)
         self.assertEqual(user["message"], "User enabled")
 
     @requests_mock.Mocker()
     def test_disable_user(self, m):
-        m.post(
-            "http://localhost/api/admin/users/2/disable",
-            json={"message": "User disabled"}
-        )
+        m.post("http://localhost/api/admin/users/2/disable", json={"message": "User disabled"})
         user = self.grafana.admin.set_user_enabled(user_id=2, enabled=False)
         self.assertEqual(user["message"], "User disabled")
