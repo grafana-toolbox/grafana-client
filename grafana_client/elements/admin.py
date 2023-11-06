@@ -75,3 +75,15 @@ class Admin(Base):
         change_user_permissions = "/admin/pause-all-alerts"
         r = self.client.POST(change_user_permissions, json={"paused": pause})
         return r
+
+    def set_user_enabled(self, user_id, enabled: bool):
+        """
+
+        :param user_id:
+        :param enabled:
+        :return:
+        """
+        action = 'enable' if enabled else 'disable'
+        set_user_enabled = '/admin/users/%s/%s' % (user_id, action)
+        r = self.client.POST(set_user_enabled)
+        return r
