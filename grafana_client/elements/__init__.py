@@ -13,6 +13,31 @@ from .organization import Organization, Organizations
 from .plugin import Plugin
 from .rbac import Rbac
 from .search import Search
+from .service_account import ServiceAccount
 from .snapshots import Snapshots
 from .team import Teams
 from .user import User, Users
+
+__all__ = (
+    "Admin",
+    "Alerting",
+    "AlertingProvisioning",
+    "Annotations",
+    "Base",
+    "Dashboard",
+    "DashboardVersions",
+    "Datasource",
+    "Folder",
+    "Health",
+    "Notifications",
+    "Organization",
+    "Organizations",
+    "Plugin",
+    "Rbac",
+    "Search",
+    "ServiceAccount",
+    "Snapshots",
+    "Teams",
+    "User",
+    "Users",
+)
