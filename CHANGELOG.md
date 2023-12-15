@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* Add support for service accounts. Thanks, @einar-lanfranco and @feerbau.
+
 
 ## 3.10.0 (2023-10-30)
 

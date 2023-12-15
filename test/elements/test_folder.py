@@ -247,6 +247,22 @@ class FolderTestCase(unittest.TestCase):
         self.assertEqual(folder["message"], "Folder permissions updated")
 
     @requests_mock.Mocker()
+    def test_update_folder_permissions_for_user(self, m):
+        m.post(
+            "http://localhost/api/access-control/folders/nErXDvCkzz/users/12345",
+            json={"message": "Folder permissions updated"},
+        )
+        folder = self.grafana.folder.update_folder_permissions_for_user(
+            uid="nErXDvCkzz",
+            user_id="12345",
+            items=[
+                {"permission": "View"},
+                {"permission": "Edit"},
+            ],
+        )
+        self.assertEqual(folder["message"], "Folder permissions updated")
+
+    @requests_mock.Mocker()
     def test_delete_folder(self, m):
         m.delete("http://localhost/api/folders/nErXDvCkzz", json={"message": "Folder deleted"})
         folder = self.grafana.folder.delete_folder(uid="nErXDvCkzz")

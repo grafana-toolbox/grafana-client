@@ -26,6 +26,7 @@ from .elements import (
     Plugin,
     Rbac,
     Search,
+    ServiceAccount,
     Snapshots,
     Teams,
     User,
@@ -80,6 +81,7 @@ class GrafanaApi:
         self.snapshots = Snapshots(self.client)
         self.notifications = Notifications(self.client)
         self.plugin = Plugin(self.client)
+        self.serviceaccount = ServiceAccount(self.client)
 
     def connect(self):
         try:
