@@ -78,6 +78,7 @@ class Annotations(Base):
     def add_annotation(
         self,
         dashboard_id=None,
+        dashboard_uid=None,
         panel_id=None,
         time_from=None,
         time_to=None,
@@ -88,6 +89,7 @@ class Annotations(Base):
         https://grafana.com/docs/grafana/latest/http_api/annotations/#create-annotation
 
         :param dashboard_id:
+        :param dashboard_uid:
         :param panel_id
         :param time_from:
         :param time_to:
@@ -98,13 +100,16 @@ class Annotations(Base):
 
         annotations_path = "/annotations"
         payload = {
-            "dashboardId": dashboard_id,
             "panelId": panel_id,
             "time": time_from,
             "timeEnd": time_to,
             "tags": tags,
             "text": text,
         }
+        if dashboard_id is not None:
+            payload["dashboardId"] = dashboard_id
+        if dashboard_uid is not None:
+            payload["dashboardUID"] = dashboard_uid
 
         r = self.client.POST(annotations_path, json=payload)
 

@@ -3,6 +3,7 @@
 ## unreleased
 
 * Add support for service accounts. Thanks, @einar-lanfranco and @feerbau.
+* Fix `add_annotation` to also accept `dashboard_uid` argument. Thanks, @IBUMBLEBEE.
 
 
 ## 3.10.0 (2023-10-30)

@@ -131,7 +131,7 @@ class AnnotationsTestCase(unittest.TestCase):
             self.grafana.annotations.delete_annotations_by_id(annotations_id=None)
 
     @requests_mock.Mocker()
-    def test_add_annotation(self, m):
+    def test_add_annotation_no_dashboard(self, m):
         m.post(
             "http://localhost/api/annotations",
             json={"endId": 80, "id": 79, "message": "Annotation added"},
@@ -142,6 +142,28 @@ class AnnotationsTestCase(unittest.TestCase):
         self.assertEqual(annotation["endId"], 80)
         self.assertEqual(annotation["id"], 79)
         self.assertEqual(annotation["message"], "Annotation added")
+
+    @requests_mock.Mocker()
+    def test_add_annotation_dashboard_id(self, m):
+        m.post(
+            "http://localhost/api/annotations",
+            json={"dashboardId": 42},
+        )
+        annotation = self.grafana.annotations.add_annotation(
+            dashboard_id=42, time_from=1563183710618, time_to=1563185212275, tags=["tags-test"], text="Test"
+        )
+        self.assertEqual(annotation["dashboardId"], 42)
+
+    @requests_mock.Mocker()
+    def test_add_annotation_dashboard_uid(self, m):
+        m.post(
+            "http://localhost/api/annotations",
+            json={"dashboardUID": "jcIIG-07z"},
+        )
+        annotation = self.grafana.annotations.add_annotation(
+            dashboard_uid="jcIIG-07z", time_from=1563183710618, time_to=1563185212275, tags=["tags-test"], text="Test"
+        )
+        self.assertEqual(annotation["dashboardUID"], "jcIIG-07z")
 
     @requests_mock.Mocker()
     def test_update_annotation(self, m):
