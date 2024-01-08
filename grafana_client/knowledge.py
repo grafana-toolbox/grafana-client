@@ -169,6 +169,8 @@ def query_factory(datasource, model: Optional[dict] = None, expression: Optional
             # "datasourceId": datasource.get("id"),
         }
         if dialect == "InfluxQL":
+            if model.get("database"):
+                query["db"] = model["database"]
             query.update(
                 {
                     "q": expression,
