@@ -2,7 +2,11 @@
 
 ## unreleased
 
+
+## 3.11.0 (2024-01-08)
+
 * Add support for service accounts. Thanks, @einar-lanfranco and @feerbau.
+* Fix querying InfluxDB with InfluxQL. Thanks, @storg2001.
 * Fix `add_annotation` to also accept `dashboard_uid` argument. Thanks, @IBUMBLEBEE.
 
 
