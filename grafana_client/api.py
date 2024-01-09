@@ -1,15 +1,14 @@
 import logging
 import os
 import warnings
-from functools import lru_cache as memoized
 from typing import Tuple, Union
 from urllib.parse import parse_qs, urlparse
 
-import requests
-import requests.auth
+import niquests
+import niquests.auth
 from urllib3.exceptions import InsecureRequestWarning
 
-from .client import DEFAULT_TIMEOUT, GrafanaClient
+from .client import DEFAULT_TIMEOUT, AsyncGrafanaClient, GrafanaClient
 from .elements import (
     Admin,
     Alerting,
@@ -31,6 +30,28 @@ from .elements import (
     Teams,
     User,
     Users,
+)
+from .elements._async import (
+    AsyncAdmin,
+    AsyncAlerting,
+    AsyncAlertingProvisioning,
+    AsyncAnnotations,
+    AsyncDashboard,
+    AsyncDashboardVersions,
+    AsyncDatasource,
+    AsyncFolder,
+    AsyncHealth,
+    AsyncNotifications,
+    AsyncOrganization,
+    AsyncOrganizations,
+    AsyncPlugin,
+    AsyncRbac,
+    AsyncSearch,
+    AsyncServiceAccount,
+    AsyncSnapshots,
+    AsyncTeams,
+    AsyncUser,
+    AsyncUsers,
 )
 from .util import as_bool
 
@@ -82,21 +103,22 @@ class GrafanaApi:
         self.notifications = Notifications(self.client)
         self.plugin = Plugin(self.client)
         self.serviceaccount = ServiceAccount(self.client)
+        self._grafana_info = None
 
     def connect(self):
         try:
-            grafana_info = self.health.check()
-        except requests.exceptions.ConnectionError as ex:
+            self._grafana_info = self.health.check()
+        except niquests.exceptions.ConnectionError as ex:
             logger.critical(f"Unable to connect to Grafana at {self.url or self.client.url_host}: {ex}")
             raise
-        logger.info(f"Connected to Grafana at {self.url}: {grafana_info}")
-        return grafana_info
+        logger.info(f"Connected to Grafana at {self.url}: {self._grafana_info}")
+        return self._grafana_info
 
     @property
-    @memoized(maxsize=1)
     def version(self):
-        grafana_info = self.health.check()
-        version = grafana_info["version"]
+        if not self._grafana_info:
+            self._grafana_info = self.health.check()
+        version = self._grafana_info["version"]
         logger.info(f"Inquired Grafana version: {version}")
         return version
 
@@ -104,7 +126,7 @@ class GrafanaApi:
     def from_url(
         cls,
         url: str = None,
-        credential: Union[str, Tuple[str, str], requests.auth.AuthBase] = None,
+        credential: Union[str, Tuple[str, str], niquests.auth.AuthBase] = None,
         timeout: Union[float, Tuple[float, float]] = DEFAULT_TIMEOUT,
     ):
         """
@@ -118,7 +140,7 @@ class GrafanaApi:
         if url is None:
             url = "http://admin:admin@localhost:3000"
 
-        if credential is not None and not isinstance(credential, (str, Tuple, requests.auth.AuthBase)):
+        if credential is not None and not isinstance(credential, (str, Tuple, niquests.auth.AuthBase)):
             raise TypeError(f"Argument 'credential' has wrong type: {type(credential)}")
 
         original_url = url
@@ -164,3 +186,69 @@ class GrafanaApi:
         return cls.from_url(
             url=os.environ.get("GRAFANA_URL"), credential=os.environ.get("GRAFANA_TOKEN"), timeout=timeout
         )
+
+
+class AsyncGrafanaApi(GrafanaApi):
+    def __init__(
+        self,
+        auth=None,
+        host="localhost",
+        port=None,
+        url_path_prefix="",
+        protocol="http",
+        verify=True,
+        timeout=DEFAULT_TIMEOUT,
+        user_agent: str = None,
+        organization_id: int = None,
+    ):
+        self.client = AsyncGrafanaClient(
+            auth,
+            host=host,
+            port=port,
+            url_path_prefix=url_path_prefix,
+            protocol=protocol,
+            verify=verify,
+            timeout=timeout,
+            user_agent=user_agent,
+            organization_id=organization_id,
+        )
+        self.url = None
+        self.admin = AsyncAdmin(self.client)
+        self.alerting = AsyncAlerting(self.client)
+        self.alertingprovisioning = AsyncAlertingProvisioning(self.client)
+        self.dashboard = AsyncDashboard(self.client, self)
+        self.dashboard_versions = AsyncDashboardVersions(self.client)
+        self.datasource = AsyncDatasource(self.client, self)
+        self.folder = AsyncFolder(self.client)
+        self.health = AsyncHealth(self.client)
+        self.organization = AsyncOrganization(self.client)
+        self.organizations = AsyncOrganizations(self.client, self)
+        self.search = AsyncSearch(self.client)
+        self.user = AsyncUser(self.client)
+        self.users = AsyncUsers(self.client)
+        self.rbac = AsyncRbac(self.client)
+        self.teams = AsyncTeams(self.client, self)
+        self.annotations = AsyncAnnotations(self.client)
+        self.snapshots = AsyncSnapshots(self.client)
+        self.notifications = AsyncNotifications(self.client)
+        self.plugin = AsyncPlugin(self.client)
+        self.serviceaccount = AsyncServiceAccount(self.client)
+
+        self._grafana_info = None
+
+    async def connect(self):
+        try:
+            self._grafana_info = await self.health.check()
+        except niquests.exceptions.ConnectionError as ex:  # pragma: no cover
+            logger.critical(f"Unable to connect to Grafana at {self.url or self.client.url_host}: {ex}")
+            raise
+        logger.info(f"Connected to Grafana at {self.url}: {self._grafana_info}")
+        return self._grafana_info
+
+    @property
+    async def version(self):
+        if not self._grafana_info:
+            self._grafana_info = await self.health.check()
+        version = self._grafana_info["version"]
+        logger.info(f"Inquired Grafana version: {version}")
+        return version

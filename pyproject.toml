@@ -30,6 +30,7 @@ omit = [
 line-length = 120
 extend-exclude = [
   "grafana_client/elements/__init__.py",
+  "grafana_client/elements/_async/__init__.py",
 ]
 
 

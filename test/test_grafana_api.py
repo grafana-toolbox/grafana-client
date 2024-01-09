@@ -2,7 +2,7 @@ import os
 import unittest
 from unittest import mock
 
-import requests
+import niquests
 
 from grafana_client import GrafanaApi, HeaderAuth, TokenAuth
 
@@ -15,7 +15,7 @@ class TestGrafanaApiFactories(unittest.TestCase):
 
     def test_from_url_default(self):
         grafana = GrafanaApi.from_url()
-        self.assertIsInstance(grafana.client.auth, requests.auth.HTTPBasicAuth)
+        self.assertIsInstance(grafana.client.auth, niquests.auth.HTTPBasicAuth)
         self.assertEqual(grafana.client.auth.username, "admin")
         self.assertEqual(grafana.client.auth.password, "admin")
         self.assertEqual(grafana.client.url_host, "localhost")
@@ -31,7 +31,7 @@ class TestGrafanaApiFactories(unittest.TestCase):
 
     def test_from_url_basicauth(self):
         grafana = GrafanaApi.from_url(credential=("foo", "bar"))
-        self.assertIsInstance(grafana.client.auth, requests.auth.HTTPBasicAuth)
+        self.assertIsInstance(grafana.client.auth, niquests.auth.HTTPBasicAuth)
         self.assertEqual(grafana.client.auth.username, "foo")
         self.assertEqual(grafana.client.auth.password, "bar")
 
@@ -56,7 +56,7 @@ class TestGrafanaApiFactories(unittest.TestCase):
 
     def test_from_url_full_on(self):
         grafana = GrafanaApi.from_url("https://foo:bar@daq.example.org/grafana/?verify=false")
-        self.assertIsInstance(grafana.client.auth, requests.auth.HTTPBasicAuth)
+        self.assertIsInstance(grafana.client.auth, niquests.auth.HTTPBasicAuth)
         self.assertEqual(grafana.client.auth.username, "foo")
         self.assertEqual(grafana.client.auth.password, "bar")
         self.assertEqual(grafana.client.url_host, "daq.example.org")
@@ -76,7 +76,7 @@ class TestGrafanaApiFactories(unittest.TestCase):
 
     def test_from_env_default(self):
         grafana = GrafanaApi.from_env()
-        self.assertIsInstance(grafana.client.auth, requests.auth.HTTPBasicAuth)
+        self.assertIsInstance(grafana.client.auth, niquests.auth.HTTPBasicAuth)
         self.assertEqual(grafana.client.auth.username, "admin")
         self.assertEqual(grafana.client.auth.password, "admin")
         self.assertEqual(grafana.client.url_host, "localhost")
@@ -94,7 +94,7 @@ class TestGrafanaApiFactories(unittest.TestCase):
     @mock.patch.dict(os.environ, {"GRAFANA_URL": "http://foo:bar@localhost:3000"})
     def test_from_env_basicauth(self):
         grafana = GrafanaApi.from_env()
-        self.assertIsInstance(grafana.client.auth, requests.auth.HTTPBasicAuth)
+        self.assertIsInstance(grafana.client.auth, niquests.auth.HTTPBasicAuth)
         self.assertEqual(grafana.client.auth.username, "foo")
         self.assertEqual(grafana.client.auth.password, "bar")
 
@@ -113,7 +113,7 @@ class TestGrafanaApiFactories(unittest.TestCase):
     @mock.patch.dict(os.environ, {"GRAFANA_URL": "https://foo:bar@daq.example.org/grafana/?verify=false"})
     def test_from_env_full_on(self):
         grafana = GrafanaApi.from_env()
-        self.assertIsInstance(grafana.client.auth, requests.auth.HTTPBasicAuth)
+        self.assertIsInstance(grafana.client.auth, niquests.auth.HTTPBasicAuth)
         self.assertEqual(grafana.client.auth.username, "foo")
         self.assertEqual(grafana.client.auth.password, "bar")
         self.assertEqual(grafana.client.url_host, "daq.example.org")

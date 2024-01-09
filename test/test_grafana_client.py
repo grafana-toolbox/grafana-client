@@ -6,7 +6,7 @@ if sys.version_info > (3, 0):
 else:
     from mock import patch, Mock
 
-import requests
+import niquests
 
 from grafana_client.api import GrafanaApi
 from grafana_client.client import GrafanaClientError, HeaderAuth, TokenAuth
@@ -74,8 +74,8 @@ class TestGrafanaClient(unittest.TestCase):
             protocol="https",
             verify=False,
         )
-        grafana.client.s.get = Mock(name="get")
-        grafana.client.s.get.return_value = MockResponse(
+        grafana.client.s.request = Mock(name="request")
+        grafana.client.s.request.return_value = MockResponse(
             status_code=200,
             json_data={
                 "email": "user@mygraf.com",
@@ -87,9 +87,10 @@ class TestGrafanaClient(unittest.TestCase):
             },
         )
 
-        basic_auth = requests.auth.HTTPBasicAuth("admin", "admin")
+        basic_auth = niquests.auth.HTTPBasicAuth("admin", "admin")
         grafana.users.find_user("test@example.org")
-        grafana.client.s.get.assert_called_once_with(
+        grafana.client.s.request.assert_called_once_with(
+            "get",
             "https://localhost/api/users/lookup?loginOrEmail=test@example.org",
             auth=basic_auth,
             headers=None,
@@ -109,12 +110,12 @@ class TestGrafanaClient(unittest.TestCase):
             timeout=0.0001,
         )
 
-        with self.assertRaises(requests.exceptions.Timeout):
+        with self.assertRaises(niquests.exceptions.Timeout):
             grafana.folder.get_all_folders()
 
     def test_grafana_client_basic_auth(self):
         grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="https", port="3000")
-        self.assertTrue(isinstance(grafana.client.auth, requests.auth.HTTPBasicAuth))
+        self.assertTrue(isinstance(grafana.client.auth, niquests.auth.HTTPBasicAuth))
 
     def test_grafana_client_token_auth(self):
         grafana = GrafanaApi(
@@ -127,13 +128,13 @@ class TestGrafanaClient(unittest.TestCase):
 
     def test_tokenauth(self):
         tokenauth = TokenAuth("VerySecretToken")
-        request = requests.Request()
+        request = niquests.Request()
         tokenauth(request)
         self.assertEqual(request.headers["Authorization"], "Bearer VerySecretToken")
 
     def test_headerauth(self):
         headerauth = HeaderAuth(name="X-WEBAUTH-USER", value="foobar")
-        request = requests.Request()
+        request = niquests.Request()
         headerauth(request)
         self.assertEqual(request.headers["X-WEBAUTH-USER"], "foobar")
 
@@ -148,7 +149,7 @@ class TestGrafanaClient(unittest.TestCase):
 
     def test_grafana_client_connect_failure(self):
         grafana = GrafanaApi(auth=None, host="localhost", url_path_prefix="", protocol="http", port="32425")
-        self.assertRaises(requests.exceptions.ConnectionError, lambda: grafana.connect())
+        self.assertRaises(niquests.exceptions.ConnectionError, lambda: grafana.connect())
 
     @patch("grafana_client.client.GrafanaClient.__getattr__")
     def test_grafana_client_version(self, mock_get):
@@ -163,8 +164,8 @@ class TestGrafanaClient(unittest.TestCase):
 
     def test_grafana_client_204_no_content_response(self):
         grafana = GrafanaApi.from_url()
-        grafana.client.s.delete = Mock(name="get")
-        grafana.client.s.delete.return_value = MockResponse(
+        grafana.client.s.request = Mock(name="request")
+        grafana.client.s.request.return_value = MockResponse(
             status_code=204,
         )
         response = grafana.alertingprovisioning.delete_alertrule("foobar")

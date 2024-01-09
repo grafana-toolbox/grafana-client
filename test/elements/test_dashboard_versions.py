@@ -1,8 +1,8 @@
 import unittest
 
-import requests_mock
-
 from grafana_client import GrafanaApi
+
+from ..compat import requests_mock
 
 
 class DashboardVersionsTestCase(unittest.TestCase):
@@ -44,6 +44,7 @@ class DashboardVersionsTestCase(unittest.TestCase):
                     "message": "Initial save",
                 },
             ],
+            headers={"Content-Type": "application/json"},
         )
         versions = self.grafana.dashboard_versions.get_dashboard_versions_by_id(dashboard_id=1, limit=10, start=0)
         self.assertEqual(versions[0]["dashboardId"], 1)
@@ -76,6 +77,7 @@ class DashboardVersionsTestCase(unittest.TestCase):
                     "message": "Initial save",
                 },
             ],
+            headers={"Content-Type": "application/json"},
         )
         versions = self.grafana.dashboard_versions.get_dashboard_versions_by_uid(
             dashboard_uid="QA7wKklGz", limit=10, start=0
@@ -97,6 +99,7 @@ class DashboardVersionsTestCase(unittest.TestCase):
                 "data": {"rows": [], "schemaVersion": 14, "timezone": "browser", "title": "test", "version": 1},
                 "createdBy": "admin",
             },
+            headers={"Content-Type": "application/json"},
         )
         dashboard = self.grafana.dashboard_versions.get_dashboard_version_by_id(dashboard_id=1, version_id=1)
         self.assertEqual(dashboard["dashboardId"], 1)
@@ -117,6 +120,7 @@ class DashboardVersionsTestCase(unittest.TestCase):
                 "data": {"rows": [], "schemaVersion": 14, "timezone": "browser", "title": "test", "version": 1},
                 "createdBy": "admin",
             },
+            headers={"Content-Type": "application/json"},
         )
         dashboard = self.grafana.dashboard_versions.get_dashboard_version_by_uid(
             dashboard_uid="QA7wKklGz", version_id=1
@@ -133,6 +137,7 @@ class DashboardVersionsTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/dashboards/id/1/restore",
             json={"slug": "my-dashboard", "status": "success", "version": 3},
+            headers={"Content-Type": "application/json"},
         )
         result = self.grafana.dashboard_versions.restore_dashboard_by_id(dashboard_id=1, version_id=1)
         self.assertEqual(result["status"], "success")
@@ -149,6 +154,7 @@ class DashboardVersionsTestCase(unittest.TestCase):
                 "url": "/d/QA7wKklGz/my-dashboard",
                 "version": 3,
             },
+            headers={"Content-Type": "application/json"},
         )
         result = self.grafana.dashboard_versions.restore_dashboard_by_uid(dashboard_uid="QA7wKklGz", version_id=1)
         self.assertEqual(result["status"], "success")

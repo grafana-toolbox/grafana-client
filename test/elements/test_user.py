@@ -1,9 +1,9 @@
 import unittest
 
-import requests_mock
-
 from grafana_client import GrafanaApi
 from grafana_client.model import PersonalPreferences
+
+from ..compat import requests_mock
 
 
 class UsersTestCase(unittest.TestCase):
@@ -15,6 +15,7 @@ class UsersTestCase(unittest.TestCase):
         m.put(
             "http://localhost/api/users/foo",
             json={},
+            headers={"Content-Type": "application/json"},
         )
         user = self.grafana.users.update_user("foo", {})
         self.assertEqual(user, {})
@@ -24,6 +25,7 @@ class UsersTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/users/foo",
             json={},
+            headers={"Content-Type": "application/json"},
         )
         user = self.grafana.users.get_user("foo")
         self.assertEqual(user, {})
@@ -33,6 +35,7 @@ class UsersTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/users/lookup?loginOrEmail=foo",
             json={},
+            headers={"Content-Type": "application/json"},
         )
         user = self.grafana.users.find_user("foo")
         self.assertEqual(user, {})
@@ -42,10 +45,12 @@ class UsersTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/users?query=foo&page=1",
             json=[{"name": "foo"}, {"name": "bar"}],
+            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/users?query=foo&page=2",
             json=[],
+            headers={"Content-Type": "application/json"},
         )
         users = self.grafana.users.search_users("foo")
         self.assertEqual(len(users), 2)
@@ -55,6 +60,7 @@ class UsersTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/users?query=foo&page=1",
             json=[],
+            headers={"Content-Type": "application/json"},
         )
         users = self.grafana.users.search_users("foo")
         self.assertEqual(len(users), 0)
@@ -64,6 +70,7 @@ class UsersTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/users?query=foo&page=2",
             json=[{}],
+            headers={"Content-Type": "application/json"},
         )
         users = self.grafana.users.search_users("foo", page=2)
         self.assertEqual(users, [{}])
@@ -73,10 +80,12 @@ class UsersTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/users?query=foo&page=1&perpage=1",
             json=[{"name": "foo"}, {"name": "bar"}],
+            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/users?query=foo&page=2&perpage=1",
             json=[],
+            headers={"Content-Type": "application/json"},
         )
         users = self.grafana.users.search_users("foo", perpage=1)
         self.assertEqual(len(users), 2)
@@ -86,10 +95,12 @@ class UsersTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/users?query=foo&page=1&perpage=5",
             json=[{"name": "foo"}, {"name": "bar"}],
+            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/users?query=foo&page=2&perpage=5",
             json=[],
+            headers={"Content-Type": "application/json"},
         )
         users = self.grafana.users.search_users("foo", perpage=5)
         self.assertEqual(len(users), 2)
@@ -99,6 +110,7 @@ class UsersTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/users/foo/orgs",
             json=[],
+            headers={"Content-Type": "application/json"},
         )
         users = self.grafana.users.get_user_organisations("foo")
         self.assertEqual(users, [])
@@ -113,6 +125,7 @@ class UserTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/user",
             json={},
+            headers={"Content-Type": "application/json"},
         )
         result = self.grafana.user.get_actual_user()
         self.assertEqual(result, {})
@@ -122,6 +135,7 @@ class UserTestCase(unittest.TestCase):
         m.put(
             "http://localhost/api/user/password",
             json={},
+            headers={"Content-Type": "application/json"},
         )
         result = self.grafana.user.change_actual_user_password("old", "new")
         self.assertEqual(result, {})
@@ -131,6 +145,7 @@ class UserTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/users/foo/using/acme",
             json={},
+            headers={"Content-Type": "application/json"},
         )
         result = self.grafana.user.switch_user_organisation("foo", "acme")
         self.assertEqual(result, {})
@@ -140,6 +155,7 @@ class UserTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/user/using/acme",
             json={},
+            headers={"Content-Type": "application/json"},
         )
         result = self.grafana.user.switch_actual_user_organisation("acme")
         self.assertEqual(result, {})
@@ -149,6 +165,7 @@ class UserTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/user/orgs",
             json=[],
+            headers={"Content-Type": "application/json"},
         )
         result = self.grafana.user.get_actual_user_organisations()
         self.assertEqual(result, [])
@@ -158,6 +175,7 @@ class UserTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/user/stars/dashboard/987vb7t33",
             json={},
+            headers={"Content-Type": "application/json"},
         )
         result = self.grafana.user.star_actual_user_dashboard("987vb7t33")
         self.assertEqual(result, {})
@@ -167,20 +185,29 @@ class UserTestCase(unittest.TestCase):
         m.delete(
             "http://localhost/api/user/stars/dashboard/987vb7t33",
             json={},
+            headers={"Content-Type": "application/json"},
         )
         result = self.grafana.user.unstar_actual_user_dashboard("987vb7t33")
         self.assertEqual(result, {})
 
     @requests_mock.Mocker()
     def test_get_preferences(self, m):
-        m.get("http://localhost/api/user/preferences", json={"theme": "", "homeDashboardId": 0, "timezone": ""})
+        m.get(
+            "http://localhost/api/user/preferences",
+            json={"theme": "", "homeDashboardId": 0, "timezone": ""},
+            headers={"Content-Type": "application/json"},
+        )
 
         result = self.grafana.user.get_preferences()
         self.assertEqual(result["homeDashboardId"], 0)
 
     @requests_mock.Mocker()
     def test_update_preferences(self, m):
-        m.put("http://localhost/api/user/preferences", json={"message": "Preferences updated"})
+        m.put(
+            "http://localhost/api/user/preferences",
+            json={"message": "Preferences updated"},
+            headers={"Content-Type": "application/json"},
+        )
         preference = self.grafana.user.update_preferences(
             PersonalPreferences(theme="", homeDashboardId=999, timezone="utc")
         )
@@ -188,6 +215,10 @@ class UserTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_patch_preferences(self, m):
-        m.patch("http://localhost/api/user/preferences", json={"message": "Preferences updated"})
+        m.patch(
+            "http://localhost/api/user/preferences",
+            json={"message": "Preferences updated"},
+            headers={"Content-Type": "application/json"},
+        )
         preference = self.grafana.user.patch_preferences(PersonalPreferences(homeDashboardUID="zgjG8dKVz"))
         self.assertEqual(preference["message"], "Preferences updated")

@@ -1,8 +1,8 @@
 import unittest
 
-import requests_mock
-
 from grafana_client import GrafanaApi
+
+from ..compat import requests_mock
 
 
 class AdminTestCase(unittest.TestCase):
@@ -123,6 +123,7 @@ class AdminTestCase(unittest.TestCase):
                     "auto_assign_org_role": "Viewer",
                 },
             },
+            headers={"Content-Type": "application/json"},
         )
         admin = self.grafana.admin.settings()
         self.assertEqual(admin["users"]["allow_org_create"], "true")
@@ -143,13 +144,18 @@ class AdminTestCase(unittest.TestCase):
                 "alerts": 2,
                 "activeUsers": 1,
             },
+            headers={"Content-Type": "application/json"},
         )
         stats = self.grafana.admin.stats()
         self.assertEqual(len(stats), 10)
 
     @requests_mock.Mocker()
     def test_create_user(self, m):
-        m.post("http://localhost/api/admin/users", json={"id": 5, "message": "User created"})
+        m.post(
+            "http://localhost/api/admin/users",
+            json={"id": 5, "message": "User created"},
+            headers={"Content-Type": "application/json"},
+        )
         user = self.grafana.admin.create_user(
             {"name": "User", "email": "user@graf.com", "login": "user", "password": "userpassword"}
         )
@@ -157,19 +163,31 @@ class AdminTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_change_user_password(self, m):
-        m.put("http://localhost/api/admin/users/2/password", json={"message": "User password updated"})
+        m.put(
+            "http://localhost/api/admin/users/2/password",
+            json={"message": "User password updated"},
+            headers={"Content-Type": "application/json"},
+        )
         user = self.grafana.admin.change_user_password(user_id=2, password="password")
         self.assertEqual(user["message"], "User password updated")
 
     @requests_mock.Mocker()
     def test_change_user_permissions(self, m):
-        m.put("http://localhost/api/admin/users/2/permissions", json={"message": "User permissions updated"})
+        m.put(
+            "http://localhost/api/admin/users/2/permissions",
+            json={"message": "User permissions updated"},
+            headers={"Content-Type": "application/json"},
+        )
         user = self.grafana.admin.change_user_permissions(user_id=2, is_grafana_admin=True)
         self.assertEqual(user["message"], "User permissions updated")
 
     @requests_mock.Mocker()
     def test_delete_user(self, m):
-        m.delete("http://localhost/api/admin/users/2", json={"message": "User deleted"})
+        m.delete(
+            "http://localhost/api/admin/users/2",
+            json={"message": "User deleted"},
+            headers={"Content-Type": "application/json"},
+        )
         user = self.grafana.admin.delete_user(user_id=2)
         self.assertEqual(user["message"], "User deleted")
 
@@ -178,18 +196,27 @@ class AdminTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/admin/pause-all-alerts",
             json={"state": "Paused", "message": "alert paused", "alertsAffected": 1},
+            headers={"Content-Type": "application/json"},
         )
         pause = self.grafana.admin.pause_all_alerts(pause="True")
         self.assertEqual(pause["message"], "alert paused")
 
     @requests_mock.Mocker()
     def test_enable_user(self, m):
-        m.post("http://localhost/api/admin/users/2/enable", json={"message": "User enabled"})
+        m.post(
+            "http://localhost/api/admin/users/2/enable",
+            json={"message": "User enabled"},
+            headers={"Content-Type": "application/json"},
+        )
         user = self.grafana.admin.set_user_enabled(user_id=2, enabled=True)
         self.assertEqual(user["message"], "User enabled")
 
     @requests_mock.Mocker()
     def test_disable_user(self, m):
-        m.post("http://localhost/api/admin/users/2/disable", json={"message": "User disabled"})
+        m.post(
+            "http://localhost/api/admin/users/2/disable",
+            json={"message": "User disabled"},
+            headers={"Content-Type": "application/json"},
+        )
         user = self.grafana.admin.set_user_enabled(user_id=2, enabled=False)
         self.assertEqual(user["message"], "User disabled")

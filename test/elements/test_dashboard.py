@@ -1,8 +1,8 @@
 import unittest
 
-import requests_mock
-
 from grafana_client import GrafanaApi
+
+from ..compat import requests_mock
 
 
 class DashboardTestCase(unittest.TestCase):
@@ -29,6 +29,7 @@ class DashboardTestCase(unittest.TestCase):
                     "slug": "production-overview",
                 },
             },
+            headers={"Content-Type": "application/json"},
         )
         dashboard = self.grafana.dashboard.get_dashboard("cIBgcSjkk")
         self.assertEqual(dashboard["dashboard"]["uid"], "cIBgcSjkk")
@@ -38,6 +39,7 @@ class DashboardTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "6f8c1d9fe4", "database": "ok", "version": "7.5.11"},
+            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/dashboards/db/Production Overview",
@@ -57,6 +59,7 @@ class DashboardTestCase(unittest.TestCase):
                     "slug": "production-overview",
                 },
             },
+            headers={"Content-Type": "application/json"},
         )
         dashboard = self.grafana.dashboard.get_dashboard_by_name("Production Overview")
         self.assertEqual(dashboard["dashboard"]["title"], "Production Overview")
@@ -66,6 +69,7 @@ class DashboardTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": "8.0.2"},
+            headers={"Content-Type": "application/json"},
         )
         with self.assertRaises(DeprecationWarning) as ex:
             self.grafana.dashboard.get_dashboard_by_name("foobar")
@@ -89,6 +93,7 @@ class DashboardTestCase(unittest.TestCase):
                 "version": 1,
                 "slug": "production-overview",
             },
+            headers={"Content-Type": "application/json"},
         )
         dashboard = self.grafana.dashboard.update_dashboard(
             {
@@ -116,7 +121,11 @@ class DashboardTestCase(unittest.TestCase):
         from the nested "meta" object.
         This is important when roundtripping dashboard payloads.
         """
-        m.post("http://localhost/api/dashboards/db", json={})
+        m.post(
+            "http://localhost/api/dashboards/db",
+            json={},
+            headers={"Content-Type": "application/json"},
+        )
         self.grafana.dashboard.update_dashboard(
             {
                 "meta": {
@@ -137,7 +146,11 @@ class DashboardTestCase(unittest.TestCase):
         This is important when roundtripping dashboard payloads and
         intentionally wanting to move the dashboard to a different folder.
         """
-        m.post("http://localhost/api/dashboards/db", json={})
+        m.post(
+            "http://localhost/api/dashboards/db",
+            json={},
+            headers={"Content-Type": "application/json"},
+        )
         self.grafana.dashboard.update_dashboard(
             {
                 "meta": {
@@ -177,19 +190,28 @@ class DashboardTestCase(unittest.TestCase):
                     "created": "0001-01-01T00:00:00Z",
                 },
             },
+            headers={"Content-Type": "application/json"},
         )
         dashboard = self.grafana.dashboard.get_home_dashboard()
         self.assertEqual(dashboard["meta"]["isHome"], "true")
 
     @requests_mock.Mocker()
     def test_delete_dashboard(self, m):
-        m.delete("http://localhost/api/dashboards/uid/cIBgcSjkk", json={"title": "Production Overview"})
+        m.delete(
+            "http://localhost/api/dashboards/uid/cIBgcSjkk",
+            json={"title": "Production Overview"},
+            headers={"Content-Type": "application/json"},
+        )
         response = self.grafana.dashboard.delete_dashboard("cIBgcSjkk")
         self.assertEqual(response["title"], "Production Overview")
 
     @requests_mock.Mocker()
     def test_get_dashboards_tags(self, m):
-        m.get("http://localhost/api/dashboards/tags", json=[{"term": "tag1", "count": 1}, {"term": "tag2", "count": 4}])
+        m.get(
+            "http://localhost/api/dashboards/tags",
+            json=[{"term": "tag1", "count": 1}, {"term": "tag2", "count": 4}],
+            headers={"Content-Type": "application/json"},
+        )
         tags = self.grafana.dashboard.get_dashboards_tags()
         self.assertEqual(len(tags), 2)
         self.assertEqual(tags[0]["term"], "tag1")
@@ -238,18 +260,22 @@ class DashboardTestCase(unittest.TestCase):
         mock.get(
             "http://localhost/api/dashboards/id/1/permissions",
             json=response_data,
+            headers={"Content-Type": "application/json"},
         )
         mock.get(
             "http://localhost/api/dashboards/uid/foobar/permissions",
             json=response_data,
+            headers={"Content-Type": "application/json"},
         )
         mock.post(
             "http://localhost/api/dashboards/id/1/permissions",
             json={"message": "Dashboard permissions updated"},
+            headers={"Content-Type": "application/json"},
         )
         mock.post(
             "http://localhost/api/dashboards/uid/foobar/permissions",
             json={"message": "Dashboard permissions updated"},
+            headers={"Content-Type": "application/json"},
         )
 
     @requests_mock.Mocker()

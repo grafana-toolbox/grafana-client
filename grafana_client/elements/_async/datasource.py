@@ -8,10 +8,10 @@ from urllib.parse import urlencode
 from niquests import ReadTimeout
 from verlib2 import Version
 
-from ..client import GrafanaBadInputError, GrafanaClientError, GrafanaServerError
-from ..knowledge import get_healthcheck_expression, query_factory
-from ..model import DatasourceHealthResponse, DatasourceIdentifier
-from .base import Base
+from ...client import GrafanaBadInputError, GrafanaClientError, GrafanaServerError
+from ...knowledge import get_healthcheck_expression, query_factory
+from ...model import DatasourceHealthResponse, DatasourceIdentifier
+from ..base import Base
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ class Datasource(Base):
         self.client = client
         self.api = api
 
-    def health(self, datasource_uid: str):
+    async def health(self, datasource_uid: str):
         """
         Makes a call to the health endpoint of a data source identified by the
         given ``uid``.
@@ -38,20 +38,20 @@ class Datasource(Base):
         https://grafana.com/docs/grafana/latest/developers/http_api/data_source/#check-data-source-health
         """
         path = f"/datasources/uid/{datasource_uid}/health"
-        r = self.client.GET(path)
+        r = await self.client.GET(path)
         return r
 
-    def find_datasource(self, datasource_name):
+    async def find_datasource(self, datasource_name):
         """
 
         :param datasource_name:
         :return:
         """
         get_datasource_path = "/datasources/name/%s" % datasource_name
-        r = self.client.GET(get_datasource_path)
+        r = await self.client.GET(get_datasource_path)
         return r
 
-    def get_datasource_by_id(self, datasource_id):
+    async def get_datasource_by_id(self, datasource_id):
         """
         Warning: This API is deprecated since Grafana v9.0.0 and will be
                  removed in a future release.
@@ -60,64 +60,64 @@ class Datasource(Base):
         :return:
         """
         get_datasource_path = "/datasources/%s" % datasource_id
-        r = self.client.GET(get_datasource_path)
+        r = await self.client.GET(get_datasource_path)
         return r
 
-    def get_datasource_by_name(self, datasource_name):
+    async def get_datasource_by_name(self, datasource_name):
         """
 
         :param datasource_name:
         :return:
         """
         get_datasource_path = "/datasources/name/%s" % datasource_name
-        r = self.client.GET(get_datasource_path)
+        r = await self.client.GET(get_datasource_path)
         return r
 
-    def get_datasource_by_uid(self, datasource_uid):
+    async def get_datasource_by_uid(self, datasource_uid):
         """
 
         :param datasource_uid:
         :return:
         """
         get_datasource_path = "/datasources/uid/%s" % datasource_uid
-        r = self.client.GET(get_datasource_path)
+        r = await self.client.GET(get_datasource_path)
         return r
 
-    def get_datasource_id_by_name(self, datasource_name):
+    async def get_datasource_id_by_name(self, datasource_name):
         """
 
         :param datasource_name:
         :return:
         """
         get_datasource_path = "/datasources/id/%s" % datasource_name
-        r = self.client.GET(get_datasource_path)
+        r = await self.client.GET(get_datasource_path)
         return r
 
-    def get(self, dsident: DatasourceIdentifier):
+    async def get(self, dsident: DatasourceIdentifier):
         """
         Get dashboard by either datasource_id, datasource_uid, or datasource_name.
         """
         if dsident.id:
-            datasource = self.get_datasource_by_id(dsident.id)
+            datasource = await self.get_datasource_by_id(dsident.id)
         elif dsident.uid:
-            datasource = self.get_datasource_by_uid(dsident.uid)
+            datasource = await self.get_datasource_by_uid(dsident.uid)
         elif dsident.name:
-            datasource = self.get_datasource_by_name(dsident.name)
+            datasource = await self.get_datasource_by_name(dsident.name)
         else:
             raise KeyError("Data source must be identified by one of id, uid, or name")
         return datasource
 
-    def create_datasource(self, datasource):
+    async def create_datasource(self, datasource):
         """
 
         :param datasource:
         :return:
         """
         create_datasources_path = "/datasources"
-        r = self.client.POST(create_datasources_path, json=datasource)
+        r = await self.client.POST(create_datasources_path, json=datasource)
         return r
 
-    def update_datasource(self, datasource_id, datasource):
+    async def update_datasource(self, datasource_id, datasource):
         """
 
         :param datasource_id:
@@ -125,10 +125,10 @@ class Datasource(Base):
         :return:
         """
         update_datasource = "/datasources/%s" % datasource_id
-        r = self.client.PUT(update_datasource, json=datasource)
+        r = await self.client.PUT(update_datasource, json=datasource)
         return r
 
-    def update_datasource_by_uid(self, datasource_uid, datasource):
+    async def update_datasource_by_uid(self, datasource_uid, datasource):
         """
 
         :param datasource_uid:
@@ -136,19 +136,19 @@ class Datasource(Base):
         :return:
         """
         update_datasource = "/datasources/uid/%s" % datasource_uid
-        r = self.client.PUT(update_datasource, json=datasource)
+        r = await self.client.PUT(update_datasource, json=datasource)
         return r
 
-    def list_datasources(self):
+    async def list_datasources(self):
         """
 
         :return:
         """
         list_datasources_path = "/datasources"
-        r = self.client.GET(list_datasources_path)
+        r = await self.client.GET(list_datasources_path)
         return r
 
-    def delete_datasource_by_id(self, datasource_id):
+    async def delete_datasource_by_id(self, datasource_id):
         """
         Warning: This API is deprecated since Grafana v9.0.0 and will be
                  removed in a future release.
@@ -157,72 +157,72 @@ class Datasource(Base):
         :return:
         """
         delete_datasource = "/datasources/%s" % datasource_id
-        r = self.client.DELETE(delete_datasource)
+        r = await self.client.DELETE(delete_datasource)
         return r
 
-    def delete_datasource_by_name(self, datasource_name):
+    async def delete_datasource_by_name(self, datasource_name):
         """
 
         :param datasource_name:
         :return:
         """
         delete_datasource = "/datasources/name/%s" % datasource_name
-        r = self.client.DELETE(delete_datasource)
+        r = await self.client.DELETE(delete_datasource)
         return r
 
-    def delete_datasource_by_uid(self, datasource_uid):
+    async def delete_datasource_by_uid(self, datasource_uid):
         """
 
         :param datasource_uid:
         :return:
         """
         delete_datasource = "/datasources/uid/%s" % datasource_uid
-        r = self.client.DELETE(delete_datasource)
+        r = await self.client.DELETE(delete_datasource)
         return r
 
-    def enable_datasource_permissions(self, datasource_id):
+    async def enable_datasource_permissions(self, datasource_id):
         """
         The Data Source Permissions is only available in Grafana Enterprise.
 
         :param datasource_id:
         :return:
         """
-        if Version(self.api.version) > VERSION_10_2_2:
+        if Version(await self.api.version) > VERSION_10_2_2:
             raise NotImplementedError("Deprecated since Grafana 10.2.3")
 
         get_datasource_path = "/datasources/%s/enable-permissions" % datasource_id
-        r = self.client.POST(get_datasource_path)
+        r = await self.client.POST(get_datasource_path)
         return r
 
-    def disable_datasource_permissions(self, datasource_id):
+    async def disable_datasource_permissions(self, datasource_id):
         """
         The Data Source Permissions is only available in Grafana Enterprise.
 
         :param datasource_id:
         :return:
         """
-        if Version(self.api.version) > VERSION_10_2_2:
+        if Version(await self.api.version) > VERSION_10_2_2:
             raise NotImplementedError("Deprecated since Grafana 10.2.3")
 
         get_datasource_path = "/datasources/%s/disable-permissions" % datasource_id
-        r = self.client.POST(get_datasource_path)
+        r = await self.client.POST(get_datasource_path)
         return r
 
-    def get_datasource_permissions(self, datasource_id):
+    async def get_datasource_permissions(self, datasource_id):
         """
         The Data Source Permissions is only available in Grafana Enterprise.
 
         :param datasource_id:
         :return:
         """
-        if Version(self.api.version) > VERSION_10_2_2:
+        if Version(await self.api.version) > VERSION_10_2_2:
             raise NotImplementedError("Deprecated since Grafana 10.2.3, please use get_rbac_datasources()")
 
         get_datasource_path = "/datasources/%s/permissions" % datasource_id
-        r = self.client.GET(get_datasource_path)
+        r = await self.client.GET(get_datasource_path)
         return r
 
-    def add_datasource_permissions(self, datasource_id, permissions):
+    async def add_datasource_permissions(self, datasource_id, permissions):
         """
         The Data Source Permissions is only available in Grafana Enterprise.
 
@@ -230,14 +230,14 @@ class Datasource(Base):
         :param permissions:
         :return:
         """
-        if Version(self.api.version) > VERSION_10_2_2:
+        if Version(await self.api.version) > VERSION_10_2_2:
             raise NotImplementedError("Deprecated since Grafana 10.2.3, please use set_rbac_datasources_*()")
 
         get_datasource_path = "/datasources/%s/permissions" % datasource_id
-        r = self.client.POST(get_datasource_path, json=permissions)
+        r = await self.client.POST(get_datasource_path, json=permissions)
         return r
 
-    def remove_datasource_permissions(self, datasource_id, permission_id):
+    async def remove_datasource_permissions(self, datasource_id, permission_id):
         """
         The Data Source Permissions is only available in Grafana Enterprise.
 
@@ -245,14 +245,14 @@ class Datasource(Base):
         :param permission_id:
         :return:
         """
-        if Version(self.api.version) > VERSION_10_2_2:
+        if Version(await self.api.version) > VERSION_10_2_2:
             raise NotImplementedError("Deprecated since Grafana 10.2.3, please use set_rbac_datasources_*()")
 
         get_datasource_path = "/datasources/%s/permissions/%s" % (datasource_id, permission_id)
-        r = self.client.DELETE(get_datasource_path)
+        r = await self.client.DELETE(get_datasource_path)
         return r
 
-    def get_datasource_proxy_data(
+    async def get_datasource_proxy_data(
         self, datasource_id, query_type="query", version="v1", expr=None, time=None, start=None, end=None, step=None
     ):
         """
@@ -277,7 +277,7 @@ class Datasource(Base):
         else:
             raise KeyError(f"Unknown or invalid query type: {query_type}")
 
-    def query(self, datasource_id, query, timestamp, access="proxy"):
+    async def query(self, datasource_id, query, timestamp, access="proxy"):
         """
 
         :param datasource_id:
@@ -287,7 +287,7 @@ class Datasource(Base):
         :return:
         """
         post_query_path = "/datasources/%s/%s/api/v1/query" % (access, datasource_id)
-        r = self.client.POST(
+        r = await self.client.POST(
             post_query_path,
             data={
                 "query": query,
@@ -296,7 +296,7 @@ class Datasource(Base):
         )
         return r
 
-    def query_range(self, datasource_id, query, start, end, step, access="proxy"):
+    async def query_range(self, datasource_id, query, start, end, step, access="proxy"):
         """
 
         :param datasource_id:
@@ -308,10 +308,12 @@ class Datasource(Base):
         :return:
         """
         post_query_range_path = "/datasources/%s/%s/api/v1/query_range" % (access, datasource_id)
-        r = self.client.POST(post_query_range_path, data={"query": query, "start": start, "end": end, "step": step})
+        r = await self.client.POST(
+            post_query_range_path, data={"query": query, "start": start, "end": end, "step": step}
+        )
         return r
 
-    def series(self, datasource_id, match, start, end, access="proxy"):
+    async def series(self, datasource_id, match, start, end, access="proxy"):
         """
 
         :param datasource_id:
@@ -322,10 +324,10 @@ class Datasource(Base):
         :return:
         """
         post_series_path = "/datasources/%s/%s/api/v1/series" % (access, datasource_id)
-        r = self.client.POST(post_series_path, data={"match[]": match, "start": start, "end": end})
+        r = await self.client.POST(post_series_path, data={"match[]": match, "start": start, "end": end})
         return r
 
-    def smartquery(
+    async def smartquery(
         self,
         datasource: Union[DatasourceIdentifier, Dict],
         expression: str,
@@ -341,7 +343,7 @@ class Datasource(Base):
         """
 
         if isinstance(datasource, DatasourceIdentifier):
-            datasource = self.get(datasource)
+            datasource = await self.get(datasource)
 
         datasource_id = datasource["id"]
         datasource_type = datasource["type"]
@@ -364,9 +366,9 @@ class Datasource(Base):
         # Compute request method, body, and endpoint.
         if "method" in request and isinstance(request["method"], str):
             if request["method"] == "POST":
-                send_request = self.client.POST
+                send_request = await self.client.POST
             else:
-                send_request = self.client.GET
+                send_request = await self.client.GET
 
         logger.info(f"Submitting request: {request}")
 
@@ -389,9 +391,9 @@ class Datasource(Base):
                 database_name=datasource.get("database"),
             )
             request_kwargs = {}
-            send_request = self.client.GET
+            send_request = await self.client.GET
 
-        elif datasource_type in ("prometheus", "loki") and Version(self.api.version) <= VERSION_7:
+        elif datasource_type in ("prometheus", "loki") and Version(await self.api.version) <= VERSION_7:
             if (
                 "queries" in request["data"]
                 and len(request["data"]["queries"]) > 0
@@ -432,7 +434,7 @@ class Datasource(Base):
             )
             raise
 
-    def health_check(self, datasource: Union[DatasourceIdentifier, Dict]) -> DatasourceHealthResponse:
+    async def health_check(self, datasource: Union[DatasourceIdentifier, Dict]) -> DatasourceHealthResponse:
         """
         Run a data source health check and return its success state, duration,
         and an (error) message.
@@ -441,7 +443,7 @@ class Datasource(Base):
         """
 
         if isinstance(datasource, DatasourceIdentifier):
-            datasource = self.get(datasource)
+            datasource = await self.get(datasource)
 
         datasource_uid = datasource["uid"]
         datasource_type = datasource["type"]
@@ -458,7 +460,7 @@ class Datasource(Base):
         start = time.time()
         message = "Unknown error"
         try:
-            response = self.smartquery(datasource, expression)
+            response = await self.smartquery(datasource, expression)
             response_display = response
             if VERBOSE:  # pragma:nocover
                 response_display = json.dumps(response, indent=2)
@@ -506,7 +508,7 @@ class Datasource(Base):
                     message = f"Invalid response. {reason}"
 
             elif datasource_type == "loki":
-                if self.api.version and VERSION_7 <= Version(self.api.version) < VERSION_8:
+                if await self.api.version and VERSION_7 <= Version(await self.api.version) < VERSION_8:
                     if "status" in response and response["status"] == "success":
                         message = "Success"
                         success = True
@@ -538,9 +540,9 @@ class Datasource(Base):
             # Generic case, where the response has a top-level `results` or `data` key.
             else:
                 if "results" in response:
-                    success, message = self.parse_health_response_results(response=response)
+                    success, message = await self.parse_health_response_results(response=response)
                 elif "data" in response:
-                    success, message = self.parse_health_response_data(response=response)
+                    success, message = await self.parse_health_response_data(response=response)
                 else:
                     message = "Response lacks expected keys 'results' or 'data'"
 
@@ -588,7 +590,7 @@ class Datasource(Base):
             response=response,
         )
 
-    def health_inquiry(self, datasource_uid: str) -> DatasourceHealthResponse:
+    async def health_inquiry(self, datasource_uid: str) -> DatasourceHealthResponse:
         """
         Inquiry data source health. Try native method available since Grafana 9 first,
         and fall back to client-side implementation afterwards.
@@ -596,7 +598,7 @@ class Datasource(Base):
 
         # Check if data source actually exists.
         try:
-            datasource = self.get(DatasourceIdentifier(uid=datasource_uid))
+            datasource = await self.get(DatasourceIdentifier(uid=datasource_uid))
             datasource_type = datasource["type"]
             logger.debug(f"Data source information: {datasource}")
         except GrafanaClientError as ex:
@@ -623,9 +625,9 @@ class Datasource(Base):
         start = time.time()
         raised = True
         noop = False
-        if self.api.version and Version(self.api.version) >= VERSION_9:
+        if await self.api.version and Version(await self.api.version) >= VERSION_9:
             try:
-                health_native = self.health(datasource_uid=datasource_uid)
+                health_native = await self.health(datasource_uid=datasource_uid)
                 logger.debug(f"Response from native data source health check: {health_native}")
                 status = health_native["status"]
                 message = health_native["message"]
@@ -682,14 +684,14 @@ class Datasource(Base):
 
         if health is None:
             # Resolve data source by UID.
-            datasource = self.get(DatasourceIdentifier(uid=datasource_uid))
+            datasource = await self.get(DatasourceIdentifier(uid=datasource_uid))
             # Run client-side health check.
-            health = self.health_check(datasource=datasource)
+            health = await self.health_check(datasource=datasource)
 
         return health
 
     @staticmethod
-    def parse_health_response_results(response: Dict) -> Tuple[bool, str]:
+    async def parse_health_response_results(response: Dict) -> Tuple[bool, str]:
         success = False
         results = response["results"]
         if isinstance(results, dict):
@@ -744,7 +746,7 @@ class Datasource(Base):
         return success, message
 
     @staticmethod
-    def parse_health_response_data(response: Dict) -> Tuple[bool, str]:
+    async def parse_health_response_data(response: Dict) -> Tuple[bool, str]:
         """
         Response from Jaeger::
 

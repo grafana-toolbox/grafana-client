@@ -16,11 +16,13 @@ Synopsis
 
 import json
 import sys
+from time import perf_counter
 
 from grafana_client import GrafanaApi
 
 
 def main():
+    before = perf_counter()
     # Connect to public Grafana instance of Grafana Labs fame.
     grafana = GrafanaApi(host="play.grafana.org")
 
@@ -28,9 +30,12 @@ def main():
     folders = grafana.folder.get_all_folders()
     print(json.dumps(folders, indent=2))
 
-    print("## Dashboard with UID 000000012 at play.grafana.org", file=sys.stderr)
-    dashboard_000000012 = grafana.dashboard.get_dashboard("000000012")
-    print(json.dumps(dashboard_000000012, indent=2))
+    for folder in folders[:4]:
+        print(f"## Dashboard with UID {folder['uid']} at play.grafana.org", file=sys.stderr)
+        dashboard = grafana.dashboard.get_dashboard(folder["uid"])
+        print(json.dumps(dashboard, indent=2))
+
+    print(f"## Completed in {perf_counter() - before}s", file=sys.stderr)
 
 
 if __name__ == "__main__":

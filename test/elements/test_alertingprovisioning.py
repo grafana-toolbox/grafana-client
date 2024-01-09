@@ -1,8 +1,8 @@
 import unittest
 
-import requests_mock
-
 from grafana_client import GrafanaApi
+
+from ..compat import requests_mock
 
 ALERTRULE = {
     "id": 2,
@@ -27,19 +27,31 @@ class AlertingProvisioningTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_get_alertrules_all(self, m):
-        m.get("http://localhost/api/v1/provisioning/alert-rules", json=[ALERTRULE])
+        m.get(
+            "http://localhost/api/v1/provisioning/alert-rules",
+            json=[ALERTRULE],
+            headers={"Content-Type": "application/json"},
+        )
         response = self.grafana.alertingprovisioning.get_alertrules_all()
         self.assertEqual(response[0]["uid"], "bUUGqLiVk")
 
     @requests_mock.Mocker()
     def test_get_alertrule(self, m):
-        m.get("http://localhost/api/v1/provisioning/alert-rules/bUUGqLiVk", json=ALERTRULE)
+        m.get(
+            "http://localhost/api/v1/provisioning/alert-rules/bUUGqLiVk",
+            json=ALERTRULE,
+            headers={"Content-Type": "application/json"},
+        )
         response = self.grafana.alertingprovisioning.get_alertrule("bUUGqLiVk")
         self.assertEqual(response["uid"], "bUUGqLiVk")
 
     @requests_mock.Mocker()
     def test_delete_alertrule(self, m):
-        m.delete("http://localhost/api/v1/provisioning/alert-rules/bUUGqLiVk", json={"uid": "bUUGqLiVk"})
+        m.delete(
+            "http://localhost/api/v1/provisioning/alert-rules/bUUGqLiVk",
+            json={"uid": "bUUGqLiVk"},
+            headers={"Content-Type": "application/json"},
+        )
         response = self.grafana.alertingprovisioning.delete_alertrule("bUUGqLiVk")
         self.assertEqual(response["uid"], "bUUGqLiVk")
 
@@ -48,6 +60,7 @@ class AlertingProvisioningTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/v1/provisioning/alert-rules",
             json=ALERTRULE,
+            headers={"Content-Type": "application/json"},
         )
 
         response = self.grafana.alertingprovisioning.create_alertrule(ALERTRULE)
@@ -63,6 +76,7 @@ class AlertingProvisioningTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/v1/provisioning/alert-rules",
             json=ALERTRULE,
+            headers={"Content-Type": "application/json"},
         )
 
         response = self.grafana.alertingprovisioning.create_alertrule(ALERTRULE, disable_provenance=True)
@@ -79,6 +93,7 @@ class AlertingProvisioningTestCase(unittest.TestCase):
         m.put(
             "http://localhost/api/v1/provisioning/alert-rules/bUUGqLiVk",
             json=ALERTRULE,
+            headers={"Content-Type": "application/json"},
         )
 
         response = self.grafana.alertingprovisioning.update_alertrule(alertrule_uid="bUUGqLiVk", alertrule=ALERTRULE)
@@ -94,6 +109,7 @@ class AlertingProvisioningTestCase(unittest.TestCase):
         m.put(
             "http://localhost/api/v1/provisioning/alert-rules/bUUGqLiVk",
             json=ALERTRULE,
+            headers={"Content-Type": "application/json"},
         )
 
         response = self.grafana.alertingprovisioning.update_alertrule(

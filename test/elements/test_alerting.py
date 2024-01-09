@@ -1,8 +1,8 @@
 import unittest
 
-import requests_mock
-
 from grafana_client import GrafanaApi
+
+from ..compat import requests_mock
 
 ALERTRULE = {
     "name": "alert-rule-test",
@@ -28,7 +28,11 @@ class AlertingTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_get_alertrule(self, m):
-        m.get("http://localhost/api/ruler/grafana/api/v1/rules/alert-folder/alert-rule-test", json=ALERTRULE)
+        m.get(
+            "http://localhost/api/ruler/grafana/api/v1/rules/alert-folder/alert-rule-test",
+            json=ALERTRULE,
+            headers={"Content-Type": "application/json"},
+        )
         response = self.grafana.alerting.get_alertrule("alert-folder", "alert-rule-test")
         self.assertEqual(response["uid"], "bUUGqLiVk")
         self.assertEqual(response["name"], "alert-rule-test")
@@ -36,7 +40,9 @@ class AlertingTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_delete_alertrule(self, m):
         m.delete(
-            "http://localhost/api/ruler/grafana/api/v1/rules/alert-folder/alert-rule-test", json={"uid": "bUUGqLiVk"}
+            "http://localhost/api/ruler/grafana/api/v1/rules/alert-folder/alert-rule-test",
+            json={"uid": "bUUGqLiVk"},
+            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.alerting.delete_alertrule("alert-folder", "alert-rule-test")
         self.assertEqual(response["uid"], "bUUGqLiVk")
@@ -46,6 +52,7 @@ class AlertingTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/ruler/grafana/api/v1/rules/alert-folder",
             json=ALERTRULE,
+            headers={"Content-Type": "application/json"},
         )
 
         response = self.grafana.alerting.create_alertrule("alert-folder", ALERTRULE)
@@ -57,6 +64,7 @@ class AlertingTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/ruler/grafana/api/v1/rules/alert-folder",
             json=ALERTRULE,
+            headers={"Content-Type": "application/json"},
         )
 
         response = self.grafana.alerting.update_alertrule("alert-folder", alertrule=ALERTRULE)

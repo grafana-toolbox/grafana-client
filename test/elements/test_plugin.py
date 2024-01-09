@@ -1,8 +1,8 @@
 import unittest
 
-import requests_mock
-
 from grafana_client import GrafanaApi
+
+from ..compat import requests_mock
 
 
 class PluginTestCase(unittest.TestCase):
@@ -185,30 +185,47 @@ class PluginTestCase(unittest.TestCase):
                     "signatureOrg": "",
                 },
             ],
+            headers={"Content-Type": "application/json"},
         )
         plugins = self.grafana.plugin.list()
         self.assertTrue(len(plugins), 6)
 
     @requests_mock.Mocker()
     def test_install(self, m):
-        m.post("http://localhost/api/plugins/alertlist/install", json={"message": "Plugin alertlist installed"})
+        m.post(
+            "http://localhost/api/plugins/alertlist/install",
+            json={"message": "Plugin alertlist installed"},
+            headers={"Content-Type": "application/json"},
+        )
         response = self.grafana.plugin.install(plugin_id="alertlist", version="1.3.12")
         self.assertEqual(response["message"], "Plugin alertlist installed")
 
     @requests_mock.Mocker()
     def test_uninstall(self, m):
-        m.post("http://localhost/api/plugins/alertlist/uninstall", json={"message": "Plugin alertlist uninstalled"})
+        m.post(
+            "http://localhost/api/plugins/alertlist/uninstall",
+            json={"message": "Plugin alertlist uninstalled"},
+            headers={"Content-Type": "application/json"},
+        )
         response = self.grafana.plugin.uninstall(plugin_id="alertlist")
         self.assertEqual(response["message"], "Plugin alertlist uninstalled")
 
     @requests_mock.Mocker()
     def test_health(self, m):
-        m.get("http://localhost/api/plugins/alertlist/health", json={"message": "Plugin alertlist healthy"})
+        m.get(
+            "http://localhost/api/plugins/alertlist/health",
+            json={"message": "Plugin alertlist healthy"},
+            headers={"Content-Type": "application/json"},
+        )
         response = self.grafana.plugin.health(plugin_id="alertlist")
         self.assertEqual(response["message"], "Plugin alertlist healthy")
 
     @requests_mock.Mocker()
     def test_metrics(self, m):
-        m.get("http://localhost/api/plugins/grafana-timestream-datasource/metrics", json={"message": "Not found"})
+        m.get(
+            "http://localhost/api/plugins/grafana-timestream-datasource/metrics",
+            json={"message": "Not found"},
+            headers={"Content-Type": "application/json"},
+        )
         response = self.grafana.plugin.metrics(plugin_id="grafana-timestream-datasource")
         self.assertEqual(response["message"], "Not found")

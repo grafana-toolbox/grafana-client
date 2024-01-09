@@ -2,6 +2,12 @@
 
 ## unreleased
 
+* Change the HTTP backend Requests for Niquests.
+  You will have to make the required changes in your code, as you no longer
+  catch `requests.exceptions.Timeout` but `niquests.exceptions.Timeout` for example.
+  [Niquests](https://github.com/jawah/niquests) is a drop-in replacement of Requests and therefore remains compatible.
+* Add asynchronous interface via `AsyncGrafanaClient`.
+* Remove Python 3.6 support.
 
 ## 3.11.2 (2024-03-07)
 
