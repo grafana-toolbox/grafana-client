@@ -1,4 +1,5 @@
 import unittest
+from test.elements.test_rbac_fixtures import PERMISSION_RBAC_DATASOURCE, RBAC_ROLES_ALL
 
 import requests_mock
 
@@ -13,17 +14,7 @@ class RbacTestCase(unittest.TestCase):
     def test_get_rbac_roles_all(self, m):
         m.get(
             "http://localhost/api/access-control/roles",
-            json=[
-                {
-                    "version": 5,
-                    "uid": "vi9mlLjGz",
-                    "name": "fixed:datasources.permissions:writer",
-                    "description": "Create, read or delete data source permissions.",
-                    "global": True,
-                    "updated": "2021-05-13T22:41:49+02:00",
-                    "created": "2021-05-13T16:24:26+02:00",
-                }
-            ],
+            json=RBAC_ROLES_ALL,
         )
         roles = self.grafana.rbac.get_rbac_roles_all()
         self.assertEqual(roles[0]["name"], "fixed:datasources.permissions:writer")
@@ -62,3 +53,37 @@ class RbacTestCase(unittest.TestCase):
         )
         r = self.grafana.rbac.remove_rbac_role_team("1", "AFUXBHKnk")
         self.assertEqual(r["message"], "Role removed from team.")
+
+    @requests_mock.Mocker()
+    def test_get_rbac_datasources(self, m):
+        m.get(
+            "http://localhost/api/access-control/datasources/my_datasource",
+            json=PERMISSION_RBAC_DATASOURCE,
+        )
+
+        r = self.grafana.rbac.get_rbac_datasources("my_datasource")
+        self.assertEqual(len(r), 3)
+
+    @requests_mock.Mocker()
+    def test_set_rbac_datasources_teams(self, m):
+        m.post(
+            "http://localhost/api/access-control/datasources/my_datasource/teams/1",
+            json={"message": "Permission updated"},
+        )
+        history = m.request_history
+
+        r = self.grafana.rbac.set_rbac_datasources_teams("my_datasource", "1", "Edit")
+        self.assertEqual(history[0].json()["permission"], "Edit")
+        self.assertEqual(r["message"], "Permission updated")
+
+    @requests_mock.Mocker()
+    def test_set_rbac_datasources_builtin_roles(self, m):
+        m.post(
+            "http://localhost/api/access-control/datasources/my_datasource/builtInRoles/Admin",
+            json={"message": "Permission updated"},
+        )
+        history = m.request_history
+
+        r = self.grafana.rbac.set_rbac_datasources_builtin_roles("my_datasource", "Admin", "Edit")
+        self.assertEqual(history[0].json()["permission"], "Edit")
+        self.assertEqual(r["message"], "Permission updated")
