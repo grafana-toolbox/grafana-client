@@ -143,11 +143,11 @@ class DatasourceTestCase(unittest.TestCase):
 
         with patch(
             "grafana_client.api.Datasource.enable_datasource_permissions",
-            side_effect=NotImplementedError("This binding is no longer available"),
+            side_effect=NotImplementedError("Deprecated since Grafana 10.2.3"),
         ):
             with self.assertRaises(NotImplementedError) as context:
                 self.grafana.datasource.enable_datasource_permissions(42)
-            self.assertEqual(str(context.exception), "This binding is no longer available")
+            self.assertEqual(str(context.exception), "Deprecated since Grafana 10.2.3")
 
     @requests_mock.Mocker()
     def test_disable_datasource_permissions(self, m):
@@ -173,11 +173,11 @@ class DatasourceTestCase(unittest.TestCase):
 
         with patch(
             "grafana_client.api.Datasource.disable_datasource_permissions",
-            side_effect=NotImplementedError("This binding is no longer available"),
+            side_effect=NotImplementedError("Deprecated since Grafana 10.2.3"),
         ):
             with self.assertRaises(NotImplementedError) as context:
                 self.grafana.datasource.disable_datasource_permissions(42)
-            self.assertEqual(str(context.exception), "This binding is no longer available")
+            self.assertEqual(str(context.exception), "Deprecated since Grafana 10.2.3")
 
     @requests_mock.Mocker()
     def test_get_datasource_permissions(self, m):
@@ -203,11 +203,11 @@ class DatasourceTestCase(unittest.TestCase):
 
         with patch(
             "grafana_client.api.Datasource.get_datasource_permissions",
-            side_effect=NotImplementedError("This binding is no longer available"),
+            side_effect=NotImplementedError("Deprecated since Grafana 10.2.3"),
         ):
             with self.assertRaises(NotImplementedError) as context:
                 self.grafana.datasource.get_datasource_permissions(42)
-            self.assertEqual(str(context.exception), "This binding is no longer available")
+            self.assertEqual(str(context.exception), "Deprecated since Grafana 10.2.3")
 
     @requests_mock.Mocker()
     def test_add_datasource_permissions(self, m):
@@ -230,11 +230,11 @@ class DatasourceTestCase(unittest.TestCase):
 
         with patch(
             "grafana_client.api.Datasource.add_datasource_permissions",
-            side_effect=NotImplementedError("This binding is no longer available"),
+            side_effect=NotImplementedError("Deprecated since Grafana 10.2.3"),
         ):
             with self.assertRaises(NotImplementedError) as context:
                 self.grafana.datasource.add_datasource_permissions(42, {"userId": 1, "permission": 1})
-            self.assertEqual(str(context.exception), "This binding is no longer available")
+            self.assertEqual(str(context.exception), "Deprecated since Grafana 10.2.3")
 
     @requests_mock.Mocker()
     def test_remove_datasource_permissions(self, m):
@@ -257,11 +257,11 @@ class DatasourceTestCase(unittest.TestCase):
 
         with patch(
             "grafana_client.api.Datasource.remove_datasource_permissions",
-            side_effect=NotImplementedError("This binding is no longer available"),
+            side_effect=NotImplementedError("Deprecated since Grafana 10.2.3"),
         ):
             with self.assertRaises(NotImplementedError) as context:
                 self.grafana.datasource.remove_datasource_permissions(42, 1)
-            self.assertEqual(str(context.exception), "This binding is no longer available")
+            self.assertEqual(str(context.exception), "Deprecated since Grafana 10.2.3")
 
     @requests_mock.Mocker()
     def test_find_datasource(self, m):

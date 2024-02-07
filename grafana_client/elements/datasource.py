@@ -188,7 +188,7 @@ class Datasource(Base):
         :return:
         """
         if Version(self.api.version) > VERSION_10_2_2:
-            raise NotImplementedError("This binding is no longer available")
+            raise NotImplementedError("Deprecated since Grafana 10.2.3")
 
         get_datasource_path = "/datasources/%s/enable-permissions" % datasource_id
         r = self.client.POST(get_datasource_path)
@@ -202,7 +202,7 @@ class Datasource(Base):
         :return:
         """
         if Version(self.api.version) > VERSION_10_2_2:
-            raise NotImplementedError("This binding is no longer available")
+            raise NotImplementedError("Deprecated since Grafana 10.2.3")
 
         get_datasource_path = "/datasources/%s/disable-permissions" % datasource_id
         r = self.client.POST(get_datasource_path)
@@ -216,7 +216,7 @@ class Datasource(Base):
         :return:
         """
         if Version(self.api.version) > VERSION_10_2_2:
-            raise NotImplementedError("This binding is no longer available, replaced by get_rbac_datasources()")
+            raise NotImplementedError("Deprecated since Grafana 10.2.3, please use get_rbac_datasources()")
 
         get_datasource_path = "/datasources/%s/permissions" % datasource_id
         r = self.client.GET(get_datasource_path)
@@ -231,7 +231,7 @@ class Datasource(Base):
         :return:
         """
         if Version(self.api.version) > VERSION_10_2_2:
-            raise NotImplementedError("This binding is no longer available, replaced by set_rbac_datasources_*()")
+            raise NotImplementedError("Deprecated since Grafana 10.2.3, please use set_rbac_datasources_*()")
 
         get_datasource_path = "/datasources/%s/permissions" % datasource_id
         r = self.client.POST(get_datasource_path, json=permissions)
@@ -246,7 +246,7 @@ class Datasource(Base):
         :return:
         """
         if Version(self.api.version) > VERSION_10_2_2:
-            raise NotImplementedError("This binding is no longer available, replaced by set_rbac_datasources_*()")
+            raise NotImplementedError("Deprecated since Grafana 10.2.3, please use set_rbac_datasources_*()")
 
         get_datasource_path = "/datasources/%s/permissions/%s" % (datasource_id, permission_id)
         r = self.client.DELETE(get_datasource_path)
