@@ -122,6 +122,11 @@ class DatasourceTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_enable_datasource_permissions(self, m):
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "unknown", "database": "ok", "version": "10.2.1"},
+        )
+
         m.post(
             "http://localhost/api/datasources/42/enable-permissions", json={"message": "Datasource permissions enabled"}
         )
@@ -130,7 +135,27 @@ class DatasourceTestCase(unittest.TestCase):
         self.assertEqual(result, {"message": "Datasource permissions enabled"})
 
     @requests_mock.Mocker()
+    def test_enable_datasource_permissions_grafana1023(self, m):
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "unknown", "database": "ok", "version": "10.2.3"},
+        )
+
+        with patch(
+            "grafana_client.api.Datasource.enable_datasource_permissions",
+            side_effect=NotImplementedError("Deprecated since Grafana 10.2.3"),
+        ):
+            with self.assertRaises(NotImplementedError) as context:
+                self.grafana.datasource.enable_datasource_permissions(42)
+            self.assertEqual(str(context.exception), "Deprecated since Grafana 10.2.3")
+
+    @requests_mock.Mocker()
     def test_disable_datasource_permissions(self, m):
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "unknown", "database": "ok", "version": "10.2.1"},
+        )
+
         m.post(
             "http://localhost/api/datasources/42/disable-permissions",
             json={"message": "Datasource permissions disabled"},
@@ -140,7 +165,27 @@ class DatasourceTestCase(unittest.TestCase):
         self.assertEqual(result, {"message": "Datasource permissions disabled"})
 
     @requests_mock.Mocker()
+    def test_disable_datasource_permissions_grafana1023(self, m):
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "unknown", "database": "ok", "version": "10.2.3"},
+        )
+
+        with patch(
+            "grafana_client.api.Datasource.disable_datasource_permissions",
+            side_effect=NotImplementedError("Deprecated since Grafana 10.2.3"),
+        ):
+            with self.assertRaises(NotImplementedError) as context:
+                self.grafana.datasource.disable_datasource_permissions(42)
+            self.assertEqual(str(context.exception), "Deprecated since Grafana 10.2.3")
+
+    @requests_mock.Mocker()
     def test_get_datasource_permissions(self, m):
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "unknown", "database": "ok", "version": "10.2.1"},
+        )
+
         m.get(
             "http://localhost/api/datasources/42/permissions",
             json=PERMISSION_DATASOURCE,
@@ -150,18 +195,73 @@ class DatasourceTestCase(unittest.TestCase):
         self.assertEqual(result["datasourceId"], 42)
 
     @requests_mock.Mocker()
+    def test_get_datasource_permissions_grafana1023(self, m):
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "unknown", "database": "ok", "version": "10.2.3"},
+        )
+
+        with patch(
+            "grafana_client.api.Datasource.get_datasource_permissions",
+            side_effect=NotImplementedError("Deprecated since Grafana 10.2.3"),
+        ):
+            with self.assertRaises(NotImplementedError) as context:
+                self.grafana.datasource.get_datasource_permissions(42)
+            self.assertEqual(str(context.exception), "Deprecated since Grafana 10.2.3")
+
+    @requests_mock.Mocker()
     def test_add_datasource_permissions(self, m):
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "unknown", "database": "ok", "version": "10.2.1"},
+        )
+
         m.post("http://localhost/api/datasources/42/permissions", json={"message": "Datasource permission added"})
 
         result = self.grafana.datasource.add_datasource_permissions(42, {"userId": 1, "permission": 1})
         self.assertEqual(result, {"message": "Datasource permission added"})
 
     @requests_mock.Mocker()
+    def test_add_datasource_permissions_grafana1023(self, m):
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "unknown", "database": "ok", "version": "10.2.3"},
+        )
+
+        with patch(
+            "grafana_client.api.Datasource.add_datasource_permissions",
+            side_effect=NotImplementedError("Deprecated since Grafana 10.2.3"),
+        ):
+            with self.assertRaises(NotImplementedError) as context:
+                self.grafana.datasource.add_datasource_permissions(42, {"userId": 1, "permission": 1})
+            self.assertEqual(str(context.exception), "Deprecated since Grafana 10.2.3")
+
+    @requests_mock.Mocker()
     def test_remove_datasource_permissions(self, m):
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "unknown", "database": "ok", "version": "10.2.1"},
+        )
+
         m.delete("http://localhost/api/datasources/42/permissions/1", json={"message": "Datasource permission removed"})
 
         result = self.grafana.datasource.remove_datasource_permissions(42, 1)
         self.assertEqual(result, {"message": "Datasource permission removed"})
+
+    @requests_mock.Mocker()
+    def test_remove_datasource_permissions_grafana1023(self, m):
+        m.get(
+            "http://localhost/api/health",
+            json={"commit": "unknown", "database": "ok", "version": "10.2.3"},
+        )
+
+        with patch(
+            "grafana_client.api.Datasource.remove_datasource_permissions",
+            side_effect=NotImplementedError("Deprecated since Grafana 10.2.3"),
+        ):
+            with self.assertRaises(NotImplementedError) as context:
+                self.grafana.datasource.remove_datasource_permissions(42, 1)
+            self.assertEqual(str(context.exception), "Deprecated since Grafana 10.2.3")
 
     @requests_mock.Mocker()
     def test_find_datasource(self, m):
