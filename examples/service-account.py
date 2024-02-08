@@ -19,6 +19,7 @@ Synopsis
     python examples/service-account.py
 
 """
+
 import uuid
 
 from grafana_client import GrafanaApi

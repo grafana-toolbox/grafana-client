@@ -3,6 +3,7 @@ https://grafana.com/docs/grafana/latest/developers/http_api/serviceaccount/
 https://grafana.com/docs/grafana/latest/administration/service-accounts/
 https://grafana.com/docs/grafana/latest/developers/http_api/create-api-tokens-for-org/
 """
+
 from .base import Base
 
 

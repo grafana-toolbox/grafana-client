@@ -3,6 +3,7 @@ Example program for checking whether a data source is healthy.
 
 Documentation: https://github.com/panodata/grafana-client/blob/main/examples/datasource-health-check.rst
 """
+
 import json
 import logging
 import sys

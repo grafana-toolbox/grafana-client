@@ -43,6 +43,7 @@ Synopsis
         --attr "legendFormat:HTTP Status {{status}}"
 
 """  # noqa: E501
+
 import json
 import logging
 from optparse import OptionParser

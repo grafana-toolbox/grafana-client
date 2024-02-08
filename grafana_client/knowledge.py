@@ -4,6 +4,7 @@ About
 Knowledgebase module for filling the missing gaps to access the Grafana API
 more efficiently.
 """
+
 from datetime import datetime
 from typing import Dict, Optional, Union
 

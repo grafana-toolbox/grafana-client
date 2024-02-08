@@ -13,6 +13,7 @@ Synopsis
     source .venv/bin/activate
     python examples/folders-dashboard.py | jq
 """
+
 import json
 import sys
 

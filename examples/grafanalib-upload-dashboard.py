@@ -29,6 +29,7 @@ Synopsis
 .. _grafana-client: https://github.com/panodata/grafana-client
 .. _grafanalib: https://github.com/weaveworks/grafanalib
 """  # noqa:E501
+
 import json
 import logging
 from typing import Dict
