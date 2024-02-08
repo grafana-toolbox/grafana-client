@@ -20,6 +20,7 @@ Synopsis
     python examples/team.py
 
 """
+
 import json
 
 from grafana_client import GrafanaApi

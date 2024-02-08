@@ -19,6 +19,7 @@ Synopsis
     python examples/grafana-health.py
 
 """
+
 from grafana_client import GrafanaApi
 from grafana_client.client import TokenAuth
 
