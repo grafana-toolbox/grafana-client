@@ -3,6 +3,12 @@
 ## unreleased
 
 
+## 3.11.1 (2024-02-08)
+
+* Adjust data source permissions APIs changed with Grafana Enterprise 10.2.3.
+  Thanks, @hamelg.
+
+
 ## 3.11.0 (2024-01-08)
 
 * Add support for service accounts. Thanks, @einar-lanfranco and @feerbau.
