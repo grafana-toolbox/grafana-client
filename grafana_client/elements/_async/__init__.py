@@ -7,6 +7,7 @@ from .dashboard_versions import DashboardVersions as AsyncDashboardVersions
 from .datasource import Datasource as AsyncDatasource
 from .folder import Folder as AsyncFolder
 from .health import Health as AsyncHealth
+from .libraryelement import LibraryElement as AsyncLibraryElement
 from .notifications import Notifications as AsyncNotifications
 from .organization import Organization as AsyncOrganization
 from .organization import Organizations as AsyncOrganizations
@@ -29,6 +30,7 @@ __all__ = (
     "AsyncDatasource",
     "AsyncFolder",
     "AsyncHealth",
+    "AsyncLibraryElement",
     "AsyncNotifications",
     "AsyncOrganization",
     "AsyncOrganizations",

@@ -345,10 +345,7 @@ def query_factory(datasource, model: Optional[dict] = None, expression: Optional
                 "name": "refId",
                 "default": None,
             },
-            {
-                "name": "builderOptions",
-                "default": None
-            }
+            {"name": "builderOptions", "default": None},
         ]
     elif datasource_type == "prometheus":
         query = {
