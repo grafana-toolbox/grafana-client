@@ -20,6 +20,7 @@ from .elements import (
     Datasource,
     Folder,
     Health,
+    LibraryElement,
     Notifications,
     Organization,
     Organizations,
@@ -82,6 +83,7 @@ class GrafanaApi:
         self.notifications = Notifications(self.client)
         self.plugin = Plugin(self.client)
         self.serviceaccount = ServiceAccount(self.client)
+        self.libraryelement = LibraryElement(self.client, self)
 
     def connect(self):
         try:
