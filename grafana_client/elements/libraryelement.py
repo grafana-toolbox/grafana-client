@@ -1,5 +1,3 @@
-import warnings
-
 from verlib2 import Version
 
 from .base import Base
@@ -16,7 +14,7 @@ class LibraryElement(Base):
         self.client = client
         self.api = api
 
-    def get_library_element(self, element_uid : str) -> any:
+    def get_library_element(self, element_uid: str) -> any:
         """
 
         :param element_uid:
@@ -24,11 +22,11 @@ class LibraryElement(Base):
         """
         if self.api.version and Version(self.api.version) < VERSION_8_2:
             raise DeprecationWarning("Grafana versions earlier than 8.2 do not support library elements")
-        get_element_path = "/library-elements/%s" % element_uid
+        get_element_path = f"/library-elements/{element_uid}"
         r = self.client.GET(get_element_path)
         return r
 
-    def get_library_element_by_name(self, element_name : str) -> any:
+    def get_library_element_by_name(self, element_name: str) -> any:
         """
 
         :param element_name:
@@ -36,11 +34,11 @@ class LibraryElement(Base):
         """
         if self.api.version and Version(self.api.version) < VERSION_8_2:
             raise DeprecationWarning("Grafana versions earlier than 8.2 do not support library elements")
-        get_element_path = "/library-elements/name/%s" % element_name
+        get_element_path = f"/library-elements/name/{element_name}"
         r = self.client.GET(get_element_path)
         return r
 
-    def get_library_element_connections(self, element_uid : str) -> any:
+    def get_library_element_connections(self, element_uid: str) -> any:
         """
 
         :param element_uid:
@@ -48,11 +46,13 @@ class LibraryElement(Base):
         """
         if self.api.version and Version(self.api.version) < VERSION_8_2:
             raise DeprecationWarning("Grafana versions earlier than 8.2 do not support library elements")
-        get_element_connections_path = "/library-elements/%s/connections" % element_uid
+        get_element_connections_path = f"/library-elements/{element_uid}/connections"
         r = self.client.GET(get_element_connections_path)
         return r
 
-    def create_library_element(self, model : dict, name : str = None, kind : int = Panel, uid : str = None, folder_uid : str = None):
+    def create_library_element(
+        self, model: dict, name: str = None, kind: int = Panel, uid: str = None, folder_uid: str = None
+    ):
         """
 
         :param model:
@@ -64,7 +64,7 @@ class LibraryElement(Base):
         """
         if self.api.version and Version(self.api.version) < VERSION_8_2:
             raise DeprecationWarning("Grafana versions earlier than 8.2 do not support library elements")
-        json : dict = dict()
+        json: dict = dict()
         # If the model contains a "meta" entry, use the "folderUid" entry if folder_uid isn't given
         if folder_uid is not None:
             json["folderUid"] = folder_uid
@@ -93,7 +93,9 @@ class LibraryElement(Base):
         r = self.client.POST(create_element_path, json=json)
         return r
 
-    def update_library_element(self, uid : str, model : dict, name: str = None, kind : int = Panel, folder_uid : str = None, version : int = None):
+    def update_library_element(
+        self, uid: str, model: dict, name: str = None, kind: int = Panel, folder_uid: str = None, version: int = None
+    ):
         """
 
         :param uid:
@@ -105,7 +107,7 @@ class LibraryElement(Base):
         """
         if self.api.version and Version(self.api.version) < VERSION_8_2:
             raise DeprecationWarning("Grafana versions earlier than 8.2 do not support library elements")
-        json : dict = dict()
+        json: dict = dict()
         # If the model contains a "meta" entry, use the "folderUid" entry if folder_uid isn't given
         if folder_uid is not None:
             json["folderUid"] = folder_uid
@@ -135,11 +137,11 @@ class LibraryElement(Base):
         else:
             json["version"] = version
 
-        update_element_path = "/library-elements/%s" % uid
+        update_element_path = f"/library-elements/{uid}"
         r = self.client.PATCH(update_element_path, json=json)
         return r
 
-    def delete_library_element(self, element_uid : str) -> any:
+    def delete_library_element(self, element_uid: str) -> any:
         """
 
         :param element_uid:
@@ -147,19 +149,21 @@ class LibraryElement(Base):
         """
         if self.api.version and Version(self.api.version) < VERSION_8_2:
             raise DeprecationWarning("Grafana versions earlier than 8.2 do not support library elements")
-        delete_element_path = "/library-elements/%s" % element_uid
+        delete_element_path = f"/library-elements/{element_uid}"
         r = self.client.DELETE(delete_element_path)
         return r
 
-    def list_library_elements(self,
-                                search_string : str = None,
-                                kind : int = None,
-                                sort_direction : str = None,
-                                type_filter : str = None,
-                                exclude_uid : str = None,
-                                folder_filter : str = None,
-                                per_page: int = None,
-                                page : int = None) -> any:
+    def list_library_elements(
+        self,
+        search_string: str = None,
+        kind: int = None,
+        sort_direction: str = None,
+        type_filter: str = None,
+        exclude_uid: str = None,
+        folder_filter: str = None,
+        per_page: int = None,
+        page: int = None,
+    ) -> any:
         """
 
         :param search_string:
