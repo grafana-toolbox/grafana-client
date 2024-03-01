@@ -215,6 +215,6 @@ class Teams(Base):
         :param group_id:
         :return:
         """
-        team_group_path = "/teams/%s/groups/%s" % (team_id, group_id)
+        team_group_path = "/teams/%s/groups?groupId=%s" % (team_id, group_id)
         r = self.client.DELETE(team_group_path)
         return r
