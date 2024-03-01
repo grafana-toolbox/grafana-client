@@ -327,8 +327,8 @@ class TeamsTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_remove_team_external_group(self, m):
         m.delete(
-            "http://localhost/api/teams/42/groups/1",
+            "http://localhost/api/teams/42/groups?groupId=a_external_group",
             json={"message": "Team group removed"},
         )
-        r = self.grafana.teams.remove_team_external_group("42", "1")
+        r = self.grafana.teams.remove_team_external_group("42", "a_external_group")
         self.assertEqual(r["message"], "Team group removed")
