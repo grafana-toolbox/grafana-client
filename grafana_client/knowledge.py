@@ -314,6 +314,39 @@ def query_factory(datasource, model: Optional[dict] = None, expression: Optional
                 "default": None,
             },
         ]
+    elif datasource_type == "grafana-clickhouse-datasource":
+        query = {
+            "datasource": {
+                "type": datasource["type"],
+                "uid": datasource.get("uid"),
+            },
+            "datasourceId": datasource.get("id"),
+            "rawSql": expression,
+        }
+
+        attrs = [
+            {
+                "name": "format",
+                "default": "0",
+                "choices": [0, 1],
+            },
+            {
+                "name": "intervalMs",
+                "default": 30000,
+            },
+            {
+                "name": "maxDataPoints",
+                "default": 1441,
+            },
+            {
+                "name": "refId",
+                "default": None,
+            },
+            {
+                "name": "builderOptions",
+                "default": None
+            }
+        ]
     elif datasource_type == "prometheus":
         query = {
             "datasource": {
