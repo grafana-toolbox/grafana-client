@@ -1,14 +1,19 @@
 import typing as t
 import warnings
 
+from verlib2 import Version
+
 from ..model import PersonalPreferences
 from .base import Base
 
+VERSION_10_2_0 = Version("10.2.0")
+
 
 class Teams(Base):
-    def __init__(self, client):
+    def __init__(self, client, api):
         super(Teams, self).__init__(client)
         self.client = client
+        self.api = api
 
     def search_teams(self, query=None, page=None, perpage=None):
         """
@@ -215,6 +220,9 @@ class Teams(Base):
         :param group_id:
         :return:
         """
-        team_group_path = "/teams/%s/groups?groupId=%s" % (team_id, group_id)
+        if Version(self.api.version) < VERSION_10_2_0:
+            team_group_path = "/teams/%s/groups/%s" % (team_id, group_id)
+        else:
+            team_group_path = "/teams/%s/groups?groupId=%s" % (team_id, group_id)
         r = self.client.DELETE(team_group_path)
         return r
