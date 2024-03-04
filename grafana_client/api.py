@@ -76,7 +76,7 @@ class GrafanaApi:
         self.user = User(self.client)
         self.users = Users(self.client)
         self.rbac = Rbac(self.client)
-        self.teams = Teams(self.client)
+        self.teams = Teams(self.client, self)
         self.annotations = Annotations(self.client)
         self.snapshots = Snapshots(self.client)
         self.notifications = Notifications(self.client)
