@@ -3,6 +3,14 @@
 ## unreleased
 
 
+## 3.11.2 (2024-03-07)
+
+* Fixed delete operation on "teams" API endpoint.
+  Grafana introduced a breaking change in 10.2.0, see
+  https://github.com/grafana/grafana/pull/76325.
+  This fix handles it. Thanks, @hamelg.
+
+
 ## 3.11.1 (2024-02-08)
 
 * Adjust data source permissions APIs changed with Grafana Enterprise 10.2.3.
