@@ -9,7 +9,12 @@ else:
 import niquests
 
 from grafana_client.api import GrafanaApi
-from grafana_client.client import GrafanaClientError, HeaderAuth, TokenAuth
+from grafana_client.client import (
+    GrafanaClientError,
+    GrafanaTimeoutError,
+    HeaderAuth,
+    TokenAuth,
+)
 
 
 class MockResponse:
@@ -110,7 +115,7 @@ class TestGrafanaClient(unittest.TestCase):
             timeout=0.0001,
         )
 
-        with self.assertRaises(niquests.exceptions.Timeout):
+        with self.assertRaises(GrafanaTimeoutError):
             grafana.folder.get_all_folders()
 
     def test_grafana_client_basic_auth(self):

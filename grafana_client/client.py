@@ -2,6 +2,7 @@ from json import JSONDecodeError
 
 import niquests
 import niquests.auth
+from niquests import HTTPError, Timeout
 
 DEFAULT_TIMEOUT: float = 5.0
 
@@ -13,6 +14,12 @@ class GrafanaException(Exception):
         self.message = message
         # Backwards compatible with implementations that rely on just the message.
         super(GrafanaException, self).__init__(message)
+
+
+class GrafanaTimeoutError(GrafanaException):
+    """
+    A timeout occurred
+    """
 
 
 class GrafanaServerError(GrafanaException):
@@ -126,66 +133,85 @@ class GrafanaClient:
             else:
                 self.auth = TokenAuth(self.auth)
 
+    def _make_url(self, url):
+        return f"{self.url}{url}"
+
+    @staticmethod
+    def _ensure_valid_json_arg(json):
+        if json is not None and not isinstance(json, (dict, list)):
+            raise TypeError(
+                f"JSON request payload has invalid shape. "
+                f"Accepted are dictionaries and lists. "
+                f"The type is: {type(json)}"
+            )
+
+    @staticmethod
+    def _extract_from_response(r, accept_empty_json):
+        if r.status_code >= 400:
+            try:
+                response = r.json()
+            except ValueError:
+                response = r.text
+            message = response["message"] if isinstance(response, dict) and "message" in response else r.text
+
+            if 500 <= r.status_code < 600:
+                raise GrafanaServerError(
+                    r.status_code,
+                    response,
+                    "Server Error {0}: {1}".format(r.status_code, message),
+                )
+            elif r.status_code == 400:
+                raise GrafanaBadInputError(response)
+            elif r.status_code == 401:
+                raise GrafanaUnauthorizedError(response)
+            elif 400 <= r.status_code < 500:
+                raise GrafanaClientError(
+                    r.status_code,
+                    response,
+                    "Client Error {0}: {1}".format(r.status_code, message),
+                )
+
+        # `204 No Content` responses have an empty response body,
+        # so it doesn't decode well from JSON.
+        if r.status_code == 204:
+            return None
+
+        # The "Tempo" data source responds with text/plain.
+        content_type = r.headers.get("Content-Type", "")
+        if content_type.startswith("text/"):
+            return r.text
+        try:
+            return r.json()
+        except JSONDecodeError:
+            if accept_empty_json and r.text == "":
+                return ""
+            else:
+                raise
+
     def __getattr__(self, item):
         def __request_runner(url, json=None, data=None, headers=None, accept_empty_json=False):
-            __url = "%s%s" % (self.url, url)
+            __url = self._make_url(url)
             # Sanity checks.
-            if json is not None and not isinstance(json, (dict, list)):
-                raise TypeError(
-                    f"JSON request payload has invalid shape. "
-                    f"Accepted are dictionaries and lists. "
-                    f"The type is: {type(json)}"
-                )
-            r = self.s.request(
-                item.lower(),
-                __url,
-                json=json,
-                data=data,
-                headers=headers,
-                auth=self.auth,
-                verify=self.verify,
-                timeout=self.timeout,
-            )
-            if r.status_code >= 400:
-                try:
-                    response = r.json()
-                except ValueError:
-                    response = r.text
-                message = response["message"] if isinstance(response, dict) and "message" in response else r.text
+            GrafanaClient._ensure_valid_json_arg(json)
 
-                if 500 <= r.status_code < 600:
-                    raise GrafanaServerError(
-                        r.status_code,
-                        response,
-                        "Server Error {0}: {1}".format(r.status_code, message),
-                    )
-                elif r.status_code == 400:
-                    raise GrafanaBadInputError(response)
-                elif r.status_code == 401:
-                    raise GrafanaUnauthorizedError(response)
-                elif 400 <= r.status_code < 500:
-                    raise GrafanaClientError(
-                        r.status_code,
-                        response,
-                        "Client Error {0}: {1}".format(r.status_code, message),
-                    )
-
-            # `204 No Content` responses have an empty response body,
-            # so it doesn't decode well from JSON.
-            if r.status_code == 204:
-                return None
-
-            # The "Tempo" data source responds with text/plain.
-            content_type = r.headers.get("Content-Type", "")
-            if content_type.startswith("text/"):
-                return r.text
             try:
-                return r.json()
-            except JSONDecodeError:
-                if accept_empty_json and r.text == "":
-                    return ""
-                else:
-                    raise
+                r = self.s.request(
+                    item.lower(),
+                    __url,
+                    json=json,
+                    data=data,
+                    headers=headers,
+                    auth=self.auth,
+                    verify=self.verify,
+                    timeout=self.timeout,
+                )
+            except Timeout as e:
+                raise GrafanaTimeoutError(0, None, str(e)) from e
+            except HTTPError as e:
+                # this branch is to make sure we don't leak anything bellow Grafana Client! like ProtocolError.
+                raise GrafanaException(0, None, str(e)) from e
+
+            return GrafanaClient._extract_from_response(r, accept_empty_json)
 
         return __request_runner
 
@@ -219,63 +245,26 @@ class AsyncGrafanaClient(GrafanaClient):
 
     def __getattr__(self, item):
         async def __request_runner(url, json=None, data=None, headers=None, accept_empty_json=False):
-            __url = "%s%s" % (self.url, url)
+            __url = self._make_url(url)
             # Sanity checks.
-            if json is not None and not isinstance(json, (dict, list)):
-                raise TypeError(  # pragma: no cover
-                    f"JSON request payload has invalid shape. "
-                    f"Accepted are dictionaries and lists. "
-                    f"The type is: {type(json)}"
-                )
-            r = await self.s.request(
-                item.lower(),
-                __url,
-                json=json,
-                data=data,
-                headers=headers,
-                auth=self.auth,
-                verify=self.verify,
-                timeout=self.timeout,
-            )
-            if r.status_code >= 400:
-                try:
-                    response = r.json()
-                except ValueError:
-                    response = r.text
-                message = response["message"] if isinstance(response, dict) and "message" in response else r.text
+            GrafanaClient._ensure_valid_json_arg(json)
 
-                if 500 <= r.status_code < 600:  # pragma: no cover
-                    raise GrafanaServerError(  # pragma: no cover
-                        r.status_code,
-                        response,
-                        "Server Error {0}: {1}".format(r.status_code, message),
-                    )
-                elif r.status_code == 400:
-                    raise GrafanaBadInputError(response)  # pragma: no cover
-                elif r.status_code == 401:
-                    raise GrafanaUnauthorizedError(response)  # pragma: no cover
-                elif 400 <= r.status_code < 500:
-                    raise GrafanaClientError(
-                        r.status_code,
-                        response,
-                        "Client Error {0}: {1}".format(r.status_code, message),
-                    )
-
-            # `204 No Content` responses have an empty response body,
-            # so it doesn't decode well from JSON.
-            if r.status_code == 204:
-                return None  # pragma: no cover
-
-            # The "Tempo" data source responds with text/plain.
-            content_type = r.headers.get("Content-Type", "")
-            if content_type.startswith("text/"):
-                return r.text  # pragma: no cover
             try:
-                return r.json()
-            except JSONDecodeError:  # pragma: no cover
-                if accept_empty_json and r.text == "":
-                    return ""
-                else:
-                    raise
+                r = await self.s.request(
+                    item.lower(),
+                    __url,
+                    json=json,
+                    data=data,
+                    headers=headers,
+                    auth=self.auth,
+                    verify=self.verify,
+                    timeout=self.timeout,
+                )
+            except Timeout as e:
+                raise GrafanaTimeoutError(0, None, str(e)) from e
+            except HTTPError as e:
+                raise GrafanaException(0, None, str(e)) from e
+
+            return GrafanaClient._extract_from_response(r, accept_empty_json)
 
         return __request_runner
