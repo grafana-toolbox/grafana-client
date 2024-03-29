@@ -1,26 +1,97 @@
+#!/usr/bin/env python
 """
-Script to automatically generate grafana asynchronous code from the
+Program to automatically generate asynchronous code from the
 synchronous counterpart.
-What does this program do:
-- For all module in grafana_client/elements/*.py excepted base and __init__
-Inject async/await keyword in all available methods / client interactions.
-- Then detect no longer needed module for removal.
-- Finally generate the _async top level code based on the elements/__init__.py one.
+
+Synopsis:
+
+  # Check if generated code is up-to-date.
+  python script/generate_async.py check
+
+  # Generate code.
+  python script/generate_async.py format
+
+What does this program does:
+- For each module in `grafana_client/elements/*.py`, except `base` and `__init__`:
+  Inject async/await keyword in all available methods / client interactions.
+- Detect modules no longer in use, and remove them.
+- Generate the async top level code based on `elements/__init__.py`.
 """
 
 import os
 import re
+import shutil
 import subprocess
-from glob import glob
+import sys
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
-BASE_PATH = ".." if os.path.exists("../grafana_client") else "."
+BASE_PATH = Path(".." if Path("../grafana_client").exists() else ".")
 
-if __name__ == "__main__":
+HERE = Path.cwd().absolute()
+PYPROJECT_TOML = HERE / "pyproject.toml"
+SOURCE = BASE_PATH / "grafana_client" / "elements"
+TARGET = BASE_PATH / "grafana_client" / "elements" / "_async"
+
+
+def run(action: str):
+    """
+    Invoke either the `check`, or the `format` subcommand.
+
+    :check:  Create amalgamated tree in temporary directory,
+             and compare with original. This is suitable for
+             running sanity checks on CI.
+    :format: Generate amalgamated async code from synchronous
+             reference code.
+    """
+
+    run_check = action == "check" or False
+    run_format = action == "format" or False
+
+    source = SOURCE
+    target = TARGET
+
+    if run_check:
+        # Create temporary formatted exemplar for probing it,
+        # compare with current state, and croak on deviations.
+
+        # Use this code for `delete=False`.
+        # TemporaryDirectory._rmtree = lambda *more, **kwargs: None
+
+        with TemporaryDirectory() as tmpdir:
+            target = tmpdir
+            process(source, target)
+
+            command = f"diff -x __pycache__ -u {TARGET} {target}"
+            exitcode = os.system(command)
+
+        if exitcode == 0:
+            print(msg("INFO: Async code up-to-date. Excellent."))
+        else:
+            print(msg("ERROR: Async code not up-to-date. Please run `poe format`."))
+            sys.exit(2)
+
+    elif run_format:
+        Path(target).mkdir(exist_ok=True)
+        process(source, target)
+
+    else:
+        raise ValueError("Wrong or missing action, use either `check` or `format`.")
+
+
+def process(source: Path, target: Path):
+    """
+    Process files, from input path (source) to output path (target).
+    """
+
     module_processed = []
-    module_generated = []
 
-    for module_path in glob(f"{BASE_PATH}/grafana_client/elements/*.py"):
-        if "__init__.py" in module_path or "base.py" in module_path:
+    print(f"Input path:  {source}")
+    print(f"Output path: {target}")
+
+    # for module_path in glob(f"{source}/*.py"):
+    for module_path in Path(source).glob("*.py"):
+        if module_path.name in ["__init__.py", "base.py"]:
             continue
 
         print(f"Processing {module_path}...")
@@ -39,33 +110,25 @@ if __name__ == "__main__":
         module_dump = module_dump.replace("= self.", "= await self.")
 
         module_processed.append(module_path)
-        target_path = module_path.replace("elements/", "elements/_async/")
-        module_generated.append(target_path)
-
-        print(f"Writing to {target_path}...")
-
-        with open(module_path.replace("elements/", "elements/_async/"), "w") as fp:
+        target_path = Path(str(module_path).replace(str(source), str(target)))
+        with open(target_path, "w") as fp:
             fp.write(module_dump)
 
-    relevant_modules = [os.path.basename(_) for _ in module_processed]
-    existing_modules = [
-        os.path.basename(_)
-        for _ in glob(f"{BASE_PATH}/grafana_client/elements/_async/*.py")
-        if "base.py" not in _ and "__init__.py" not in _
-    ]
+    relevant_modules = [_.name for _ in module_processed]
+    existing_modules = [_.name for _ in Path(target).glob("*.py") if _.name not in ["base.py", "__init__.py"]]
 
     remove_module_count = 0
 
     for existing_module in existing_modules:
         if existing_module not in relevant_modules:
             print(f"Removing module {existing_module}...")
-            os.remove(f"{BASE_PATH}/grafana_client/elements/_async/{existing_module}")
+            (Path(target) / existing_module).unlink()
             remove_module_count += 1
 
     if not remove_module_count:
         print("No modules to remove.. pursuing..")
 
-    with open(f"{BASE_PATH}/grafana_client/elements/__init__.py", "r") as fp:
+    with open(f"{source}/__init__.py", "r") as fp:
         top_level_content = fp.read()
 
     print("Updating _async top level import content")
@@ -99,7 +162,31 @@ if __name__ == "__main__":
 
         top_level_content_patch.append(line)
 
-    with open(f"{BASE_PATH}/grafana_client/elements/_async/__init__.py", "w") as fp:
+    with open(f"{target}/__init__.py", "w") as fp:
         fp.write("\n".join(top_level_content_patch) + "\n")
 
-    subprocess.call(["poe", "format"])
+    # Run Black and isort, providing them with the same configuration as the project.
+    shutil.copy(PYPROJECT_TOML, f"{target}")
+    subprocess.call(["black", target])
+    subprocess.call(["isort", target])
+    Path(f"{target}/pyproject.toml").unlink()
+
+
+def msg(text: str):
+    """
+    Return a colorful message, the color is determined by its text.
+    """
+    green = "\033[92;1m"
+    red = "\033[91;1m"
+    reset = "\033[0m"
+    color = ""
+    if text.lower().startswith("info"):
+        color = green
+    elif text.lower().startswith("error"):
+        color = red
+    return f"{color}{text}{reset}"
+
+
+if __name__ == "__main__":
+    subcommand = sys.argv[1:] and sys.argv[1] or None
+    run(subcommand)

@@ -40,10 +40,12 @@ extend-exclude = [
 
 [tool.poe.tasks]
 format = [
+  {cmd="script/generate_async.py format"},
   {cmd="black ."},
   {cmd="isort ."},
 ]
 lint = [
+  {cmd="script/generate_async.py check"},
   {cmd="ruff ."},
   {cmd="black --check ."},
   {cmd="isort --check ."},
