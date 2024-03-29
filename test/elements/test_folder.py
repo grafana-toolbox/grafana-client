@@ -32,7 +32,7 @@ class FolderTestCase(unittest.TestCase):
                 }
             ],
         )
-        folders = self.grafana.folder.get_all_folders()
+        folders = self.grafana.folder.get_all_folders(parent_uid="gFtOEwFlbb")
         self.assertEqual(folders[0]["id"], 1)
         self.assertEqual(len(folders), 1)
 
@@ -66,6 +66,7 @@ class FolderTestCase(unittest.TestCase):
             json={
                 "id": 1,
                 "uid": "nErXDvCkzz",
+                "parentUid": "gFtOEwFlbb",
                 "title": "Departmenet ABC",
                 "url": "/dashboards/f/nErXDvCkzz/department-abc",
                 "hasAcl": "false",
@@ -79,8 +80,9 @@ class FolderTestCase(unittest.TestCase):
                 "version": 1,
             },
         )
-        folder = self.grafana.folder.create_folder(title="Departmenet ABC", uid="nErXDvCkzz")
+        folder = self.grafana.folder.create_folder(title="Departmenet ABC", uid="nErXDvCkzz", parent_uid="gFtOEwFlbb")
         self.assertEqual(folder["uid"], "nErXDvCkzz")
+        self.assertEqual(folder["parentUid"], "gFtOEwFlbb")
 
     @requests_mock.Mocker()
     def test_create_folder_empty_uid(self, m):
@@ -91,6 +93,31 @@ class FolderTestCase(unittest.TestCase):
         )
         with self.assertRaises(GrafanaBadInputError):
             self.grafana.folder.create_folder(title="Departmenet ABC")
+
+    @requests_mock.Mocker()
+    def test_move_folder(self, m):
+        m.post(
+            "http://localhost/api/folders/nErXDvCkzz/move",
+            json={
+                "id": 1,
+                "uid": "nErXDvCkzz",
+                "parentUid": "gFtOEwFlbb",
+                "title": "Departmenet ABC",
+                "url": "/dashboards/f/nErXDvCkzz/department-abc",
+                "hasAcl": "false",
+                "canSave": "false",
+                "canEdit": "false",
+                "canAdmin": "false",
+                "createdBy": "admin",
+                "created": "2018-01-31T17:43:12+01:00",
+                "updatedBy": "admin",
+                "updated": "2018-01-31T17:43:12+01:00",
+                "version": 1,
+            },
+        )
+        folder = self.grafana.folder.move_folder(uid="nErXDvCkzz", parent_uid="gFtOEwFlbb")
+        self.assertEqual(folder["uid"], "nErXDvCkzz")
+        self.assertEqual(folder["parentUid"], "gFtOEwFlbb")
 
     @requests_mock.Mocker()
     def test_update_folder(self, m):

@@ -6,13 +6,16 @@ class Folder(Base):
         super(Folder, self).__init__(client)
         self.client = client
 
-    async def get_all_folders(self):
+    async def get_all_folders(self, parent_uid=None):
         """
 
         :return:
         """
         path = "/folders"
-        return await self.client.GET(path)
+        data = {}
+        if parent_uid:
+            data["parentUid"] = parent_uid
+        return await self.client.GET(path, data=data)
 
     async def get_folder(self, uid):
         """
@@ -23,17 +26,33 @@ class Folder(Base):
         path = "/folders/%s" % uid
         return await self.client.GET(path)
 
-    async def create_folder(self, title, uid=None):
+    async def create_folder(self, title, uid=None, parent_uid=None):
         """
 
         :param title:
         :param uid:
+        :param parent_uid:
         :return:
         """
         json_data = dict(title=title)
         if uid is not None:
             json_data["uid"] = uid
+        if parent_uid is not None:
+            json_data["parentUid"] = parent_uid
         return await self.client.POST("/folders", json=json_data)
+
+    async def move_folder(self, uid, parent_uid):
+        """
+        Move a folder beneath another parent folder.
+
+        This is relevant only if nested folders are enabled.
+
+        :param uid:
+        :param parent_uid:
+        :return:
+        """
+        path = "/folders/%s/move" % uid
+        return await self.client.POST(path, json={"parentUid": parent_uid})
 
     async def update_folder(self, uid, title=None, version=None, overwrite=False, new_uid=None):
         """

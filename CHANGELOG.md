@@ -9,6 +9,8 @@
   uses `GrafanaTimeoutError` instead. Other than this, [Niquests] is a drop-
   in replacement for [Requests] and therefore is largely compatible.
 * Remove Python 3.6 support. Thanks, @Ousret.
+* Improve support for folders, by adding ``parent_uid`` option to relevant
+  endpoints, and by adding missing ``move_folder``. Thanks, @grafuls.
 
 [Niquests]: https://niquests.readthedocs.io/
 [Riquests]: https://requests.readthedocs.io/
