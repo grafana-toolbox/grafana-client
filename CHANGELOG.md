@@ -2,6 +2,9 @@
 
 ## unreleased
 
+
+## 4.0.1 (2024-03-29)
+
 * Packaging: Do not mark package as "universal wheel" py2, py3.
   Thanks, @Ousret.
 
