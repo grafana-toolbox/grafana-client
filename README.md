@@ -240,6 +240,7 @@ versions of Grafana might not support certain features or subsystems.
 | Folder Permissions | + |
 | Folder/Dashboard Search | +- |
 | Health | + |
+| Library Elements | + |
 | Organisation | + |
 | Other | + |
 | Plugin | + |

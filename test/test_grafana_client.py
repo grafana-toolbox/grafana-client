@@ -159,7 +159,7 @@ class TestGrafanaClient(unittest.TestCase):
         self.assertEqual(grafana.version, "9.0.1")
 
     def test_grafana_client_non_json_response(self):
-        grafana = GrafanaApi.from_url("https://httpbin.org/html")
+        grafana = GrafanaApi.from_url("https://example.org/")
         self.assertRaises(GrafanaClientError, lambda: grafana.connect())
 
     def test_grafana_client_204_no_content_response(self):

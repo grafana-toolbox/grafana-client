@@ -8,6 +8,7 @@ from .dashboard_versions import DashboardVersions
 from .datasource import Datasource
 from .folder import Folder
 from .health import Health
+from .libraryelement import LibraryElement
 from .notifications import Notifications
 from .organization import Organization, Organizations
 from .plugin import Plugin
@@ -29,6 +30,7 @@ __all__ = (
     "Datasource",
     "Folder",
     "Health",
+    "LibraryElement",
     "Notifications",
     "Organization",
     "Organizations",
