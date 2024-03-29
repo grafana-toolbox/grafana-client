@@ -2,6 +2,9 @@
 
 ## unreleased
 
+
+## 4.0.0 (2024-03-29)
+
 * Add asynchronous interface via `AsyncGrafanaClient`. Thanks, @Ousret.
   Changed the HTTP backend from `requests` to `niquests`.
   BREAKING CHANGE: In certain conditions, you will need to adjust your code,
@@ -18,6 +21,7 @@
 
 [Niquests]: https://niquests.readthedocs.io/
 [Riquests]: https://requests.readthedocs.io/
+
 
 ## 3.11.2 (2024-03-07)
 
