@@ -247,7 +247,7 @@ class AsyncGrafanaClient(GrafanaClient):
         async def __request_runner(url, json=None, data=None, headers=None, accept_empty_json=False):
             __url = self._make_url(url)
             # Sanity checks.
-            GrafanaClient._ensure_valid_json_arg(json)
+            self._ensure_valid_json_arg(json)
 
             try:
                 r = await self.s.request(
