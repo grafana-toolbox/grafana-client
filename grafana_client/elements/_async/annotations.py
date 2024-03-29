@@ -71,9 +71,7 @@ class Annotations(Base):
         list_annotations_path += "?"
         list_annotations_path += "&".join(params)
 
-        r = await self.client.GET(list_annotations_path)
-
-        return r
+        return await self.client.GET(list_annotations_path)
 
     async def add_annotation(
         self,
@@ -111,9 +109,7 @@ class Annotations(Base):
         if dashboard_uid is not None:
             payload["dashboardUID"] = dashboard_uid
 
-        r = await self.client.POST(annotations_path, json=payload)
-
-        return r
+        return await self.client.POST(annotations_path, json=payload)
 
     async def add_annotation_graphite(
         self,
@@ -135,9 +131,7 @@ class Annotations(Base):
         annotations_path = "/annotations/graphite"
         payload = {"what": what, "tags": tags, "when": when, "data": data}
 
-        r = await self.client.POST(annotations_path, json=payload)
-
-        return r
+        return await self.client.POST(annotations_path, json=payload)
 
     async def update_annotation(
         self,
@@ -156,12 +150,10 @@ class Annotations(Base):
         :param text:
         :return:
         """
-        annotations_path = "/annotations/{}".format(annotations_id)
+        annotations_path = f"/annotations/{annotations_id}"
         payload = {"time": time_from, "timeEnd": time_to, "tags": tags, "text": text}
 
-        r = await self.client.PUT(annotations_path, json=payload)
-
-        return r
+        return await self.client.PUT(annotations_path, json=payload)
 
     async def partial_update_annotation(
         self,
@@ -181,14 +173,12 @@ class Annotations(Base):
         :param text:
         :return:
         """
-        annotations_path = "/annotations/{}".format(annotations_id)
+        annotations_path = f"/annotations/{annotations_id}"
         payload = {}
 
         payload = {"time": time_from, "timeEnd": time_to, "tags": tags, "text": text}
 
-        r = await self.client.PATCH(annotations_path, json=payload)
-
-        return r
+        return await self.client.PATCH(annotations_path, json=payload)
 
     async def delete_annotations_by_id(self, annotations_id=None):
         """
@@ -197,7 +187,5 @@ class Annotations(Base):
         :param annotations_id:
         :return:
         """
-        annotations_path = "/annotations/{}".format(annotations_id)
-        r = await self.client.DELETE(annotations_path)
-
-        return r
+        annotations_path = f"/annotations/{annotations_id}"
+        return await self.client.DELETE(annotations_path)

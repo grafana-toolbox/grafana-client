@@ -78,8 +78,7 @@ def prometheus_demo(grafana: GrafanaApi):
     datasource = DatasourceModel(
         name="probe-prometheus", type="prometheus", url="http://host.docker.internal:9090", access="server"
     )
-    health_info = health_probe(grafana, datasource)
-    return health_info
+    return health_probe(grafana, datasource)
 
 
 def run(grafana: GrafanaApi, grafana_version: Version = None):

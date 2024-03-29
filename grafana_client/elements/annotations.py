@@ -71,9 +71,7 @@ class Annotations(Base):
         list_annotations_path += "?"
         list_annotations_path += "&".join(params)
 
-        r = self.client.GET(list_annotations_path)
-
-        return r
+        return self.client.GET(list_annotations_path)
 
     def add_annotation(
         self,
@@ -111,9 +109,7 @@ class Annotations(Base):
         if dashboard_uid is not None:
             payload["dashboardUID"] = dashboard_uid
 
-        r = self.client.POST(annotations_path, json=payload)
-
-        return r
+        return self.client.POST(annotations_path, json=payload)
 
     def add_annotation_graphite(
         self,
@@ -135,9 +131,7 @@ class Annotations(Base):
         annotations_path = "/annotations/graphite"
         payload = {"what": what, "tags": tags, "when": when, "data": data}
 
-        r = self.client.POST(annotations_path, json=payload)
-
-        return r
+        return self.client.POST(annotations_path, json=payload)
 
     def update_annotation(
         self,
@@ -156,12 +150,10 @@ class Annotations(Base):
         :param text:
         :return:
         """
-        annotations_path = "/annotations/{}".format(annotations_id)
+        annotations_path = f"/annotations/{annotations_id}"
         payload = {"time": time_from, "timeEnd": time_to, "tags": tags, "text": text}
 
-        r = self.client.PUT(annotations_path, json=payload)
-
-        return r
+        return self.client.PUT(annotations_path, json=payload)
 
     def partial_update_annotation(
         self,
@@ -181,14 +173,12 @@ class Annotations(Base):
         :param text:
         :return:
         """
-        annotations_path = "/annotations/{}".format(annotations_id)
+        annotations_path = f"/annotations/{annotations_id}"
         payload = {}
 
         payload = {"time": time_from, "timeEnd": time_to, "tags": tags, "text": text}
 
-        r = self.client.PATCH(annotations_path, json=payload)
-
-        return r
+        return self.client.PATCH(annotations_path, json=payload)
 
     def delete_annotations_by_id(self, annotations_id=None):
         """
@@ -197,7 +187,5 @@ class Annotations(Base):
         :param annotations_id:
         :return:
         """
-        annotations_path = "/annotations/{}".format(annotations_id)
-        r = self.client.DELETE(annotations_path)
-
-        return r
+        annotations_path = f"/annotations/{annotations_id}"
+        return self.client.DELETE(annotations_path)

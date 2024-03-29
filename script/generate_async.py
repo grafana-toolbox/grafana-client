@@ -56,13 +56,13 @@ def run(action: str):
         # compare with current state, and croak on deviations.
 
         # Use this code for `delete=False`.
-        # TemporaryDirectory._rmtree = lambda *more, **kwargs: None
+        # TemporaryDirectory._rmtree = lambda *more, **kwargs: None  # noqa: ERA001
 
         with TemporaryDirectory() as tmpdir:
-            target = tmpdir
+            target = Path(tmpdir)
             process(source, target)
 
-            command = f"diff -x __pycache__ -u {TARGET} {target}"
+            command = f"diff -x __pycache__ -x .ruff_cache -u {TARGET} {target}"
             exitcode = os.system(command)
 
         if exitcode == 0:
@@ -96,7 +96,7 @@ def process(source: Path, target: Path):
 
         print(f"Processing {module_path}...")
 
-        with open(module_path, "r") as fp:
+        with Path.open(module_path) as fp:
             module_dump = fp.read()
 
         module_dump = re.sub(r"( {4}def )(?!_)", r"    async def ", module_dump)
@@ -111,7 +111,7 @@ def process(source: Path, target: Path):
 
         module_processed.append(module_path)
         target_path = Path(str(module_path).replace(str(source), str(target)))
-        with open(target_path, "w") as fp:
+        with Path.open(target_path, "w") as fp:
             fp.write(module_dump)
 
     relevant_modules = [_.name for _ in module_processed]
@@ -128,7 +128,7 @@ def process(source: Path, target: Path):
     if not remove_module_count:
         print("No modules to remove.. pursuing..")
 
-    with open(f"{source}/__init__.py", "r") as fp:
+    with Path.open(source / "__init__.py") as fp:
         top_level_content = fp.read()
 
     print("Updating _async top level import content")
@@ -162,13 +162,13 @@ def process(source: Path, target: Path):
 
         top_level_content_patch.append(line)
 
-    with open(f"{target}/__init__.py", "w") as fp:
+    with Path.open(target / "__init__.py", "w") as fp:
         fp.write("\n".join(top_level_content_patch) + "\n")
 
-    # Run Black and isort, providing them with the same configuration as the project.
+    # Run Ruff for code formatting, providing the same configuration as the project.
     shutil.copy(PYPROJECT_TOML, f"{target}")
-    subprocess.call(["black", target])
-    subprocess.call(["isort", target])
+    subprocess.call(["ruff", "format", target])
+    subprocess.call(["ruff", "check", "--fix", target])
     Path(f"{target}/pyproject.toml").unlink()
 
 

@@ -8,14 +8,6 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 
-[tool.black]
-line-length = 120
-
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-skip_glob = [".*_cache"]
-
 [tool.coverage.run]
 source = ["grafana_client"]
 
@@ -33,6 +25,52 @@ extend-exclude = [
   "grafana_client/elements/_async/__init__.py",
 ]
 
+[tool.ruff.lint]
+select = [
+    # Bandit
+    "S",
+    # eradicate
+    "ERA",
+    # flake8-2020
+    "YTT",
+    # isort
+    "I",
+    # print
+    "T20",
+    # Pycodestyle
+    "E",
+    "W",
+    # Pyflakes
+    "F",
+    # return
+    "RET",
+    # pyupgrade
+    # "UP",
+    # flake8-commas
+    "COM",
+    # future-annotations
+    # "FA",
+    # flake8-type-checking
+    "TCH",
+    # flake8-unused-arguments
+    "ARG",
+    # flake8-use-pathlib
+    "PTH"
+]
+extend-ignore = [
+    # Unnecessary `elif` after `return` or `raise` statement.
+    "RET505",
+    "RET506",
+    # No trailing commas.
+    "COM812"
+]
+unfixable = ["ERA", "F401", "F841", "T20", "ERA001"]
+
+[tool.ruff.lint.per-file-ignores]
+"examples/*" = ["ERA001", "T201"]
+"script/*" = ["S603", "S605", "S607", "T201"]
+"grafana_client/knowledge.py" = ["ERA001"]
+
 
 # ===================
 # Tasks configuration
@@ -41,14 +79,12 @@ extend-exclude = [
 [tool.poe.tasks]
 format = [
   {cmd="script/generate_async.py format"},
-  {cmd="black ."},
-  {cmd="isort ."},
+  {cmd="ruff format"},
+  {cmd="ruff check --fix"},
 ]
 lint = [
   {cmd="script/generate_async.py check"},
-  {cmd="ruff ."},
-  {cmd="black --check ."},
-  {cmd="isort --check ."},
+  {cmd="ruff check"},
 ]
 test = [
   {cmd="python -m unittest -vvv"},

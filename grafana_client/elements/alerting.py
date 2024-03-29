@@ -13,8 +13,7 @@ class Alerting(Base):
         :return:
         """
         get_alertrule_path = "/ruler/grafana/api/v1/rules/%s/%s" % (folder_name, alertrule_name)
-        r = self.client.GET(get_alertrule_path)
-        return r
+        return self.client.GET(get_alertrule_path)
 
     def create_alertrule(self, folder_name, alertrule):
         """
@@ -23,8 +22,7 @@ class Alerting(Base):
         :return:
         """
         create_alertrule_path = "/ruler/grafana/api/v1/rules/%s" % folder_name
-        r = self.client.POST(create_alertrule_path, json=alertrule)
-        return r
+        return self.client.POST(create_alertrule_path, json=alertrule)
 
     def update_alertrule(self, folder_name, alertrule):
         """
@@ -34,8 +32,7 @@ class Alerting(Base):
         """
 
         update_alertrule_path = "/ruler/grafana/api/v1/rules/%s" % folder_name
-        r = self.client.POST(update_alertrule_path, json=alertrule)
-        return r
+        return self.client.POST(update_alertrule_path, json=alertrule)
 
     def delete_alertrule(self, folder_name, alertrule_name):
         """
@@ -45,5 +42,4 @@ class Alerting(Base):
         """
 
         delete_alertrule_path = "/ruler/grafana/api/v1/rules/%s/%s" % (folder_name, alertrule_name)
-        r = self.client.DELETE(delete_alertrule_path)
-        return r
+        return self.client.DELETE(delete_alertrule_path)

@@ -164,7 +164,7 @@ class AdminTestCase(unittest.TestCase):
             "http://localhost/api/admin/users/2/password",
             json={"message": "User password updated"},
         )
-        user = self.grafana.admin.change_user_password(user_id=2, password="password")
+        user = self.grafana.admin.change_user_password(user_id=2, password="password")  # noqa: S106
         self.assertEqual(user["message"], "User password updated")
 
     @requests_mock.Mocker()

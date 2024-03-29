@@ -55,8 +55,7 @@ class Users(Base):
         :return:
         """
         get_user_path = "/users/%s" % user_id
-        r = self.client.GET(get_user_path)
-        return r
+        return self.client.GET(get_user_path)
 
     def find_user(self, login_or_email):
         """
@@ -65,8 +64,7 @@ class Users(Base):
         :return:
         """
         search_user_path = "/users/lookup?loginOrEmail=%s" % login_or_email
-        r = self.client.GET(search_user_path)
-        return r
+        return self.client.GET(search_user_path)
 
     def update_user(self, user_id, user):
         """
@@ -76,8 +74,7 @@ class Users(Base):
         :return:
         """
         update_user_path = "/users/%s" % user_id
-        r = self.client.PUT(update_user_path, json=user)
-        return r
+        return self.client.PUT(update_user_path, json=user)
 
     def get_user_organisations(self, user_id):
         """
@@ -86,8 +83,7 @@ class Users(Base):
         :return:
         """
         get_user_organisations_path = "/users/%s/orgs" % user_id
-        r = self.client.GET(get_user_organisations_path)
-        return r
+        return self.client.GET(get_user_organisations_path)
 
 
 class User(Base):
@@ -102,8 +98,7 @@ class User(Base):
         :return:
         """
         get_actual_user_path = "/user"
-        r = self.client.GET(get_actual_user_path)
-        return r
+        return self.client.GET(get_actual_user_path)
 
     def change_actual_user_password(self, old_password, new_password):
         """
@@ -112,14 +107,13 @@ class User(Base):
         :param new_password:
         :return:
         """
-        change_actual_user_password_path = "/user/password"
+        change_actual_user_password_path = "/user/password"  # noqa: S105
         change_actual_user_password_json = {
             "oldPassword": old_password,
             "newPassword": new_password,
             "confirmNew": new_password,
         }
-        r = self.client.PUT(change_actual_user_password_path, json=change_actual_user_password_json)
-        return r
+        return self.client.PUT(change_actual_user_password_path, json=change_actual_user_password_json)
 
     def switch_user_organisation(self, user_id, organisation_id):
         """
@@ -132,8 +126,7 @@ class User(Base):
             user_id,
             organisation_id,
         )
-        r = self.client.POST(switch_user_organisation_path)
-        return r
+        return self.client.POST(switch_user_organisation_path)
 
     def switch_actual_user_organisation(self, organisation_id):
         """
@@ -142,8 +135,7 @@ class User(Base):
         :return:
         """
         switch_actual_user_organisation_path = "/user/using/%s" % organisation_id
-        r = self.client.POST(switch_actual_user_organisation_path)
-        return r
+        return self.client.POST(switch_actual_user_organisation_path)
 
     def get_actual_user_organisations(self):
         """
@@ -151,8 +143,7 @@ class User(Base):
         :return:
         """
         get_actual_user_organisations_path = "/user/orgs"
-        r = self.client.GET(get_actual_user_organisations_path)
-        return r
+        return self.client.GET(get_actual_user_organisations_path)
 
     def star_actual_user_dashboard(self, dashboard_id):
         """
@@ -161,8 +152,7 @@ class User(Base):
         :return:
         """
         star_dashboard = "/user/stars/dashboard/%s" % dashboard_id
-        r = self.client.POST(star_dashboard)
-        return r
+        return self.client.POST(star_dashboard)
 
     def unstar_actual_user_dashboard(self, dashboard_id):
         """
@@ -171,8 +161,7 @@ class User(Base):
         :return:
         """
         unstar_dashboard = "/user/stars/dashboard/%s" % dashboard_id
-        r = self.client.DELETE(unstar_dashboard)
-        return r
+        return self.client.DELETE(unstar_dashboard)
 
     def get_preferences(self):
         """
@@ -181,8 +170,7 @@ class User(Base):
         :return:
         """
         update_preference = "/user/preferences"
-        r = self.client.GET(update_preference)
-        return r
+        return self.client.GET(update_preference)
 
     def update_preferences(self, preferences: PersonalPreferences):
         """
@@ -200,11 +188,10 @@ class User(Base):
         update_preference = "/user/preferences"
         data = preferences.asdict(filter_none=True)
 
-        r = self.client.PUT(
+        return self.client.PUT(
             update_preference,
             json=data,
         )
-        return r
 
     def patch_preferences(self, preferences: PersonalPreferences):
         """
@@ -219,8 +206,7 @@ class User(Base):
         update_preference = "/user/preferences"
         data = preferences.asdict(filter_none=True)
 
-        r = self.client.PATCH(
+        return self.client.PATCH(
             update_preference,
             json=data,
         )
-        return r

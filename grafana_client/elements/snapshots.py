@@ -41,8 +41,7 @@ class Snapshots(Base):
         if delete_key:
             post_json["deleteKey"] = delete_key
 
-        r = self.client.POST(path, json=post_json)
-        return r
+        return self.client.POST(path, json=post_json)
 
     def get_dashboard_snapshots(self):
         """
@@ -50,8 +49,7 @@ class Snapshots(Base):
         :return:
         """
         path = "/dashboard/snapshots"
-        r = self.client.GET(path)
-        return r
+        return self.client.GET(path)
 
     def get_snapshot_by_key(self, key):
         """
@@ -60,8 +58,7 @@ class Snapshots(Base):
         :return:
         """
         path = "/snapshots/%s" % key
-        r = self.client.GET(path)
-        return r
+        return self.client.GET(path)
 
     def delete_snapshot_by_key(self, snapshot_id=None):
         """
@@ -69,10 +66,8 @@ class Snapshots(Base):
         :param snapshot_id:
         :return:
         """
-        path = "/snapshots/{}".format(snapshot_id)
-        r = self.client.DELETE(path)
-
-        return r
+        path = f"/snapshots/{snapshot_id}"
+        return self.client.DELETE(path)
 
     def delete_snapshot_by_delete_key(self, snapshot_delete_key=None):
         """
@@ -80,7 +75,5 @@ class Snapshots(Base):
         :param snapshot_delete_key:
         :return:
         """
-        path = "/snapshots-delete/{}".format(snapshot_delete_key)
-        r = self.client.GET(path)
-
-        return r
+        path = f"/snapshots-delete/{snapshot_delete_key}"
+        return self.client.GET(path)

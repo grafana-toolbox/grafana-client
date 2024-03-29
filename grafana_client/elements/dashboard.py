@@ -20,8 +20,7 @@ class Dashboard(Base):
         :return:
         """
         get_dashboard_path = "/dashboards/uid/%s" % dashboard_uid
-        r = self.client.GET(get_dashboard_path)
-        return r
+        return self.client.GET(get_dashboard_path)
 
     def get_dashboard_by_name(self, dashboard_name):
         """
@@ -32,8 +31,7 @@ class Dashboard(Base):
         if self.api.version and Version(self.api.version) >= VERSION_8:
             raise DeprecationWarning("Grafana 8 and higher does not support getting dashboards by slug")
         get_dashboard_path = "/dashboards/db/%s" % dashboard_name
-        r = self.client.GET(get_dashboard_path)
-        return r
+        return self.client.GET(get_dashboard_path)
 
     def update_dashboard(self, dashboard):
         """
@@ -50,8 +48,7 @@ class Dashboard(Base):
                 dashboard["folderId"] = dashboard["meta"]["folderId"]
 
         put_dashboard_path = "/dashboards/db"
-        r = self.client.POST(put_dashboard_path, json=dashboard)
-        return r
+        return self.client.POST(put_dashboard_path, json=dashboard)
 
     def delete_dashboard(self, dashboard_uid):
         """
@@ -60,8 +57,7 @@ class Dashboard(Base):
         :return:
         """
         delete_dashboard_path = "/dashboards/uid/%s" % dashboard_uid
-        r = self.client.DELETE(delete_dashboard_path)
-        return r
+        return self.client.DELETE(delete_dashboard_path)
 
     def get_home_dashboard(self):
         """
@@ -69,8 +65,7 @@ class Dashboard(Base):
         :return:
         """
         get_home_dashboard_path = "/dashboards/home"
-        r = self.client.GET(get_home_dashboard_path)
-        return r
+        return self.client.GET(get_home_dashboard_path)
 
     def get_dashboards_tags(self):
         """
@@ -78,8 +73,7 @@ class Dashboard(Base):
         :return:
         """
         get_dashboards_tags_path = "/dashboards/tags"
-        r = self.client.GET(get_dashboards_tags_path)
-        return r
+        return self.client.GET(get_dashboards_tags_path)
 
     def get_dashboard_permissions(self, dashboard_id):
         warnings.warn(

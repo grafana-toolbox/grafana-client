@@ -74,8 +74,7 @@ class Teams(Base):
         :return:
         """
         get_team_path = "/teams/%s" % team_id
-        r = self.client.GET(get_team_path)
-        return r
+        return self.client.GET(get_team_path)
 
     def add_team(self, team):
         """
@@ -84,8 +83,7 @@ class Teams(Base):
         :return:
         """
         add_team_path = "/teams"
-        r = self.client.POST(add_team_path, json=team)
-        return r
+        return self.client.POST(add_team_path, json=team)
 
     def update_team(self, team_id, team):
         """
@@ -95,8 +93,7 @@ class Teams(Base):
         :return:
         """
         update_team_path = "/teams/%s" % team_id
-        r = self.client.PUT(update_team_path, json=team)
-        return r
+        return self.client.PUT(update_team_path, json=team)
 
     def delete_team(self, team_id):
         """
@@ -105,8 +102,7 @@ class Teams(Base):
         :return:
         """
         delete_team_path = "/teams/%s" % team_id
-        r = self.client.DELETE(delete_team_path)
-        return r
+        return self.client.DELETE(delete_team_path)
 
     def get_team_members(self, team_id):
         """
@@ -115,8 +111,7 @@ class Teams(Base):
         :return:
         """
         get_team_members_path = "/teams/%s/members" % team_id
-        r = self.client.GET(get_team_members_path)
-        return r
+        return self.client.GET(get_team_members_path)
 
     def add_team_member(self, team_id, user_id):
         """
@@ -127,8 +122,7 @@ class Teams(Base):
         """
         add_team_member_path = "/teams/%s/members" % team_id
         payload = {"userId": user_id}
-        r = self.client.POST(add_team_member_path, json=payload)
-        return r
+        return self.client.POST(add_team_member_path, json=payload)
 
     def remove_team_member(self, team_id, user_id):
         """
@@ -138,8 +132,7 @@ class Teams(Base):
         :return:
         """
         remove_team_member_path = "/teams/%s/members/%s" % (team_id, user_id)
-        r = self.client.DELETE(remove_team_member_path)
-        return r
+        return self.client.DELETE(remove_team_member_path)
 
     def get_team_preferences(self, team_id: int):
         """
@@ -168,8 +161,7 @@ class Teams(Base):
         :return:
         """
         get_team_preferences_path = "/teams/%s/preferences" % team_id
-        r = self.client.GET(get_team_preferences_path)
-        return r
+        return self.client.GET(get_team_preferences_path)
 
     def update_preferences(self, team_id: int, preferences: PersonalPreferences):
         """
@@ -186,8 +178,7 @@ class Teams(Base):
                 f"Unable to use data type '{type(preferences)}' for updating preferences. "
                 f"Please use `PersonalPreferences` instead."
             )
-        r = self.client.PUT(update_team_preferences_path, json=data)
-        return r
+        return self.client.PUT(update_team_preferences_path, json=data)
 
     def get_team_external_group(self, team_id):
         """
@@ -197,8 +188,7 @@ class Teams(Base):
         :return:
         """
         team_group_path = "/teams/%s/groups" % team_id
-        r = self.client.GET(team_group_path)
-        return r
+        return self.client.GET(team_group_path)
 
     def add_team_external_group(self, team_id, group):
         """
@@ -209,8 +199,7 @@ class Teams(Base):
         :return:
         """
         team_group_path = "/teams/%s/groups" % team_id
-        r = self.client.POST(team_group_path, json={"groupId": group})
-        return r
+        return self.client.POST(team_group_path, json={"groupId": group})
 
     def remove_team_external_group(self, team_id, group_id):
         """
@@ -224,5 +213,4 @@ class Teams(Base):
             team_group_path = "/teams/%s/groups/%s" % (team_id, group_id)
         else:
             team_group_path = "/teams/%s/groups?groupId=%s" % (team_id, group_id)
-        r = self.client.DELETE(team_group_path)
-        return r
+        return self.client.DELETE(team_group_path)

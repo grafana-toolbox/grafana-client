@@ -1,10 +1,5 @@
-import sys
 import unittest
-
-if sys.version_info > (3, 0):
-    from unittest.mock import Mock, patch
-else:
-    from mock import patch, Mock
+from unittest.mock import Mock, patch
 
 import niquests
 
@@ -174,4 +169,4 @@ class TestGrafanaClient(unittest.TestCase):
             status_code=204,
         )
         response = grafana.alertingprovisioning.delete_alertrule("foobar")
-        assert response is None
+        self.assertIsNone(response)

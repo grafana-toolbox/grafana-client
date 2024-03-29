@@ -12,8 +12,7 @@ class Folder(Base):
         :return:
         """
         path = "/folders"
-        r = self.client.GET(path)
-        return r
+        return self.client.GET(path)
 
     def get_folder(self, uid):
         """
@@ -22,8 +21,7 @@ class Folder(Base):
         :return:
         """
         path = "/folders/%s" % uid
-        r = self.client.GET(path)
-        return r
+        return self.client.GET(path)
 
     def create_folder(self, title, uid=None):
         """
@@ -58,8 +56,7 @@ class Folder(Base):
             body["overwrite"] = True
 
         path = "/folders/%s" % uid
-        r = self.client.PUT(path, json=body)
-        return r
+        return self.client.PUT(path, json=body)
 
     def delete_folder(self, uid):
         """
@@ -68,8 +65,7 @@ class Folder(Base):
         :return:
         """
         path = "/folders/%s" % uid
-        r = self.client.DELETE(path)
-        return r
+        return self.client.DELETE(path)
 
     def get_folder_by_id(self, folder_id):
         """
@@ -78,8 +74,7 @@ class Folder(Base):
         :return:
         """
         path = "/folders/id/%s" % folder_id
-        r = self.client.GET(path)
-        return r
+        return self.client.GET(path)
 
     def get_folder_permissions(self, uid):
         """
@@ -87,8 +82,7 @@ class Folder(Base):
         :return:
         """
         path = "/folders/%s/permissions" % uid
-        r = self.client.GET(path)
-        return r
+        return self.client.GET(path)
 
     def update_folder_permissions(self, uid, items):
         """
@@ -98,8 +92,7 @@ class Folder(Base):
         :return:
         """
         update_folder_permissions_path = "/folders/%s/permissions" % uid
-        r = self.client.POST(update_folder_permissions_path, json=items)
-        return r
+        return self.client.POST(update_folder_permissions_path, json=items)
 
     def update_folder_permissions_for_user(self, uid, user_id, items):
         """
@@ -112,5 +105,4 @@ class Folder(Base):
         """
 
         update_folder_permissions_path_for_user = "/access-control/folders/%s/users/%s" % (uid, user_id)
-        r = self.client.POST(update_folder_permissions_path_for_user, json=items)
-        return r
+        return self.client.POST(update_folder_permissions_path_for_user, json=items)

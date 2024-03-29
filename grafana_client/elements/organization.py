@@ -16,8 +16,7 @@ class Organization(Base):
         :return:
         """
         get_org_path = "/orgs/name/%s" % org_name
-        r = self.client.GET(get_org_path)
-        return r
+        return self.client.GET(get_org_path)
 
     def get_current_organization(self):
         """
@@ -25,8 +24,7 @@ class Organization(Base):
         :return:
         """
         get_current_organization_path = "/org"
-        r = self.client.GET(get_current_organization_path)
-        return r
+        return self.client.GET(get_current_organization_path)
 
     def create_organization(self, organization):
         """
@@ -35,8 +33,7 @@ class Organization(Base):
         :return:
         """
         create_orgs_path = "/orgs"
-        r = self.client.POST(create_orgs_path, json={"name": organization["name"]})
-        return r
+        return self.client.POST(create_orgs_path, json={"name": organization["name"]})
 
     def update_current_organization(self, organization):
         """
@@ -45,8 +42,7 @@ class Organization(Base):
         :return:
         """
         update_current_organization_path = "/org"
-        r = self.client.PUT(update_current_organization_path, json=organization)
-        return r
+        return self.client.PUT(update_current_organization_path, json=organization)
 
     def get_current_organization_users(self):
         """
@@ -54,8 +50,7 @@ class Organization(Base):
         :return:
         """
         get_current_organization_users_path = "/org/users"
-        r = self.client.GET(get_current_organization_users_path)
-        return r
+        return self.client.GET(get_current_organization_users_path)
 
     def add_user_current_organization(self, user):
         """
@@ -64,8 +59,7 @@ class Organization(Base):
         :return:
         """
         add_user_current_organization_path = "/org/users"
-        r = self.client.POST(add_user_current_organization_path, json=user)
-        return r
+        return self.client.POST(add_user_current_organization_path, json=user)
 
     def update_user_current_organization(self, user_id, user):
         """
@@ -75,8 +69,7 @@ class Organization(Base):
         :return:
         """
         update_user_current_organization_path = "/org/users/%s" % user_id
-        r = self.client.PATCH(update_user_current_organization_path, json=user)
-        return r
+        return self.client.PATCH(update_user_current_organization_path, json=user)
 
     def delete_user_current_organization(self, user_id):
         """
@@ -85,8 +78,7 @@ class Organization(Base):
         :return:
         """
         delete_user_current_organization_path = "/org/users/%s" % user_id
-        r = self.client.DELETE(delete_user_current_organization_path)
-        return r
+        return self.client.DELETE(delete_user_current_organization_path)
 
     def get_preferences(self):
         """
@@ -95,8 +87,7 @@ class Organization(Base):
         :return:
         """
         update_preference = "/org/preferences"
-        r = self.client.GET(update_preference)
-        return r
+        return self.client.GET(update_preference)
 
     def update_preferences(self, preferences: PersonalPreferences):
         """
@@ -114,11 +105,10 @@ class Organization(Base):
         update_preference = "/org/preferences"
         data = preferences.asdict(filter_none=True)
 
-        r = self.client.PUT(
+        return self.client.PUT(
             update_preference,
             json=data,
         )
-        return r
 
     def patch_preferences(self, preferences: PersonalPreferences):
         """
@@ -133,11 +123,10 @@ class Organization(Base):
         update_preference = "/org/preferences"
         data = preferences.asdict(filter_none=True)
 
-        r = self.client.PATCH(
+        return self.client.PATCH(
             update_preference,
             json=data,
         )
-        return r
 
 
 class Organizations(Base):
@@ -154,8 +143,7 @@ class Organizations(Base):
         :return:
         """
         update_org_path = "/orgs/%s" % organization_id
-        r = self.client.PUT(update_org_path, json=organization)
-        return r
+        return self.client.PUT(update_org_path, json=organization)
 
     def delete_organization(self, organization_id):
         """
@@ -164,8 +152,7 @@ class Organizations(Base):
         :return:
         """
         delete_org_path = "/orgs/%s" % organization_id
-        r = self.client.DELETE(delete_org_path)
-        return r
+        return self.client.DELETE(delete_org_path)
 
     def list_organization(self):
         """
@@ -173,8 +160,7 @@ class Organizations(Base):
         :return:
         """
         search_org_path = "/orgs"
-        r = self.client.GET(search_org_path)
-        return r
+        return self.client.GET(search_org_path)
 
     def switch_organization(self, organization_id):
         """
@@ -183,8 +169,7 @@ class Organizations(Base):
         :return:
         """
         switch_user_organization = "/user/using/%s" % organization_id
-        r = self.client.POST(switch_user_organization)
-        return r
+        return self.client.POST(switch_user_organization)
 
     def organization_user_list(self, organization_id):
         """
@@ -193,8 +178,7 @@ class Organizations(Base):
         :return:
         """
         users_in_org = "/orgs/%s/users" % organization_id
-        r = self.client.GET(users_in_org)
-        return r
+        return self.client.GET(users_in_org)
 
     def organization_user_add(self, organization_id, user):
         """
@@ -204,8 +188,7 @@ class Organizations(Base):
         :return:
         """
         add_user_path = "/orgs/%s/users" % organization_id
-        r = self.client.POST(add_user_path, json=user)
-        return r
+        return self.client.POST(add_user_path, json=user)
 
     def organization_user_update(self, organization_id, user_id, user_role):
         """
@@ -216,8 +199,7 @@ class Organizations(Base):
         :return:
         """
         patch_user = "/orgs/%s/users/%s" % (organization_id, user_id)
-        r = self.client.PATCH(patch_user, json={"role": user_role})
-        return r
+        return self.client.PATCH(patch_user, json={"role": user_role})
 
     def organization_user_delete(self, organization_id, user_id):
         """
@@ -227,8 +209,7 @@ class Organizations(Base):
         :return:
         """
         delete_user = "/orgs/%s/users/%s" % (organization_id, user_id)
-        r = self.client.DELETE(delete_user)
-        return r
+        return self.client.DELETE(delete_user)
 
     def organization_preference_get(self):
         """

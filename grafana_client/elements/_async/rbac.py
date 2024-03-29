@@ -13,8 +13,7 @@ class Rbac(Base):
         :return:
         """
         roles_path = "/access-control/roles"
-        r = await self.client.GET(roles_path)
-        return r
+        return await self.client.GET(roles_path)
 
     async def add_rbac_role_team(self, team_id, role_uid):
         """
@@ -25,8 +24,7 @@ class Rbac(Base):
         :return:
         """
         role_team_path = "/access-control/teams/%s/roles" % team_id
-        r = await self.client.POST(role_team_path, json={"roleUid": role_uid})
-        return r
+        return await self.client.POST(role_team_path, json={"roleUid": role_uid})
 
     async def add_rbac_roles_team(self, team_id, role_uids):
         """
@@ -37,8 +35,7 @@ class Rbac(Base):
         :return:
         """
         role_team_path = "/access-control/teams/%s/roles" % team_id
-        r = await self.client.PUT(role_team_path, json={"roleUids": role_uids})
-        return r
+        return await self.client.PUT(role_team_path, json={"roleUids": role_uids})
 
     async def remove_rbac_role_team(self, team_id, role_uid):
         """
@@ -49,8 +46,7 @@ class Rbac(Base):
         :return:
         """
         role_team_path = "/access-control/teams/%s/roles/%s" % (team_id, role_uid)
-        r = await self.client.DELETE(role_team_path)
-        return r
+        return await self.client.DELETE(role_team_path)
 
     async def get_rbac_datasources(self, datasource_uid):
         """
@@ -63,8 +59,7 @@ class Rbac(Base):
         :return:
         """
         datasource_path = "/access-control/datasources/%s" % datasource_uid
-        r = await self.client.GET(datasource_path)
-        return r
+        return await self.client.GET(datasource_path)
 
     async def set_rbac_datasources_teams(self, datasource_uid, team_id, permission):
         """
@@ -82,8 +77,7 @@ class Rbac(Base):
         :return:
         """
         datasource_path = "/access-control/datasources/%s/teams/%s" % (datasource_uid, team_id)
-        r = await self.client.POST(datasource_path, json={"permission": permission})
-        return r
+        return await self.client.POST(datasource_path, json={"permission": permission})
 
     async def set_rbac_datasources_builtin_roles(self, datasource_uid, builtin_role, permission):
         """
@@ -104,5 +98,4 @@ class Rbac(Base):
         :return:
         """
         datasource_path = "/access-control/datasources/%s/builtInRoles/%s" % (datasource_uid, builtin_role)
-        r = await self.client.POST(datasource_path, json={"permission": permission})
-        return r
+        return await self.client.POST(datasource_path, json={"permission": permission})
