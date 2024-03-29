@@ -1,3 +1,3 @@
-class Base(object):
+class Base:
     def __init__(self, client):
         self.client = client

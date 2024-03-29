@@ -16,8 +16,7 @@ class Plugin(Base):
         Return list of all installed plugins.
         """
         path = "/plugins?embedded=0"
-        r = self.client.GET(path)
-        return r
+        return self.client.GET(path)
 
     def by_id(self, plugin_id):
         """
@@ -34,8 +33,7 @@ class Plugin(Base):
             path = "/plugins/%s/install" % plugin_id
             # Unfortunately, this endpoint may respond with an empty JSON,
             # which needs compensation, because it does not decode well.
-            r = self.client.POST(path, json={"version": version}, accept_empty_json=True)
-            return r
+            return self.client.POST(path, json={"version": version}, accept_empty_json=True)
         except GrafanaClientError as ex:
             # Ignore `Client Error 409: Plugin already installed`.
             if "409" not in str(ex):
@@ -57,8 +55,7 @@ class Plugin(Base):
             path = "/plugins/%s/uninstall" % plugin_id
             # Unfortunately, this endpoint may respond with an empty JSON,
             # which needs compensation, because it does not decode well.
-            r = self.client.POST(path, accept_empty_json=True)
-            return r
+            return self.client.POST(path, accept_empty_json=True)
         except Exception as ex:
             if errors == "raise":
                 raise
@@ -73,16 +70,14 @@ class Plugin(Base):
         Run a health check probe on the designated plugin.
         """
         path = "/plugins/%s/health" % plugin_id
-        r = self.client.GET(path)
-        return r
+        return self.client.GET(path)
 
     def metrics(self, plugin_id):
         """
         Inquire metrics of the designated plugin.
         """
         path = "/plugins/%s/metrics" % plugin_id
-        r = self.client.GET(path)
-        return r
+        return self.client.GET(path)
 
 
 def get_plugin_by_id(plugin_list, plugin_id):

@@ -22,8 +22,7 @@ class ServiceAccount(Base):
         :return:
         """
         get_actual_user_path = "/serviceaccounts/%s?accesscontrol=true" % (service_account_id)
-        r = self.client.GET(get_actual_user_path)
-        return r
+        return self.client.GET(get_actual_user_path)
 
     def create(self, service_account):
         """
@@ -34,8 +33,7 @@ class ServiceAccount(Base):
         :return:
         """
         create_service_account_path = "/serviceaccounts/"
-        r = self.client.POST(create_service_account_path, json=service_account)
-        return r
+        return self.client.POST(create_service_account_path, json=service_account)
 
     def delete(self, service_account_id):
         """
@@ -47,8 +45,7 @@ class ServiceAccount(Base):
         """
 
         delete_service_account_path = "/serviceaccounts/%s" % (service_account_id)
-        r = self.client.DELETE(delete_service_account_path)
-        return r
+        return self.client.DELETE(delete_service_account_path)
 
     def get_tokens(self, service_account_id):
         """
@@ -59,8 +56,7 @@ class ServiceAccount(Base):
         :return:
         """
         service_account_tokens_path = "/serviceaccounts/%s/tokens" % (service_account_id)
-        r = self.client.GET(service_account_tokens_path)
-        return r
+        return self.client.GET(service_account_tokens_path)
 
     def create_token(self, service_account_id, content):
         """
@@ -72,8 +68,7 @@ class ServiceAccount(Base):
         :return:
         """
         create_service_account_token_path = "/serviceaccounts/%s/tokens" % (service_account_id)
-        r = self.client.POST(create_service_account_token_path, json=content)
-        return r
+        return self.client.POST(create_service_account_token_path, json=content)
 
     def delete_token(self, service_account_id, service_account_token_id):
         """
@@ -88,8 +83,7 @@ class ServiceAccount(Base):
             service_account_id,
             service_account_token_id,
         )
-        r = self.client.DELETE(delete_service_account_token_path)
-        return r
+        return self.client.DELETE(delete_service_account_token_path)
 
     def search(self, query=None, page=None, perpage=None):
         """

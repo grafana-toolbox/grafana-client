@@ -36,7 +36,7 @@ if __name__ == "__main__":
     # Connect to custom Grafana instance.
     grafana = GrafanaApi.from_url(
         url="http://localhost:3000/",
-        credential=TokenAuth(token="eyJrIjoiMGJIcDBZZVdGV3VNWHYyV1J2dU5lcnVBSW1qYzR2c1MiLCJuIjoiZm9vIiwiaWQiOjF9"),
+        credential=TokenAuth(token="eyJrIjoiMGJIcDBZZVdGV3VNWHYyV1J2dU5lcnVBSW1qYzR2c1MiLCJuIjoiZm9vIiwiaWQiOjF9"),  # noqa: S106
     )
 
     # Connect to Grafana instance of Grafana Labs fame.

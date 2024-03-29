@@ -12,5 +12,4 @@ class Health(Base):
         :return:
         """
         path = "/health"
-        r = self.client.GET(path)
-        return r
+        return self.client.GET(path)

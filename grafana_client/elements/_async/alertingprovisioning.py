@@ -12,8 +12,7 @@ class AlertingProvisioning(Base):
         @return:
         """
         get_alertrules_all_path = "/v1/provisioning/alert-rules"
-        r = await self.client.GET(get_alertrules_all_path)
-        return r
+        return await self.client.GET(get_alertrules_all_path)
 
     async def get_alertrule(self, alertrule_uid):
         """
@@ -22,8 +21,7 @@ class AlertingProvisioning(Base):
         :return:
         """
         get_alertrule_path = "/v1/provisioning/alert-rules/%s" % alertrule_uid
-        r = await self.client.GET(get_alertrule_path)
-        return r
+        return await self.client.GET(get_alertrule_path)
 
     async def create_alertrule(self, alertrule, disable_provenance=False):
         """
@@ -35,8 +33,7 @@ class AlertingProvisioning(Base):
         headers = {}
         if disable_provenance:
             headers["X-Disable-Provenance"] = "true"
-        r = await self.client.POST(create_alertrule_path, json=alertrule, headers=headers)
-        return r
+        return await self.client.POST(create_alertrule_path, json=alertrule, headers=headers)
 
     async def update_alertrule(self, alertrule_uid, alertrule, disable_provenance=False):
         """
@@ -49,8 +46,7 @@ class AlertingProvisioning(Base):
         headers = {}
         if disable_provenance:
             headers["X-Disable-Provenance"] = "true"
-        r = await self.client.PUT(update_alertrule_path, json=alertrule, headers=headers)
-        return r
+        return await self.client.PUT(update_alertrule_path, json=alertrule, headers=headers)
 
     async def get_rule_group(self, folder_uid, group_uid):
         """
@@ -60,8 +56,7 @@ class AlertingProvisioning(Base):
         :return:
         """
         get_rule_group_path = "/v1/provisioning/folder/%s/rule-groups/%s" % (folder_uid, group_uid)
-        r = await self.client.GET(get_rule_group_path)
-        return r
+        return await self.client.GET(get_rule_group_path)
 
     async def update_rule_group(self, folder_uid, group_uid, alertrule_group, disable_provenance=False):
         """
@@ -74,8 +69,7 @@ class AlertingProvisioning(Base):
         if disable_provenance:
             headers["X-Disable-Provenance"] = "true"
         update_rule_group_path = "/v1/provisioning/folder/%s/rule-groups/%s" % (folder_uid, group_uid)
-        r = await self.client.PUT(update_rule_group_path, json=alertrule_group, headers=headers)
-        return r
+        return await self.client.PUT(update_rule_group_path, json=alertrule_group, headers=headers)
 
     async def update_rule_group_interval(self, folder_uid, group_uid, alertrule_group, disable_provenance=False):
         """
@@ -94,8 +88,7 @@ class AlertingProvisioning(Base):
         """
 
         delete_alertrule_path = "/v1/provisioning/alert-rules/%s" % alertrule_uid
-        r = await self.client.DELETE(delete_alertrule_path)
-        return r
+        return await self.client.DELETE(delete_alertrule_path)
 
     async def get_contactpoints(self):
         """

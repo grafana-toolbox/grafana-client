@@ -66,7 +66,7 @@ class DatasourceTestCase(unittest.TestCase):
         self.assertEqual(result["type"], "prometheus")
 
     @requests_mock.Mocker()
-    def test_get_datasource_invalid(self, m):
+    def test_get_datasource_invalid(self, m):  # noqa: ARG002
         self.assertRaises(KeyError, lambda: self.grafana.datasource.get(DatasourceIdentifier()))
 
     @requests_mock.Mocker()

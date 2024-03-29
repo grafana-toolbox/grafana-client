@@ -54,5 +54,4 @@ class Search(Base):
         list_dashboard_path += "?"
         list_dashboard_path += "&".join(params)
 
-        r = await self.client.GET(list_dashboard_path)
-        return r
+        return await self.client.GET(list_dashboard_path)

@@ -38,8 +38,7 @@ class DashboardVersions(Base):
         if start is not None:
             query_args["start"] = start
 
-        r = self.client.GET(dashboard_versions_path, data=query_args)
-        return r
+        return self.client.GET(dashboard_versions_path, data=query_args)
 
     def get_dashboard_versions_by_id(self, dashboard_id: int = None, limit: int = None, start: int = None):
         return self.get_dashboard_versions(dashboard_id=dashboard_id, limit=limit, start=start)
@@ -54,8 +53,7 @@ class DashboardVersions(Base):
         if version_id is None:
             raise LookupError("version_id is required")
 
-        r = self.client.GET(dashboard_version_path)
-        return r
+        return self.client.GET(dashboard_version_path)
 
     def get_dashboard_version_by_id(self, dashboard_id: int = None, version_id: int = None):
         return self.get_dashboard_version(dashboard_id=dashboard_id, version_id=version_id)
@@ -70,8 +68,7 @@ class DashboardVersions(Base):
         if version_id is None:
             raise LookupError("version_id is required")
 
-        r = self.client.POST(restore_dashboard_path, json={"version": version_id})
-        return r
+        return self.client.POST(restore_dashboard_path, json={"version": version_id})
 
     def restore_dashboard_by_id(self, dashboard_id: int = None, version_id: int = None):
         return self.restore_dashboard(dashboard_id=dashboard_id, version_id=version_id)
@@ -97,7 +94,7 @@ class DashboardVersions(Base):
         if diff_type not in ["json", "basic"]:
             raise LookupError("diff_type must be either 'json' or 'basic'")
 
-        r = self.client.POST(
+        return self.client.POST(
             calculate_diff_path,
             json={
                 "base": {"dashboardId": base_dashboard_id, "version": base_version_id},
@@ -105,4 +102,3 @@ class DashboardVersions(Base):
                 "diffType": diff_type,
             },
         )
-        return r

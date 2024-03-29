@@ -12,8 +12,7 @@ class Admin(Base):
         :return:
         """
         path = "/admin/settings"
-        r = self.client.GET(path)
-        return r
+        return self.client.GET(path)
 
     def stats(self):
         """
@@ -21,8 +20,7 @@ class Admin(Base):
         :return:
         """
         path = "/admin/stats"
-        r = self.client.GET(path)
-        return r
+        return self.client.GET(path)
 
     def create_user(self, user):
         """
@@ -31,8 +29,7 @@ class Admin(Base):
         :return:
         """
         create_user_path = "/admin/users"
-        r = self.client.POST(create_user_path, json=user)
-        return r
+        return self.client.POST(create_user_path, json=user)
 
     def change_user_password(self, user_id, password):
         """
@@ -42,8 +39,7 @@ class Admin(Base):
         :return:
         """
         change_user_password_path = "/admin/users/%s/password" % user_id
-        r = self.client.PUT(change_user_password_path, json={"password": password})
-        return r
+        return self.client.PUT(change_user_password_path, json={"password": password})
 
     def change_user_permissions(self, user_id, is_grafana_admin):
         """
@@ -53,8 +49,7 @@ class Admin(Base):
         :return:
         """
         change_user_permissions = "/admin/users/%s/permissions" % user_id
-        r = self.client.PUT(change_user_permissions, json={"isGrafanaAdmin": is_grafana_admin})
-        return r
+        return self.client.PUT(change_user_permissions, json={"isGrafanaAdmin": is_grafana_admin})
 
     def delete_user(self, user_id):
         """
@@ -63,8 +58,7 @@ class Admin(Base):
         :return:
         """
         delete_user_path = "/admin/users/%s" % user_id
-        r = self.client.DELETE(delete_user_path)
-        return r
+        return self.client.DELETE(delete_user_path)
 
     def pause_all_alerts(self, pause):
         """
@@ -73,8 +67,7 @@ class Admin(Base):
         :return:
         """
         change_user_permissions = "/admin/pause-all-alerts"
-        r = self.client.POST(change_user_permissions, json={"paused": pause})
-        return r
+        return self.client.POST(change_user_permissions, json={"paused": pause})
 
     def set_user_enabled(self, user_id, enabled: bool):
         """
@@ -85,5 +78,4 @@ class Admin(Base):
         """
         action = "enable" if enabled else "disable"
         set_user_enabled = "/admin/users/%s/%s" % (user_id, action)
-        r = self.client.POST(set_user_enabled)
-        return r
+        return self.client.POST(set_user_enabled)

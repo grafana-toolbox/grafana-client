@@ -38,8 +38,7 @@ class Datasource(Base):
         https://grafana.com/docs/grafana/latest/developers/http_api/data_source/#check-data-source-health
         """
         path = f"/datasources/uid/{datasource_uid}/health"
-        r = self.client.GET(path)
-        return r
+        return self.client.GET(path)
 
     def find_datasource(self, datasource_name):
         """
@@ -48,8 +47,7 @@ class Datasource(Base):
         :return:
         """
         get_datasource_path = "/datasources/name/%s" % datasource_name
-        r = self.client.GET(get_datasource_path)
-        return r
+        return self.client.GET(get_datasource_path)
 
     def get_datasource_by_id(self, datasource_id):
         """
@@ -60,8 +58,7 @@ class Datasource(Base):
         :return:
         """
         get_datasource_path = "/datasources/%s" % datasource_id
-        r = self.client.GET(get_datasource_path)
-        return r
+        return self.client.GET(get_datasource_path)
 
     def get_datasource_by_name(self, datasource_name):
         """
@@ -70,8 +67,7 @@ class Datasource(Base):
         :return:
         """
         get_datasource_path = "/datasources/name/%s" % datasource_name
-        r = self.client.GET(get_datasource_path)
-        return r
+        return self.client.GET(get_datasource_path)
 
     def get_datasource_by_uid(self, datasource_uid):
         """
@@ -80,8 +76,7 @@ class Datasource(Base):
         :return:
         """
         get_datasource_path = "/datasources/uid/%s" % datasource_uid
-        r = self.client.GET(get_datasource_path)
-        return r
+        return self.client.GET(get_datasource_path)
 
     def get_datasource_id_by_name(self, datasource_name):
         """
@@ -90,8 +85,7 @@ class Datasource(Base):
         :return:
         """
         get_datasource_path = "/datasources/id/%s" % datasource_name
-        r = self.client.GET(get_datasource_path)
-        return r
+        return self.client.GET(get_datasource_path)
 
     def get(self, dsident: DatasourceIdentifier):
         """
@@ -114,8 +108,7 @@ class Datasource(Base):
         :return:
         """
         create_datasources_path = "/datasources"
-        r = self.client.POST(create_datasources_path, json=datasource)
-        return r
+        return self.client.POST(create_datasources_path, json=datasource)
 
     def update_datasource(self, datasource_id, datasource):
         """
@@ -125,8 +118,7 @@ class Datasource(Base):
         :return:
         """
         update_datasource = "/datasources/%s" % datasource_id
-        r = self.client.PUT(update_datasource, json=datasource)
-        return r
+        return self.client.PUT(update_datasource, json=datasource)
 
     def update_datasource_by_uid(self, datasource_uid, datasource):
         """
@@ -136,8 +128,7 @@ class Datasource(Base):
         :return:
         """
         update_datasource = "/datasources/uid/%s" % datasource_uid
-        r = self.client.PUT(update_datasource, json=datasource)
-        return r
+        return self.client.PUT(update_datasource, json=datasource)
 
     def list_datasources(self):
         """
@@ -145,8 +136,7 @@ class Datasource(Base):
         :return:
         """
         list_datasources_path = "/datasources"
-        r = self.client.GET(list_datasources_path)
-        return r
+        return self.client.GET(list_datasources_path)
 
     def delete_datasource_by_id(self, datasource_id):
         """
@@ -157,8 +147,7 @@ class Datasource(Base):
         :return:
         """
         delete_datasource = "/datasources/%s" % datasource_id
-        r = self.client.DELETE(delete_datasource)
-        return r
+        return self.client.DELETE(delete_datasource)
 
     def delete_datasource_by_name(self, datasource_name):
         """
@@ -167,8 +156,7 @@ class Datasource(Base):
         :return:
         """
         delete_datasource = "/datasources/name/%s" % datasource_name
-        r = self.client.DELETE(delete_datasource)
-        return r
+        return self.client.DELETE(delete_datasource)
 
     def delete_datasource_by_uid(self, datasource_uid):
         """
@@ -177,8 +165,7 @@ class Datasource(Base):
         :return:
         """
         delete_datasource = "/datasources/uid/%s" % datasource_uid
-        r = self.client.DELETE(delete_datasource)
-        return r
+        return self.client.DELETE(delete_datasource)
 
     def enable_datasource_permissions(self, datasource_id):
         """
@@ -191,8 +178,7 @@ class Datasource(Base):
             raise NotImplementedError("Deprecated since Grafana 10.2.3")
 
         get_datasource_path = "/datasources/%s/enable-permissions" % datasource_id
-        r = self.client.POST(get_datasource_path)
-        return r
+        return self.client.POST(get_datasource_path)
 
     def disable_datasource_permissions(self, datasource_id):
         """
@@ -205,8 +191,7 @@ class Datasource(Base):
             raise NotImplementedError("Deprecated since Grafana 10.2.3")
 
         get_datasource_path = "/datasources/%s/disable-permissions" % datasource_id
-        r = self.client.POST(get_datasource_path)
-        return r
+        return self.client.POST(get_datasource_path)
 
     def get_datasource_permissions(self, datasource_id):
         """
@@ -219,8 +204,7 @@ class Datasource(Base):
             raise NotImplementedError("Deprecated since Grafana 10.2.3, please use get_rbac_datasources()")
 
         get_datasource_path = "/datasources/%s/permissions" % datasource_id
-        r = self.client.GET(get_datasource_path)
-        return r
+        return self.client.GET(get_datasource_path)
 
     def add_datasource_permissions(self, datasource_id, permissions):
         """
@@ -234,8 +218,7 @@ class Datasource(Base):
             raise NotImplementedError("Deprecated since Grafana 10.2.3, please use set_rbac_datasources_*()")
 
         get_datasource_path = "/datasources/%s/permissions" % datasource_id
-        r = self.client.POST(get_datasource_path, json=permissions)
-        return r
+        return self.client.POST(get_datasource_path, json=permissions)
 
     def remove_datasource_permissions(self, datasource_id, permission_id):
         """
@@ -249,11 +232,18 @@ class Datasource(Base):
             raise NotImplementedError("Deprecated since Grafana 10.2.3, please use set_rbac_datasources_*()")
 
         get_datasource_path = "/datasources/%s/permissions/%s" % (datasource_id, permission_id)
-        r = self.client.DELETE(get_datasource_path)
-        return r
+        return self.client.DELETE(get_datasource_path)
 
     def get_datasource_proxy_data(
-        self, datasource_id, query_type="query", version="v1", expr=None, time=None, start=None, end=None, step=None
+        self,
+        datasource_id,
+        query_type="query",
+        version="v1",  # noqa: ARG002
+        expr=None,
+        time=None,
+        start=None,
+        end=None,
+        step=None,
     ):
         """
 
@@ -287,14 +277,13 @@ class Datasource(Base):
         :return:
         """
         post_query_path = "/datasources/%s/%s/api/v1/query" % (access, datasource_id)
-        r = self.client.POST(
+        return self.client.POST(
             post_query_path,
             data={
                 "query": query,
                 "time": timestamp,
             },
         )
-        return r
 
     def query_range(self, datasource_id, query, start, end, step, access="proxy"):
         """
@@ -308,8 +297,7 @@ class Datasource(Base):
         :return:
         """
         post_query_range_path = "/datasources/%s/%s/api/v1/query_range" % (access, datasource_id)
-        r = self.client.POST(post_query_range_path, data={"query": query, "start": start, "end": end, "step": step})
-        return r
+        return self.client.POST(post_query_range_path, data={"query": query, "start": start, "end": end, "step": step})
 
     def series(self, datasource_id, match, start, end, access="proxy"):
         """
@@ -322,8 +310,7 @@ class Datasource(Base):
         :return:
         """
         post_series_path = "/datasources/%s/%s/api/v1/series" % (access, datasource_id)
-        r = self.client.POST(post_series_path, data={"match[]": match, "start": start, "end": end})
-        return r
+        return self.client.POST(post_series_path, data={"match[]": match, "start": start, "end": end})
 
     def smartquery(
         self,
@@ -422,9 +409,7 @@ class Datasource(Base):
 
         # Submit query.
         try:
-            r = send_request(url, **request_kwargs)
-            # logger.debug(f"Response from generic data source query: {r}")
-            return r
+            return send_request(url, **request_kwargs)
         except (GrafanaClientError, GrafanaServerError) as ex:
             logger.error(
                 f"Querying data source failed. id={datasource_id}, type={datasource_type}. "
@@ -603,7 +588,7 @@ class Datasource(Base):
             logger.error(f"Data source with UID '{datasource_uid}' does not exist: {ex}. Response: {ex.response}")
             if ex.status_code == 404:
                 message = ex.response.get("message")
-                health = DatasourceHealthResponse(
+                return DatasourceHealthResponse(
                     uid=datasource_uid,
                     type=None,
                     success=False,
@@ -612,7 +597,6 @@ class Datasource(Base):
                     duration=None,
                     response=ex.response,
                 )
-                return health
             else:
                 raise
 

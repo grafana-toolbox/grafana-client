@@ -44,7 +44,7 @@ class GrafanaBadInputError(GrafanaClientError):
     """
 
     def __init__(self, response):
-        super(GrafanaBadInputError, self).__init__(400, response, "Bad Input: `{0}`".format(response))
+        super(GrafanaBadInputError, self).__init__(400, response, f"Bad Input: `{response}`")
 
 
 class GrafanaUnauthorizedError(GrafanaClientError):
@@ -61,7 +61,7 @@ class TokenAuth(niquests.auth.AuthBase):
         self.token = token
 
     def __call__(self, request):
-        request.headers.update({"Authorization": "Bearer {0}".format(self.token)})
+        request.headers.update({"Authorization": f"Bearer {self.token}"})
         return request
 
 
@@ -158,7 +158,7 @@ class GrafanaClient:
                 raise GrafanaServerError(
                     r.status_code,
                     response,
-                    "Server Error {0}: {1}".format(r.status_code, message),
+                    f"Server Error {r.status_code}: {message}",
                 )
             elif r.status_code == 400:
                 raise GrafanaBadInputError(response)
@@ -168,7 +168,7 @@ class GrafanaClient:
                 raise GrafanaClientError(
                     r.status_code,
                     response,
-                    "Client Error {0}: {1}".format(r.status_code, message),
+                    f"Client Error {r.status_code}: {message}",
                 )
 
         # `204 No Content` responses have an empty response body,

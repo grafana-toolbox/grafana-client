@@ -52,12 +52,11 @@ def mkdashboard(uid: str, title: str = None, message: str = None, overwrite: boo
     implementation would stuff more details into the dashboard beforehand.
     """
     dashboard = Dashboard(uid=uid, title=title)
-    data = {
+    return {
         "dashboard": encode_dashboard(dashboard),
         "overwrite": overwrite,
         "message": message,
     }
-    return data
 
 
 def encode_dashboard(entity) -> Dict:
