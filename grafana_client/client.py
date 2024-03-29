@@ -211,7 +211,7 @@ class GrafanaClient:
                 # Make sure to not leak any exception types of the requests implementation.
                 raise GrafanaException(0, None, str(e)) from e
 
-            return GrafanaClient._extract_from_response(r, accept_empty_json)
+            return self._extract_from_response(r, accept_empty_json)
 
         return __request_runner
 
