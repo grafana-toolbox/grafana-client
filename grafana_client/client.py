@@ -208,7 +208,7 @@ class GrafanaClient:
             except Timeout as e:
                 raise GrafanaTimeoutError(0, None, str(e)) from e
             except HTTPError as e:
-                # this branch is to make sure we don't leak anything bellow Grafana Client! like ProtocolError.
+                # Make sure to not leak any exception types of the requests implementation.
                 raise GrafanaException(0, None, str(e)) from e
 
             return GrafanaClient._extract_from_response(r, accept_empty_json)
