@@ -11,6 +11,8 @@
 * Remove Python 3.6 support. Thanks, @Ousret.
 * Improve support for folders, by adding ``parent_uid`` option to relevant
   endpoints, and by adding missing ``move_folder``. Thanks, @grafuls.
+* Service Accounts: Unlock endpoint to update service account by id.
+  Thanks, @einar-lanfranco.
 
 [Niquests]: https://niquests.readthedocs.io/
 [Riquests]: https://requests.readthedocs.io/
