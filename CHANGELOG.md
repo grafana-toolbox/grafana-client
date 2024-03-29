@@ -13,6 +13,8 @@
   endpoints, and by adding missing ``move_folder``. Thanks, @grafuls.
 * Service Accounts: Unlock endpoint to update service account by id.
   Thanks, @einar-lanfranco.
+* Data Source API: Add support for Amazon Redshift and Clickhouse.
+  Thanks, @lpfann and @mysuperai.
 
 [Niquests]: https://niquests.readthedocs.io/
 [Riquests]: https://requests.readthedocs.io/
