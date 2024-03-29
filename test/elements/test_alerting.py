@@ -31,7 +31,6 @@ class AlertingTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/ruler/grafana/api/v1/rules/alert-folder/alert-rule-test",
             json=ALERTRULE,
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.alerting.get_alertrule("alert-folder", "alert-rule-test")
         self.assertEqual(response["uid"], "bUUGqLiVk")
@@ -42,7 +41,6 @@ class AlertingTestCase(unittest.TestCase):
         m.delete(
             "http://localhost/api/ruler/grafana/api/v1/rules/alert-folder/alert-rule-test",
             json={"uid": "bUUGqLiVk"},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.alerting.delete_alertrule("alert-folder", "alert-rule-test")
         self.assertEqual(response["uid"], "bUUGqLiVk")
@@ -52,7 +50,6 @@ class AlertingTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/ruler/grafana/api/v1/rules/alert-folder",
             json=ALERTRULE,
-            headers={"Content-Type": "application/json"},
         )
 
         response = self.grafana.alerting.create_alertrule("alert-folder", ALERTRULE)
@@ -64,7 +61,6 @@ class AlertingTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/ruler/grafana/api/v1/rules/alert-folder",
             json=ALERTRULE,
-            headers={"Content-Type": "application/json"},
         )
 
         response = self.grafana.alerting.update_alertrule("alert-folder", alertrule=ALERTRULE)

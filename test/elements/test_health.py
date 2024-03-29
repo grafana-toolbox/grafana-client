@@ -14,7 +14,6 @@ class HealthTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "6f8c1d9fe4", "database": "ok", "version": "7.5.11"},
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.health.check()

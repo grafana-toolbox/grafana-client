@@ -30,7 +30,6 @@ class TeamsTestCase(unittest.TestCase):
                 "page": 1,
                 "perPage": 1000,
             },
-            headers={"Content-Type": "application/json"},
         )
         teams = self.grafana.teams.search_teams("my team")
         self.assertEqual(teams[0]["name"], "MyTestTeam")
@@ -55,7 +54,6 @@ class TeamsTestCase(unittest.TestCase):
                 "page": 1,
                 "perPage": 1,
             },
-            headers={"Content-Type": "application/json"},
         )
 
         m.get(
@@ -75,7 +73,6 @@ class TeamsTestCase(unittest.TestCase):
                 "page": 2,
                 "perPage": 1,
             },
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/teams/search?query=team&page=3&perpage=1",
@@ -85,7 +82,6 @@ class TeamsTestCase(unittest.TestCase):
                 "page": 3,
                 "perPage": 1,
             },
-            headers={"Content-Type": "application/json"},
         )
         teams = self.grafana.teams.search_teams("team", perpage=1)
         self.assertEqual(teams[0]["name"], "MyTestTeam")
@@ -111,7 +107,6 @@ class TeamsTestCase(unittest.TestCase):
                 "page": 1,
                 "perPage": 1,
             },
-            headers={"Content-Type": "application/json"},
         )
         teams = self.grafana.teams.search_teams("my team", 2)
         self.assertEqual(teams[0]["name"], "MyTestTeam")
@@ -122,12 +117,10 @@ class TeamsTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/teams/search?query=my%20team&page=1&perpage=5",
             json={"page": 1, "totalCount": 7, "teams": [{"name": "FirstTeam"}, {"name": "SecondTeam"}], "perPage": 5},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/teams/search?query=my%20team&page=2&perpage=5",
             json={"page": 2, "totalCount": 7, "teams": [], "perPage": 5},
-            headers={"Content-Type": "application/json"},
         )
         teams = self.grafana.teams.search_teams("my team", perpage=5)
         self.assertEqual(len(teams), 2)
@@ -151,7 +144,6 @@ class TeamsTestCase(unittest.TestCase):
                 "page": 1,
                 "perPage": 1000,
             },
-            headers={"Content-Type": "application/json"},
         )
         teams = self.grafana.teams.get_team_by_name("my team")
         self.assertEqual(teams[0]["name"], "my team")
@@ -169,7 +161,6 @@ class TeamsTestCase(unittest.TestCase):
                 "created": "2017-12-15T10:40:45+01:00",
                 "updated": "2017-12-15T10:40:45+01:00",
             },
-            headers={"Content-Type": "application/json"},
         )
         team = self.grafana.teams.get_team("1")
         self.assertEqual(team["name"], "MyTestTeam")
@@ -179,7 +170,6 @@ class TeamsTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/teams",
             json={"message": "Team created", "teamId": 2},
-            headers={"Content-Type": "application/json"},
         )
         team = {"name": "MySecondTestTeam", "email": "email@example.org"}
         new_team = self.grafana.teams.add_team(team)
@@ -194,7 +184,6 @@ class TeamsTestCase(unittest.TestCase):
             "http://localhost/api/teams",
             json={"message": "bad request data", "traceID": "00000000000000000000000000000000"},
             status_code=400,
-            headers={"Content-Type": "application/json"},
         )
         team_as_json = json.dumps({"name": "MySecondTestTeam", "email": "email@example.org"})
 
@@ -210,7 +199,6 @@ class TeamsTestCase(unittest.TestCase):
         m.put(
             "http://localhost/api/teams/3",
             json={"message": "Team updated"},
-            headers={"Content-Type": "application/json"},
         )
         team = {"name": "MyThirdTestTeam", "email": "email@example.org"}
         response = self.grafana.teams.update_team(3, team)
@@ -221,7 +209,6 @@ class TeamsTestCase(unittest.TestCase):
         m.delete(
             "http://localhost/api/teams/3",
             json={"message": "Team deleted"},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.teams.delete_team(3)
         self.assertEqual(response, {"message": "Team deleted"})
@@ -240,7 +227,6 @@ class TeamsTestCase(unittest.TestCase):
                     "avatarUrl": "/avatar/1b3c32f6386b0185c40d359cdc733a79",
                 }
             ],
-            headers={"Content-Type": "application/json"},
         )
         members = self.grafana.teams.get_team_members("1")
         self.assertEqual(members[0]["login"], "user1")
@@ -250,7 +236,6 @@ class TeamsTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/teams/1/members",
             json={"message": "Member added to Team"},
-            headers={"Content-Type": "application/json"},
         )
         history = m.request_history
         add_res = self.grafana.teams.add_team_member("1", "3")
@@ -262,7 +247,6 @@ class TeamsTestCase(unittest.TestCase):
         m.delete(
             "http://localhost/api/teams/13/members/2",
             json={"message": "Team member removed"},
-            headers={"Content-Type": "application/json"},
         )
         remove_res = self.grafana.teams.remove_team_member("13", "2")
         self.assertEqual(remove_res["message"], "Team member removed")
@@ -275,7 +259,6 @@ class TeamsTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/teams/1/preferences",
             json={"theme": "", "homeDashboardId": 0, "timezone": ""},
-            headers={"Content-Type": "application/json"},
         )
         prefs = self.grafana.teams.get_team_preferences("1")
         self.assertEqual(prefs["homeDashboardId"], 0)
@@ -288,7 +271,6 @@ class TeamsTestCase(unittest.TestCase):
         m.put(
             "http://localhost/api/teams/1/preferences",
             json={"message": "Preferences updated"},
-            headers={"Content-Type": "application/json"},
         )
         prefs = {"theme": "light", "homeDashboardId": 0, "timezone": "utc"}
 
@@ -306,7 +288,6 @@ class TeamsTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/teams/1/preferences",
             json={"theme": "", "homeDashboardId": 0, "timezone": ""},
-            headers={"Content-Type": "application/json"},
         )
         prefs = self.grafana.teams.get_preferences("1")
         self.assertEqual(prefs["homeDashboardId"], 0)
@@ -319,7 +300,6 @@ class TeamsTestCase(unittest.TestCase):
         m.put(
             "http://localhost/api/teams/1/preferences",
             json={"message": "Preferences updated"},
-            headers={"Content-Type": "application/json"},
         )
         prefs = PersonalPreferences(theme="light", homeDashboardId=0, timezone="utc")
 
@@ -340,7 +320,6 @@ class TeamsTestCase(unittest.TestCase):
                     "groupId": "group",
                 }
             ],
-            headers={"Content-Type": "application/json"},
         )
         groups = self.grafana.teams.get_team_external_group("1")
         self.assertEqual(groups[0]["groupId"], "group")
@@ -350,7 +329,6 @@ class TeamsTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/teams/1/groups",
             json={"message": "Group added to Team"},
-            headers={"Content-Type": "application/json"},
         )
         r = self.grafana.teams.add_team_external_group("1", "group")
         self.assertEqual(r["message"], "Group added to Team")
@@ -360,13 +338,11 @@ class TeamsTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": "10.2.0"},
-            headers={"Content-Type": "application/json"},
         )
 
         m.delete(
             "http://localhost/api/teams/42/groups?groupId=a_external_group",
             json={"message": "Team group removed"},
-            headers={"Content-Type": "application/json"},
         )
         r = self.grafana.teams.remove_team_external_group("42", "a_external_group")
         self.assertEqual(r["message"], "Team group removed")
@@ -376,13 +352,11 @@ class TeamsTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": "10.1.0"},
-            headers={"Content-Type": "application/json"},
         )
 
         m.delete(
             "http://localhost/api/teams/42/groups/a_external_group",
             json={"message": "Team group removed"},
-            headers={"Content-Type": "application/json"},
         )
         r = self.grafana.teams.remove_team_external_group("42", "a_external_group")
         self.assertEqual(r["message"], "Team group removed")

@@ -30,7 +30,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/foobar/health",
             json={"message": "TwinMaker datasource successfully configured (For play.grafana.org)", "status": "OK"},
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.datasource.health("foobar")
@@ -41,7 +40,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/42",
             json=PROMETHEUS_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.datasource.get(DatasourceIdentifier(id="42"))
@@ -52,7 +50,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
             json=PROMETHEUS_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.datasource.get(DatasourceIdentifier(uid="h8KkCLt7z"))
@@ -63,7 +60,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/name/Prometheus",
             json=PROMETHEUS_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.datasource.get(DatasourceIdentifier(name="Prometheus"))
@@ -78,7 +74,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/datasources",
             json=PROMETHEUS_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.datasource.create_datasource(PROMETHEUS_DATASOURCE)
@@ -89,7 +84,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.put(
             "http://localhost/api/datasources/42",
             json=PROMETHEUS_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.datasource.update_datasource(42, PROMETHEUS_DATASOURCE)
@@ -100,7 +94,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.put(
             "http://localhost/api/datasources/uid/foo42",
             json=PROMETHEUS_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.datasource.update_datasource_by_uid("foo42", PROMETHEUS_DATASOURCE)
@@ -111,7 +104,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.delete(
             "http://localhost/api/datasources/42",
             json={"message": "Data source deleted"},
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.datasource.delete_datasource_by_id(42)
@@ -122,7 +114,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.delete(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
             json={"message": "Data source deleted"},
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.datasource.delete_datasource_by_uid("h8KkCLt7z")
@@ -133,7 +124,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.delete(
             "http://localhost/api/datasources/name/Prometheus",
             json={"message": "Data source deleted"},
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.datasource.delete_datasource_by_name("Prometheus")
@@ -144,13 +134,11 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": "10.2.1"},
-            headers={"Content-Type": "application/json"},
         )
 
         m.post(
             "http://localhost/api/datasources/42/enable-permissions",
             json={"message": "Datasource permissions enabled"},
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.datasource.enable_datasource_permissions(42)
@@ -161,7 +149,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": "10.2.3"},
-            headers={"Content-Type": "application/json"},
         )
 
         with patch(
@@ -177,13 +164,11 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": "10.2.1"},
-            headers={"Content-Type": "application/json"},
         )
 
         m.post(
             "http://localhost/api/datasources/42/disable-permissions",
             json={"message": "Datasource permissions disabled"},
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.datasource.disable_datasource_permissions(42)
@@ -194,7 +179,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": "10.2.3"},
-            headers={"Content-Type": "application/json"},
         )
 
         with patch(
@@ -210,13 +194,11 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": "10.2.1"},
-            headers={"Content-Type": "application/json"},
         )
 
         m.get(
             "http://localhost/api/datasources/42/permissions",
             json=PERMISSION_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.datasource.get_datasource_permissions(42)
@@ -227,7 +209,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": "10.2.3"},
-            headers={"Content-Type": "application/json"},
         )
 
         with patch(
@@ -243,13 +224,11 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": "10.2.1"},
-            headers={"Content-Type": "application/json"},
         )
 
         m.post(
             "http://localhost/api/datasources/42/permissions",
             json={"message": "Datasource permission added"},
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.datasource.add_datasource_permissions(42, {"userId": 1, "permission": 1})
@@ -260,7 +239,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": "10.2.3"},
-            headers={"Content-Type": "application/json"},
         )
 
         with patch(
@@ -276,13 +254,11 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": "10.2.1"},
-            headers={"Content-Type": "application/json"},
         )
 
         m.delete(
             "http://localhost/api/datasources/42/permissions/1",
             json={"message": "Datasource permission removed"},
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.datasource.remove_datasource_permissions(42, 1)
@@ -293,7 +269,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": "10.2.3"},
-            headers={"Content-Type": "application/json"},
         )
 
         with patch(
@@ -309,7 +284,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/name/Prometheus",
             json=PROMETHEUS_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.datasource.find_datasource("Prometheus")
@@ -321,7 +295,6 @@ class DatasourceTestCase(unittest.TestCase):
             "http://localhost/api/datasources/name/it_doesnot_exist",
             json={"message": "Data source not found"},
             status_code=400,
-            headers={"Content-Type": "application/json"},
         )
 
         with self.assertRaises(GrafanaBadInputError):
@@ -332,7 +305,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/id/Prometheus",
             json={"id": 42},
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.datasource.get_datasource_id_by_name("Prometheus")
@@ -343,7 +315,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources",
             json=[PROMETHEUS_DATASOURCE],
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.datasource.list_datasources()
@@ -356,7 +327,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/datasources/proxy/1/api/v1/query",
             json=PROMETHEUS_DATA_RESPONSE,
-            headers={"Content-Type": "application/json"},
         )
         result = self.grafana.datasource.get_datasource_proxy_data(
             1,  # datasource_id
@@ -374,7 +344,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/datasources/proxy/1/api/v1/query_range",
             json=PROMETHEUS_DATA_RESPONSE,
-            headers={"Content-Type": "application/json"},
         )
         result = self.grafana.datasource.get_datasource_proxy_data(
             1,  # datasource_id
@@ -393,7 +362,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/datasources/proxy/1/api/v1/query",
             json=PROMETHEUS_DATA_RESPONSE,
-            headers={"Content-Type": "application/json"},
         )
         with self.assertRaises(KeyError) as ctx:
             self.grafana.datasource.get_datasource_proxy_data(
@@ -411,7 +379,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/datasources/proxy/1/api/v1/series",
             json=PROMETHEUS_DATA_RESPONSE,
-            headers={"Content-Type": "application/json"},
         )
         result = self.grafana.datasource.series(
             datasource_id=1,
@@ -430,12 +397,10 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": "7.0.1"},
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json=DATAFRAME_RESPONSE_HEALTH_PROMETHEUS,
-            headers={"Content-Type": "application/json"},
         )
         datasource = PROMETHEUS_DATASOURCE.copy()
         response = self.grafana.datasource.smartquery(datasource, "1+1")
@@ -448,12 +413,10 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json=DATAFRAME_RESPONSE_HEALTH_PROMETHEUS,
-            headers={"Content-Type": "application/json"},
         )
         datasource = PROMETHEUS_DATASOURCE.copy()
         response = self.grafana.datasource.smartquery(datasource, "1+1")
@@ -464,7 +427,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/datasources/proxy/43/query",
             json={},
-            headers={"Content-Type": "application/json"},
         )
         datasource = INFLUXDB1_DATASOURCE.copy()
         _ = self.grafana.datasource.smartquery(
@@ -477,12 +439,10 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/proxy/44/bazqux/_mapping",
             json={},
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json=DATAFRAME_RESPONSE_HEALTH_ELASTICSEARCH_VALID,
-            headers={"Content-Type": "application/json"},
         )
         datasource = ELASTICSEARCH_DATASOURCE.copy()
         _ = self.grafana.datasource.smartquery(datasource, "url:///datasources/proxy/44/bazqux/_mapping")
@@ -495,17 +455,14 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
             json=PROMETHEUS_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json=DATAFRAME_RESPONSE_HEALTH_PROMETHEUS,
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.smartquery(DatasourceIdentifier(uid="h8KkCLt7z"), "1+1")
         self.assertEqual(response, DATAFRAME_RESPONSE_HEALTH_PROMETHEUS)
@@ -517,7 +474,6 @@ class DatasourceTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
-            headers={"Content-Type": "application/json"},
         )
         datasource = PROMETHEUS_DATASOURCE.copy()
         datasource["access"] = "__UNKNOWN__"

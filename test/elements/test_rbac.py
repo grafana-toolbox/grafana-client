@@ -15,7 +15,6 @@ class RbacTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/access-control/roles",
             json=RBAC_ROLES_ALL,
-            headers={"Content-Type": "application/json"},
         )
         roles = self.grafana.rbac.get_rbac_roles_all()
         self.assertEqual(roles[0]["name"], "fixed:datasources.permissions:writer")
@@ -26,7 +25,6 @@ class RbacTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/access-control/teams/1/roles",
             json={"message": "Role added to the team."},
-            headers={"Content-Type": "application/json"},
         )
         history = m.request_history
 
@@ -39,7 +37,6 @@ class RbacTestCase(unittest.TestCase):
         m.put(
             "http://localhost/api/access-control/teams/1/roles",
             json={"message": "Team roles have been updated."},
-            headers={"Content-Type": "application/json"},
         )
         history = m.request_history
 
@@ -53,7 +50,6 @@ class RbacTestCase(unittest.TestCase):
         m.delete(
             "http://localhost/api/access-control/teams/1/roles/AFUXBHKnk",
             json={"message": "Role removed from team."},
-            headers={"Content-Type": "application/json"},
         )
         r = self.grafana.rbac.remove_rbac_role_team("1", "AFUXBHKnk")
         self.assertEqual(r["message"], "Role removed from team.")
@@ -63,7 +59,6 @@ class RbacTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/access-control/datasources/my_datasource",
             json=PERMISSION_RBAC_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
 
         r = self.grafana.rbac.get_rbac_datasources("my_datasource")
@@ -74,7 +69,6 @@ class RbacTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/access-control/datasources/my_datasource/teams/1",
             json={"message": "Permission updated"},
-            headers={"Content-Type": "application/json"},
         )
         history = m.request_history
 
@@ -87,7 +81,6 @@ class RbacTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/access-control/datasources/my_datasource/builtInRoles/Admin",
             json={"message": "Permission updated"},
-            headers={"Content-Type": "application/json"},
         )
         history = m.request_history
 

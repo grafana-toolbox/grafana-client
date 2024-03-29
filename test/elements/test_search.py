@@ -27,7 +27,6 @@ class AnnotationsTestCase(unittest.TestCase):
                     "uri": "db/folder",
                 }
             ],
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.search.search_dashboards(
@@ -48,7 +47,6 @@ class AnnotationsTestCase(unittest.TestCase):
             "http://localhost/api/search",
             json={"message": "Not found"},
             status_code=400,
-            headers={"Content-Type": "application/json"},
         )
 
         with self.assertRaises(GrafanaBadInputError):

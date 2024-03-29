@@ -32,7 +32,6 @@ class ServiceAccountsTestCase(unittest.TestCase):
                     "serviceaccounts:write": True,
                 },
             },
-            headers={"Content-Type": "application/json"},
         )
         result = self.grafana.serviceaccount.get(42)
         self.assertEqual(
@@ -63,7 +62,6 @@ class ServiceAccountsTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/serviceaccounts/",
             json={"message": "Service account created"},
-            headers={"Content-Type": "application/json"},
         )
         user = self.grafana.serviceaccount.create({"name": "foo", "role": "Admin"})
         self.assertEqual(user["message"], "Service account created")
@@ -73,7 +71,6 @@ class ServiceAccountsTestCase(unittest.TestCase):
         m.delete(
             "http://localhost/api/serviceaccounts/42",
             json={"message": "Service account deleted"},
-            headers={"Content-Type": "application/json"},
         )
         user = self.grafana.serviceaccount.delete(42)
         self.assertEqual(user["message"], "Service account deleted")
@@ -83,7 +80,6 @@ class ServiceAccountsTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/serviceaccounts/42/tokens",
             json={"message": "Service account token created"},
-            headers={"Content-Type": "application/json"},
         )
         user = self.grafana.serviceaccount.create_token(42, {"name": "some-uuid"})
         self.assertEqual(user["message"], "Service account token created")
@@ -93,7 +89,6 @@ class ServiceAccountsTestCase(unittest.TestCase):
         m.delete(
             "http://localhost/api/serviceaccounts/42/tokens/2",
             json={"message": "Service account token deleted"},
-            headers={"Content-Type": "application/json"},
         )
         user = self.grafana.serviceaccount.delete_token(42, 2)
         self.assertEqual(user["message"], "Service account token deleted")
@@ -103,7 +98,6 @@ class ServiceAccountsTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/serviceaccounts/42/tokens",
             json=["token1", "token2"],
-            headers={"Content-Type": "application/json"},
         )
         result = self.grafana.serviceaccount.get_tokens(42)
         self.assertEqual(len(result), 2)
@@ -113,7 +107,6 @@ class ServiceAccountsTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/serviceaccounts/42/tokens",
             json=[],
-            headers={"Content-Type": "application/json"},
         )
         result = self.grafana.serviceaccount.get_tokens(42)
         self.assertEqual(len(result), 0)
@@ -124,7 +117,6 @@ class ServiceAccountsTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/serviceaccounts/search?query=foo&page=3&perpage=10",
             json={"foo": "bar"},
-            headers={"Content-Type": "application/json"},
         )
         result = self.grafana.serviceaccount.search("foo", page=3, perpage=10)
         self.assertEqual(result, [{"foo": "bar"}])
@@ -134,12 +126,10 @@ class ServiceAccountsTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/serviceaccounts/search?query=foo&page=1",
             json={"totalCount": 1, "serviceAccounts": [{"foo": "bar"}]},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/serviceaccounts/search?query=foo&page=2",
             json={"totalCount": 1, "serviceAccounts": []},
-            headers={"Content-Type": "application/json"},
         )
         result = self.grafana.serviceaccount.search_one("foo")
         self.assertEqual(result, {"foo": "bar"})
@@ -149,12 +139,10 @@ class ServiceAccountsTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/serviceaccounts/search?query=foo&page=1",
             json={"totalCount": 2, "serviceAccounts": [{"foo": "bar"}, {"foo": "baz"}]},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/serviceaccounts/search?query=foo&page=2",
             json={"totalCount": 2, "serviceAccounts": []},
-            headers={"Content-Type": "application/json"},
         )
         with self.assertRaises(ValueError) as ex:
             self.grafana.serviceaccount.search_one("foo")
@@ -165,7 +153,6 @@ class ServiceAccountsTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/serviceaccounts/search?query=foo&page=1",
             json={"totalCount": 0, "serviceAccounts": []},
-            headers={"Content-Type": "application/json"},
         )
         with self.assertRaises(ValueError) as ex:
             self.grafana.serviceaccount.search_one("foo")

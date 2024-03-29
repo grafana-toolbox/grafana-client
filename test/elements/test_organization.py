@@ -15,7 +15,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.delete(
             "http://localhost/api/orgs/1/users/2",
             json={"message": "User removed from organization"},
-            headers={"Content-Type": "application/json"},
         )
         annotation = self.grafana.organizations.organization_user_delete(organization_id=1, user_id=2)
         self.assertEqual(annotation["message"], "User removed from organization")
@@ -25,7 +24,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/org/preferences",
             json={"theme": "", "homeDashboardId": 0, "timezone": ""},
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.organizations.organization_preference_get()
@@ -36,7 +34,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.put(
             "http://localhost/api/org/preferences",
             json={"message": "Preferences updated"},
-            headers={"Content-Type": "application/json"},
         )
         preference = self.grafana.organizations.organization_preference_update(
             theme="", home_dashboard_id=0, timezone="utc"
@@ -48,7 +45,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/org/preferences",
             json={"theme": "", "homeDashboardId": 0, "timezone": ""},
-            headers={"Content-Type": "application/json"},
         )
 
         result = self.grafana.organization.get_preferences()
@@ -59,7 +55,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.put(
             "http://localhost/api/org/preferences",
             json={"message": "Preferences updated"},
-            headers={"Content-Type": "application/json"},
         )
         preference = self.grafana.organization.update_preferences(
             PersonalPreferences(theme="", homeDashboardId=999, timezone="utc")
@@ -71,7 +66,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.patch(
             "http://localhost/api/org/preferences",
             json={"message": "Preferences updated"},
-            headers={"Content-Type": "application/json"},
         )
         preference = self.grafana.organization.patch_preferences(PersonalPreferences(homeDashboardUID="zgjG8dKVz"))
         self.assertEqual(preference["message"], "Preferences updated")
@@ -81,7 +75,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.patch(
             "http://localhost/api/orgs/1/users/2",
             json={"message": "Organization user updated"},
-            headers={"Content-Type": "application/json"},
         )
         preference = self.grafana.organizations.organization_user_update(
             organization_id=1, user_id=2, user_role="Admin"
@@ -93,7 +86,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/orgs/1/users",
             json={"message": "User added to organization"},
-            headers={"Content-Type": "application/json"},
         )
         preference = self.grafana.organizations.organization_user_add(
             organization_id=1, user={"loginOrEmail": "user", "role": "Viewer"}
@@ -105,7 +97,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/orgs/1/users",
             json=[{"orgId": 1, "userId": 1, "email": "admin@mygraf.com", "login": "admin", "role": "Admin"}],
-            headers={"Content-Type": "application/json"},
         )
         users = self.grafana.organizations.organization_user_list(organization_id=1)
         self.assertEqual(len(users), 1)
@@ -115,7 +106,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/orgs",
             json=[{"orgId": 1, "userId": 1, "email": "admin@mygraf.com", "login": "admin", "role": "Admin"}],
-            headers={"Content-Type": "application/json"},
         )
         users = self.grafana.organizations.list_organization()
         self.assertEqual(len(users), 1)
@@ -125,7 +115,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/org",
             json={"id": 1, "name": "Main Org."},
-            headers={"Content-Type": "application/json"},
         )
         orgs = self.grafana.organization.get_current_organization()
         self.assertEqual(orgs["name"], "Main Org.")
@@ -135,7 +124,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.put(
             "http://localhost/api/org",
             json={"message": "Organization updated"},
-            headers={"Content-Type": "application/json"},
         )
         org = self.grafana.organization.update_current_organization(organization={"name": "Main Org."})
         self.assertEqual(org["message"], "Organization updated")
@@ -145,7 +133,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.put(
             "http://localhost/api/orgs/1",
             json={"message": "Organization updated"},
-            headers={"Content-Type": "application/json"},
         )
         preference = self.grafana.organizations.update_organization(
             organization_id=1, organization={"name": "Main Org 2."}
@@ -157,7 +144,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.delete(
             "http://localhost/api/orgs/1",
             json={"message": "Organization deleted"},
-            headers={"Content-Type": "application/json"},
         )
         preference = self.grafana.organizations.delete_organization(organization_id=1)
         self.assertEqual(preference["message"], "Organization deleted")
@@ -167,7 +153,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/orgs",
             json={"orgId": "1", "message": "Organization created"},
-            headers={"Content-Type": "application/json"},
         )
         preference = self.grafana.organization.create_organization(organization={"name": "New Org."})
         self.assertEqual(preference["message"], "Organization created")
@@ -177,7 +162,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.delete(
             "http://localhost/api/org/users/1",
             json={"message": "User removed from organization"},
-            headers={"Content-Type": "application/json"},
         )
         preference = self.grafana.organization.delete_user_current_organization(user_id=1)
         self.assertEqual(preference["message"], "User removed from organization")
@@ -187,7 +171,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/org/users",
             json={"message": "User added to organization"},
-            headers={"Content-Type": "application/json"},
         )
         preference = self.grafana.organization.add_user_current_organization({"role": "Admin", "loginOrEmail": "admin"})
         self.assertEqual(preference["message"], "User added to organization")
@@ -197,7 +180,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.patch(
             "http://localhost/api/org/users/1",
             json={"message": "Organization user updated"},
-            headers={"Content-Type": "application/json"},
         )
         preference = self.grafana.organization.update_user_current_organization(
             user_id=1,
@@ -212,7 +194,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/org/users",
             json=[{"orgId": 1, "userId": 1, "email": "admin@mygraf.com", "login": "admin", "role": "Admin"}],
-            headers={"Content-Type": "application/json"},
         )
         org = self.grafana.organization.get_current_organization_users()
         self.assertEqual(len(org), 1)
@@ -226,7 +207,6 @@ class OrganizationTestCase(unittest.TestCase):
                 "name": "Main Org.",
                 "address": {"address1": "", "address2": "", "city": "", "zipCode": "", "state": "", "country": ""},
             },
-            headers={"Content-Type": "application/json"},
         )
         org = self.grafana.organization.find_organization(org_name="Main")
         self.assertEqual(org["id"], 1)
@@ -236,7 +216,6 @@ class OrganizationTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/user/using/2",
             json={"message": "Active organization changed"},
-            headers={"Content-Type": "application/json"},
         )
         preference = self.grafana.organizations.switch_organization(organization_id=2)
         self.assertEqual(preference["message"], "Active organization changed")

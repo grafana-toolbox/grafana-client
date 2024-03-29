@@ -185,7 +185,6 @@ class PluginTestCase(unittest.TestCase):
                     "signatureOrg": "",
                 },
             ],
-            headers={"Content-Type": "application/json"},
         )
         plugins = self.grafana.plugin.list()
         self.assertTrue(len(plugins), 6)
@@ -195,7 +194,6 @@ class PluginTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/plugins/alertlist/install",
             json={"message": "Plugin alertlist installed"},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.plugin.install(plugin_id="alertlist", version="1.3.12")
         self.assertEqual(response["message"], "Plugin alertlist installed")
@@ -205,7 +203,6 @@ class PluginTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/plugins/alertlist/uninstall",
             json={"message": "Plugin alertlist uninstalled"},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.plugin.uninstall(plugin_id="alertlist")
         self.assertEqual(response["message"], "Plugin alertlist uninstalled")
@@ -215,7 +212,6 @@ class PluginTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/plugins/alertlist/health",
             json={"message": "Plugin alertlist healthy"},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.plugin.health(plugin_id="alertlist")
         self.assertEqual(response["message"], "Plugin alertlist healthy")
@@ -225,7 +221,6 @@ class PluginTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/plugins/grafana-timestream-datasource/metrics",
             json={"message": "Not found"},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.plugin.metrics(plugin_id="grafana-timestream-datasource")
         self.assertEqual(response["message"], "Not found")

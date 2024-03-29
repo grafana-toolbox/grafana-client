@@ -43,7 +43,6 @@ class AnnotationsTestCase(unittest.TestCase):
                     "data": {},
                 },
             ],
-            headers={"Content-Type": "application/json"},
         )
         annotations = self.grafana.annotations.get_annotation(
             time_from=1563183710618,
@@ -93,7 +92,6 @@ class AnnotationsTestCase(unittest.TestCase):
                     "data": {},
                 },
             ],
-            headers={"Content-Type": "application/json"},
         )
         annotations = self.grafana.annotations.get_annotation()
         self.assertEqual(len(annotations), 1)
@@ -103,7 +101,6 @@ class AnnotationsTestCase(unittest.TestCase):
         m.delete(
             "http://localhost/api/annotations/99",
             json={"message": "Annotation deleted"},
-            headers={"Content-Type": "application/json"},
         )
         annotation = self.grafana.annotations.delete_annotations_by_id(annotations_id=99)
         self.assertEqual(annotation["message"], "Annotation deleted")
@@ -114,7 +111,6 @@ class AnnotationsTestCase(unittest.TestCase):
             "http://localhost/api/annotations/None",
             json={"message": "Could not find annotation to update"},
             status_code=500,
-            headers={"Content-Type": "application/json"},
         )
         with self.assertRaises(GrafanaServerError):
             self.grafana.annotations.delete_annotations_by_id(annotations_id=None)
@@ -125,7 +121,6 @@ class AnnotationsTestCase(unittest.TestCase):
             "http://localhost/api/annotations/None",
             json={"message": "Forbidden"},
             status_code=403,
-            headers={"Content-Type": "application/json"},
         )
         with self.assertRaises(GrafanaClientError):
             self.grafana.annotations.delete_annotations_by_id(annotations_id=None)
@@ -136,7 +131,6 @@ class AnnotationsTestCase(unittest.TestCase):
             "http://localhost/api/annotations/None",
             json={"message": "Unauthorized"},
             status_code=401,
-            headers={"Content-Type": "application/json"},
         )
         with self.assertRaises(GrafanaUnauthorizedError):
             self.grafana.annotations.delete_annotations_by_id(annotations_id=None)
@@ -147,7 +141,6 @@ class AnnotationsTestCase(unittest.TestCase):
             "http://localhost/api/annotations/None",
             json={"message": "Bad Input"},
             status_code=400,
-            headers={"Content-Type": "application/json"},
         )
         with self.assertRaises(GrafanaBadInputError):
             self.grafana.annotations.delete_annotations_by_id(annotations_id=None)
@@ -157,7 +150,6 @@ class AnnotationsTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/annotations",
             json={"endId": 80, "id": 79, "message": "Annotation added"},
-            headers={"Content-Type": "application/json"},
         )
         annotation = self.grafana.annotations.add_annotation(
             time_from=1563183710618, time_to=1563185212275, tags=["tags-test"], text="Test"
@@ -171,7 +163,6 @@ class AnnotationsTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/annotations",
             json={"dashboardId": 42},
-            headers={"Content-Type": "application/json"},
         )
         annotation = self.grafana.annotations.add_annotation(
             dashboard_id=42, time_from=1563183710618, time_to=1563185212275, tags=["tags-test"], text="Test"
@@ -183,7 +174,6 @@ class AnnotationsTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/annotations",
             json={"dashboardUID": "jcIIG-07z"},
-            headers={"Content-Type": "application/json"},
         )
         annotation = self.grafana.annotations.add_annotation(
             dashboard_uid="jcIIG-07z", time_from=1563183710618, time_to=1563185212275, tags=["tags-test"], text="Test"
@@ -195,7 +185,6 @@ class AnnotationsTestCase(unittest.TestCase):
         m.put(
             "http://localhost/api/annotations/79",
             json={"endId": 80, "id": 79, "message": "Annotation updated"},
-            headers={"Content-Type": "application/json"},
         )
         annotation = self.grafana.annotations.update_annotation(
             annotations_id=79, time_from=1563183710618, time_to=1563185212275, tags=["tags-test"], text="Test"
@@ -209,7 +198,6 @@ class AnnotationsTestCase(unittest.TestCase):
         m.patch(
             "http://localhost/api/annotations/89",
             json={"message": "Annotation patched"},
-            headers={"Content-Type": "application/json"},
         )
         annotation = self.grafana.annotations.partial_update_annotation(
             annotations_id=89, tags=["tag1", "tag2"], text="Test"
@@ -221,7 +209,6 @@ class AnnotationsTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/annotations/graphite",
             json={"message": "Graphite annotation added", "id": 1},
-            headers={"Content-Type": "application/json"},
         )
         annotation = self.grafana.annotations.add_annotation_graphite(
             what="Event - deploy", tags=["deploy", "production"], when=1467844481, data="Data"

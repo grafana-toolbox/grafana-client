@@ -19,7 +19,6 @@ class SnapshotTestCase(unittest.TestCase):
                 "key": "YYYYYYY",
                 "url": "myurl/dashboard/snapshot/YYYYYYY",
             },
-            headers={"Content-Type": "application/json"},
         )
         snapshot = self.grafana.snapshots.create_new_snapshot(
             dashboard={
@@ -53,7 +52,6 @@ class SnapshotTestCase(unittest.TestCase):
                 "key": "YYYYYYY",
                 "url": "myurl/dashboard/snapshot/YYYYYYY",
             },
-            headers={"Content-Type": "application/json"},
         )
         snapshot = self.grafana.snapshots.create_new_snapshot(
             dashboard={
@@ -90,7 +88,6 @@ class SnapshotTestCase(unittest.TestCase):
                     "updated": "2200-13-32T28:24:23+02:00",
                 }
             ],
-            headers={"Content-Type": "application/json"},
         )
         dashboards = self.grafana.snapshots.get_dashboard_snapshots()
         self.assertEqual(len(dashboards), 1)
@@ -113,7 +110,6 @@ class SnapshotTestCase(unittest.TestCase):
                     "updated": "2200-13-32T28:24:23+02:00",
                 }
             ],
-            headers={"Content-Type": "application/json"},
         )
         dashboards = self.grafana.snapshots.get_snapshot_by_key(key="YYYYYYY")
         self.assertEqual(len(dashboards), 1)
@@ -123,7 +119,6 @@ class SnapshotTestCase(unittest.TestCase):
         m.delete(
             "http://localhost/api/snapshots/YYYYYYY",
             json={"message": "Snapshot deleted. It might take an hour " "before it's cleared from any CDN " "caches."},
-            headers={"Content-Type": "application/json"},
         )
         annotation = self.grafana.snapshots.delete_snapshot_by_key(snapshot_id="YYYYYYY")
         self.assertEqual(
@@ -135,7 +130,6 @@ class SnapshotTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/snapshots-delete/XXXXXXX",
             json={"message": "Snapshot deleted. It might take an hour " "before it's cleared from any CDN " "caches."},
-            headers={"Content-Type": "application/json"},
         )
         annotation = self.grafana.snapshots.delete_snapshot_by_delete_key(snapshot_delete_key="XXXXXXX")
         self.assertEqual(

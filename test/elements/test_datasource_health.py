@@ -41,7 +41,6 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
             json=PROMETHEUS_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
 
         datasource = PROMETHEUS_DATASOURCE.copy()
@@ -53,12 +52,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/34inf2sdc",
             json=ELASTICSEARCH_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"bazqux": {"mappings": {"properties": "something"}}},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="34inf2sdc"))
         response.duration = None
@@ -81,12 +78,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/34inf2sdc",
             json=ELASTICSEARCH_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="34inf2sdc"))
         response.duration = None
@@ -109,12 +104,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/34inf2sdc",
             json=ELASTICSEARCH_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"bazqux": {}},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="34inf2sdc"))
         response.duration = None
@@ -137,13 +130,11 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/34inf2sdc",
             json=ELASTICSEARCH_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"error": "This failed!", "status": 400},
             status_code=400,
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="34inf2sdc"))
         response.duration = None
@@ -166,13 +157,11 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/34inf2sdc",
             json=ELASTICSEARCH_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"error": {"root_cause": [{"type": "foo", "reason": "bar"}]}, "status": 400},
             status_code=400,
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="34inf2sdc"))
         response.duration = None
@@ -195,12 +184,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/wr47rz34e",
             json=GRAPHITE_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/datasources/proxy/48/render",
             json=[{"target": "", "tags": {}, "datapoints": []}],
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="wr47rz34e"))
         response.duration = None
@@ -223,12 +210,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/wr47rz34e",
             json=GRAPHITE_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/datasources/proxy/48/render",
             json=[],
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="wr47rz34e"))
         response.duration = None
@@ -251,7 +236,6 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/9ac78sdc2",
             json=INFLUXDB1_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/datasources/proxy/43/query",
@@ -268,7 +252,6 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
                     }
                 ]
             },
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="9ac78sdc2"))
         response.duration = None
@@ -291,12 +274,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/DbtFe237k",
             json=JAEGER_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"data": ["jaeger-query"], "total": 1, "limit": 0, "offset": 0, "errors": None},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="DbtFe237k"))
         response.duration = None
@@ -319,7 +300,6 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/DbtFe237k",
             json=JAEGER_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
@@ -330,7 +310,6 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
                 "offset": 0,
                 "errors": [{"code": 418, "message": "foobar"}],
             },
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="DbtFe237k"))
         response.duration = None
@@ -355,17 +334,14 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": "7.0.1"},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/vCyglaq7z",
             json=LOKI_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"status": "success", "data": ["__name__"]},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="vCyglaq7z"))
         response.duration = None
@@ -390,17 +366,14 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/vCyglaq7z",
             json=LOKI_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"results": {"test": True}},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="vCyglaq7z"))
         response.duration = None
@@ -425,17 +398,14 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": "7.0.1"},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/vCyglaq7z",
             json=LOKI_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"message": "Failed to call resource", "traceID": "00000000000000000000000000000000"},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="vCyglaq7z"))
         response.duration = None
@@ -460,17 +430,14 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/vCyglaq7z",
             json=LOKI_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"message": "Failed to call resource", "traceID": "00000000000000000000000000000000"},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="vCyglaq7z"))
         response.duration = None
@@ -493,12 +460,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/0pueH83nz",
             json=MSSQL_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json=DATAFRAME_RESPONSE_HEALTH_SELECT1,
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="0pueH83nz"))
         response.duration = None
@@ -521,12 +486,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/7CpzLp37z",
             json=MYSQL_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json=DATAFRAME_RESPONSE_HEALTH_SELECT1,
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="7CpzLp37z"))
         response.duration = None
@@ -549,12 +512,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/hkuk5h3nk",
             json=OPENTSDB_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json="",
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="hkuk5h3nk"))
         response.duration = None
@@ -577,12 +538,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/v2KYBt37k",
             json=POSTGRES_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json=DATAFRAME_RESPONSE_HEALTH_SELECT1,
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
         response.duration = None
@@ -608,17 +567,14 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": grafana_version},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
             json=PROMETHEUS_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json=DATAFRAME_RESPONSE_HEALTH_PROMETHEUS,
-            headers={"Content-Type": "application/json"},
         )
         with m:
             response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="h8KkCLt7z"))
@@ -645,17 +601,14 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": grafana_version},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
             json=PROMETHEUS_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json=DATAFRAME_RESPONSE_EMPTY,
-            headers={"Content-Type": "application/json"},
         )
         with m:
             response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="h8KkCLt7z"))
@@ -682,17 +635,14 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "unknown", "database": "ok", "version": grafana_version},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
             json=PROMETHEUS_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json=DATAFRAME_RESPONSE_INVALID,
-            headers={"Content-Type": "application/json"},
         )
         with m:
             response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="h8KkCLt7z"))
@@ -717,13 +667,11 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/rw783ds3e",
             json=SIMPLE_JSON_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"results": {"test": {"error": "Resource not found: /metadata"}}},
             status_code=404,
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="rw783ds3e"))
         response.duration = None
@@ -746,12 +694,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/oie238af3",
             json=SIMPOD_JSON_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"results": [{"statement_id": "ID", "series": []}]},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="oie238af3"))
         response.duration = None
@@ -774,12 +720,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/239fasva4",
             json=SUNANDMOON_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json=SUNANDMOON_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="239fasva4"))
         response.duration = None
@@ -802,12 +746,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/239fasva4",
             json=SUNANDMOON_DATASOURCE_INCOMPLETE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json=SUNANDMOON_DATASOURCE_INCOMPLETE,
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="239fasva4"))
         response.duration = None
@@ -830,7 +772,6 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/aTk86s3nk",
             json=TEMPO_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
@@ -858,7 +799,6 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/aTk86s3nk",
             json=TEMPO_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
@@ -885,12 +825,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/439fngqr2",
             json=TESTDATA_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"id": "test", "uid": "test"},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="439fngqr2"))
         response.duration = None
@@ -913,12 +851,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/3sXIv8q7k",
             json=ZIPKIN_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json=[],
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="3sXIv8q7k"))
         response.duration = None
@@ -946,12 +882,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/v2KYBt37k",
             json=POSTGRES_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"results": {"test": {"refId": "foobar", "meta": {"executedQueryString": "ALIVE?"}}}},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
         response.duration = None
@@ -979,12 +913,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/v2KYBt37k",
             json=POSTGRES_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"results": {"test": {"refId": "foobar"}}},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
         response.duration = None
@@ -1012,12 +944,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/v2KYBt37k",
             json=POSTGRES_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"results": {"test": {}}},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
         response.duration = None
@@ -1046,12 +976,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/v2KYBt37k",
             json=POSTGRES_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"results": [{"error": "This failed!"}]},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
         response.duration = None
@@ -1079,12 +1007,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/v2KYBt37k",
             json=POSTGRES_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"results": [{}]},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
         response.duration = None
@@ -1112,12 +1038,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/v2KYBt37k",
             json=POSTGRES_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"results": []},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
         response.duration = None
@@ -1145,12 +1069,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/v2KYBt37k",
             json=POSTGRES_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
         response.duration = None
@@ -1178,12 +1100,10 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/v2KYBt37k",
             json=POSTGRES_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"results": "WRONG!"},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_check(DatasourceIdentifier(uid="v2KYBt37k"))
         response.duration = None
@@ -1211,7 +1131,6 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/datasources/uid/v2KYBt37k",
             json=POSTGRES_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
@@ -1244,17 +1163,14 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/39mf288en",
             json={"type": "unknown"},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/39mf288en/health",
             json={"status": "OK", "message": "Excellent!"},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_inquiry(datasource_uid="39mf288en")
         response.duration = None
@@ -1277,17 +1193,14 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/39mf288en",
             json={"type": "unknown"},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/39mf288en/health",
             json={"status": "ERROR", "message": "No way!"},
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_inquiry(datasource_uid="39mf288en")
         response.duration = None
@@ -1310,18 +1223,15 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/39mf288en",
             json={"type": "unknown"},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/39mf288en/health",
             json={"status": "ERROR", "message": "Something failed"},
             status_code=400,
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_inquiry(datasource_uid="39mf288en")
         response.duration = None
@@ -1344,18 +1254,15 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/39mf288en",
             json={"type": "unknown"},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/39mf288en/health",
             json={"status": "ERROR", "message": "Something failed"},
             status_code=418,
-            headers={"Content-Type": "application/json"},
         )
         with self.assertRaises(GrafanaClientError) as ctx:
             self.grafana.datasource.health_inquiry(datasource_uid="39mf288en")
@@ -1366,24 +1273,20 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
             json=PROMETHEUS_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"status": "ERROR", "message": "Something failed"},
             status_code=404,
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z/health",
             json={"status": "ERROR", "message": "Something failed"},
             status_code=404,
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_inquiry(datasource_uid="h8KkCLt7z")
         response.duration = None
@@ -1407,24 +1310,20 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
         m.get(
             "http://localhost/api/health",
             json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
             json=PROMETHEUS_DATASOURCE,
-            headers={"Content-Type": "application/json"},
         )
         m.post(
             "http://localhost/api/ds/query",
             json={"status": "ERROR", "message": "Something failed"},
             status_code=500,
-            headers={"Content-Type": "application/json"},
         )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z/health",
             json={"status": "ERROR", "message": "Something failed", "code": "foobar"},
             status_code=500,
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_inquiry(datasource_uid="h8KkCLt7z")
         response.duration = None
@@ -1448,7 +1347,6 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
             "http://localhost/api/datasources/uid/39mf288en",
             json={"status": "FATAL", "message": "Not found"},
             status_code=404,
-            headers={"Content-Type": "application/json"},
         )
         response = self.grafana.datasource.health_inquiry(datasource_uid="39mf288en")
         response.duration = None
@@ -1472,7 +1370,6 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
             "http://localhost/api/datasources/uid/39mf288en",
             json={"status": "FATAL", "message": "Bad request"},
             status_code=418,
-            headers={"Content-Type": "application/json"},
         )
         self.assertRaises(
             GrafanaClientError, lambda: self.grafana.datasource.health_inquiry(datasource_uid="39mf288en")
@@ -1484,7 +1381,6 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
             "http://localhost/api/datasources/uid/39mf288en",
             json={"status": "FATAL", "message": "Server failed"},
             status_code=500,
-            headers={"Content-Type": "application/json"},
         )
         self.assertRaises(
             GrafanaServerError, lambda: self.grafana.datasource.health_inquiry(datasource_uid="39mf288en")

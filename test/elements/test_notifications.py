@@ -27,7 +27,6 @@ class NotificationsTestCase(unittest.TestCase):
                     "updated": "2018-08-20T15:47:49+02:00",
                 }
             ],
-            headers={"Content-Type": "application/json"},
         )
         notification_channels = self.grafana.notifications.get_channels()
         self.assertEqual(len(notification_channels), 1)
@@ -64,7 +63,6 @@ class NotificationsTestCase(unittest.TestCase):
                     "isDefault": False,
                 },
             ],
-            headers={"Content-Type": "application/json"},
         )
         notification_channels = self.grafana.notifications.lookup_channels()
         self.assertEqual(len(notification_channels), 2)
@@ -99,7 +97,6 @@ class NotificationsTestCase(unittest.TestCase):
                 "created": "2018-04-23T14:44:09+02:00",
                 "updated": "2018-08-20T15:47:49+02:00",
             },
-            headers={"Content-Type": "application/json"},
         )
 
         channel = self.grafana.notifications.get_channel_by_uid("team-a-email-notifier")
@@ -130,7 +127,6 @@ class NotificationsTestCase(unittest.TestCase):
                 "created": "2018-04-23T14:44:09+02:00",
                 "updated": "2018-08-20T15:47:49+02:00",
             },
-            headers={"Content-Type": "application/json"},
         )
 
         channel = self.grafana.notifications.get_channel_by_id(1)
@@ -161,7 +157,6 @@ class NotificationsTestCase(unittest.TestCase):
                 "created": "2018-04-23T14:44:09+02:00",
                 "updated": "2018-08-20T15:47:49+02:00",
             },
-            headers={"Content-Type": "application/json"},
         )
 
         payload = {
@@ -201,7 +196,6 @@ class NotificationsTestCase(unittest.TestCase):
                 "created": "2017-01-01 12:34",
                 "updated": "2020-01-01 12:34",
             },
-            headers={"Content-Type": "application/json"},
         )
 
         payload = {
@@ -242,7 +236,6 @@ class NotificationsTestCase(unittest.TestCase):
                 "created": "2017-01-01 12:34",
                 "updated": "2020-01-01 12:34",
             },
-            headers={"Content-Type": "application/json"},
         )
 
         payload = {
@@ -272,7 +265,6 @@ class NotificationsTestCase(unittest.TestCase):
         mock.delete(
             "http://localhost/api/alert-notifications/uid/new-alert-notification",
             json={"message": "Notification deleted"},
-            headers={"Content-Type": "application/json"},
         )
 
         delete_response = self.grafana.notifications.delete_notification_by_uid("new-alert-notification")
@@ -283,7 +275,6 @@ class NotificationsTestCase(unittest.TestCase):
         mock.delete(
             "http://localhost/api/alert-notifications/1",
             json={"message": "Notification deleted"},
-            headers={"Content-Type": "application/json"},
         )
 
         delete_response = self.grafana.notifications.delete_notification_by_id(1)

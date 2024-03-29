@@ -123,7 +123,6 @@ class AdminTestCase(unittest.TestCase):
                     "auto_assign_org_role": "Viewer",
                 },
             },
-            headers={"Content-Type": "application/json"},
         )
         admin = self.grafana.admin.settings()
         self.assertEqual(admin["users"]["allow_org_create"], "true")
@@ -144,7 +143,6 @@ class AdminTestCase(unittest.TestCase):
                 "alerts": 2,
                 "activeUsers": 1,
             },
-            headers={"Content-Type": "application/json"},
         )
         stats = self.grafana.admin.stats()
         self.assertEqual(len(stats), 10)
@@ -154,7 +152,6 @@ class AdminTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/admin/users",
             json={"id": 5, "message": "User created"},
-            headers={"Content-Type": "application/json"},
         )
         user = self.grafana.admin.create_user(
             {"name": "User", "email": "user@graf.com", "login": "user", "password": "userpassword"}
@@ -166,7 +163,6 @@ class AdminTestCase(unittest.TestCase):
         m.put(
             "http://localhost/api/admin/users/2/password",
             json={"message": "User password updated"},
-            headers={"Content-Type": "application/json"},
         )
         user = self.grafana.admin.change_user_password(user_id=2, password="password")
         self.assertEqual(user["message"], "User password updated")
@@ -176,7 +172,6 @@ class AdminTestCase(unittest.TestCase):
         m.put(
             "http://localhost/api/admin/users/2/permissions",
             json={"message": "User permissions updated"},
-            headers={"Content-Type": "application/json"},
         )
         user = self.grafana.admin.change_user_permissions(user_id=2, is_grafana_admin=True)
         self.assertEqual(user["message"], "User permissions updated")
@@ -186,7 +181,6 @@ class AdminTestCase(unittest.TestCase):
         m.delete(
             "http://localhost/api/admin/users/2",
             json={"message": "User deleted"},
-            headers={"Content-Type": "application/json"},
         )
         user = self.grafana.admin.delete_user(user_id=2)
         self.assertEqual(user["message"], "User deleted")
@@ -196,7 +190,6 @@ class AdminTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/admin/pause-all-alerts",
             json={"state": "Paused", "message": "alert paused", "alertsAffected": 1},
-            headers={"Content-Type": "application/json"},
         )
         pause = self.grafana.admin.pause_all_alerts(pause="True")
         self.assertEqual(pause["message"], "alert paused")
@@ -206,7 +199,6 @@ class AdminTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/admin/users/2/enable",
             json={"message": "User enabled"},
-            headers={"Content-Type": "application/json"},
         )
         user = self.grafana.admin.set_user_enabled(user_id=2, enabled=True)
         self.assertEqual(user["message"], "User enabled")
@@ -216,7 +208,6 @@ class AdminTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/admin/users/2/disable",
             json={"message": "User disabled"},
-            headers={"Content-Type": "application/json"},
         )
         user = self.grafana.admin.set_user_enabled(user_id=2, enabled=False)
         self.assertEqual(user["message"], "User disabled")

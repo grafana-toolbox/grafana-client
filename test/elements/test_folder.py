@@ -31,7 +31,6 @@ class FolderTestCase(unittest.TestCase):
                     "version": 1,
                 }
             ],
-            headers={"Content-Type": "application/json"},
         )
         folders = self.grafana.folder.get_all_folders()
         self.assertEqual(folders[0]["id"], 1)
@@ -56,7 +55,6 @@ class FolderTestCase(unittest.TestCase):
                 "updated": "2018-01-31T17:43:12+01:00",
                 "version": 1,
             },
-            headers={"Content-Type": "application/json"},
         )
         folders = self.grafana.folder.get_folder(uid="nErXDvCkzzh")
         self.assertEqual(folders["uid"], "nErXDvCkzzh")
@@ -80,7 +78,6 @@ class FolderTestCase(unittest.TestCase):
                 "updated": "2018-01-31T17:43:12+01:00",
                 "version": 1,
             },
-            headers={"Content-Type": "application/json"},
         )
         folder = self.grafana.folder.create_folder(title="Departmenet ABC", uid="nErXDvCkzz")
         self.assertEqual(folder["uid"], "nErXDvCkzz")
@@ -91,7 +88,6 @@ class FolderTestCase(unittest.TestCase):
             "http://localhost/api/folders",
             json={"message": "Folder title cannot be empty"},
             status_code=400,
-            headers={"Content-Type": "application/json"},
         )
         with self.assertRaises(GrafanaBadInputError):
             self.grafana.folder.create_folder(title="Departmenet ABC")
@@ -115,7 +111,6 @@ class FolderTestCase(unittest.TestCase):
                 "updated": "2018-01-31T17:43:12+01:00",
                 "version": 1,
             },
-            headers={"Content-Type": "application/json"},
         )
         folder = self.grafana.folder.update_folder(title="Departmenet DEF", uid="nErXDvCkzz", version=1, overwrite=True)
         self.assertEqual(folder["title"], "Departmenet DEF")
@@ -140,7 +135,6 @@ class FolderTestCase(unittest.TestCase):
                 "updated": "2018-01-31T17:43:12+01:00",
                 "version": 1,
             },
-            headers={"Content-Type": "application/json"},
         )
         folder = self.grafana.folder.update_folder(
             title="Departmenet DEF", uid="nErXDvCkzz", new_uid="oFsYEwDlaa", version=1, overwrite=True
@@ -167,7 +161,6 @@ class FolderTestCase(unittest.TestCase):
                 "updated": "2018-01-31T17:43:12+01:00",
                 "version": 1,
             },
-            headers={"Content-Type": "application/json"},
         )
         folder = self.grafana.folder.update_folder(title="Departmenet DEF", uid="nErXDvCkzz")
         self.assertEqual(folder["title"], "Departmenet DEF")
@@ -191,7 +184,6 @@ class FolderTestCase(unittest.TestCase):
                 "updated": "2018-01-31T17:43:12+01:00",
                 "version": 1,
             },
-            headers={"Content-Type": "application/json"},
         )
         folder = self.grafana.folder.get_folder_by_id(folder_id=1)
         self.assertEqual(folder["id"], 1)
@@ -240,7 +232,6 @@ class FolderTestCase(unittest.TestCase):
                     "url": "",
                 },
             ],
-            headers={"Content-Type": "application/json"},
         )
         folder_permissions = self.grafana.folder.get_folder_permissions(uid="nErXDvCkzz")
         self.assertEqual(folder_permissions[0]["permissionName"], "View")
@@ -250,7 +241,6 @@ class FolderTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/folders/nErXDvCkzz/permissions",
             json={"message": "Folder permissions updated"},
-            headers={"Content-Type": "application/json"},
         )
         folder = self.grafana.folder.update_folder_permissions(
             uid="nErXDvCkzz",
@@ -268,7 +258,6 @@ class FolderTestCase(unittest.TestCase):
         m.post(
             "http://localhost/api/access-control/folders/nErXDvCkzz/users/12345",
             json={"message": "Folder permissions updated"},
-            headers={"Content-Type": "application/json"},
         )
         folder = self.grafana.folder.update_folder_permissions_for_user(
             uid="nErXDvCkzz",
@@ -285,7 +274,6 @@ class FolderTestCase(unittest.TestCase):
         m.delete(
             "http://localhost/api/folders/nErXDvCkzz",
             json={"message": "Folder deleted"},
-            headers={"Content-Type": "application/json"},
         )
         folder = self.grafana.folder.delete_folder(uid="nErXDvCkzz")
         self.assertEqual(folder["message"], "Folder deleted")
