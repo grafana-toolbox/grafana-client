@@ -1,8 +1,8 @@
 import unittest
 
-import requests_mock
-
 from grafana_client import GrafanaApi
+
+from ..compat import requests_mock
 
 ALERTRULE = {
     "id": 2,
@@ -27,19 +27,28 @@ class AlertingProvisioningTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_get_alertrules_all(self, m):
-        m.get("http://localhost/api/v1/provisioning/alert-rules", json=[ALERTRULE])
+        m.get(
+            "http://localhost/api/v1/provisioning/alert-rules",
+            json=[ALERTRULE],
+        )
         response = self.grafana.alertingprovisioning.get_alertrules_all()
         self.assertEqual(response[0]["uid"], "bUUGqLiVk")
 
     @requests_mock.Mocker()
     def test_get_alertrule(self, m):
-        m.get("http://localhost/api/v1/provisioning/alert-rules/bUUGqLiVk", json=ALERTRULE)
+        m.get(
+            "http://localhost/api/v1/provisioning/alert-rules/bUUGqLiVk",
+            json=ALERTRULE,
+        )
         response = self.grafana.alertingprovisioning.get_alertrule("bUUGqLiVk")
         self.assertEqual(response["uid"], "bUUGqLiVk")
 
     @requests_mock.Mocker()
     def test_delete_alertrule(self, m):
-        m.delete("http://localhost/api/v1/provisioning/alert-rules/bUUGqLiVk", json={"uid": "bUUGqLiVk"})
+        m.delete(
+            "http://localhost/api/v1/provisioning/alert-rules/bUUGqLiVk",
+            json={"uid": "bUUGqLiVk"},
+        )
         response = self.grafana.alertingprovisioning.delete_alertrule("bUUGqLiVk")
         self.assertEqual(response["uid"], "bUUGqLiVk")
 

@@ -48,7 +48,7 @@ import json
 import logging
 from optparse import OptionParser
 
-import requests
+import niquests
 
 from grafana_client import GrafanaApi
 from grafana_client.model import DatasourceIdentifier
@@ -97,7 +97,7 @@ if __name__ == "__main__":
 
     try:
         grafana_client.connect()
-    except requests.exceptions.ConnectionError:
+    except niquests.exceptions.ConnectionError:
         logger.exception("Connecting to Grafana failed")
         raise SystemExit(1)
 

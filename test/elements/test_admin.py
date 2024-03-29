@@ -1,8 +1,8 @@
 import unittest
 
-import requests_mock
-
 from grafana_client import GrafanaApi
+
+from ..compat import requests_mock
 
 
 class AdminTestCase(unittest.TestCase):
@@ -149,7 +149,10 @@ class AdminTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_create_user(self, m):
-        m.post("http://localhost/api/admin/users", json={"id": 5, "message": "User created"})
+        m.post(
+            "http://localhost/api/admin/users",
+            json={"id": 5, "message": "User created"},
+        )
         user = self.grafana.admin.create_user(
             {"name": "User", "email": "user@graf.com", "login": "user", "password": "userpassword"}
         )
@@ -157,19 +160,28 @@ class AdminTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_change_user_password(self, m):
-        m.put("http://localhost/api/admin/users/2/password", json={"message": "User password updated"})
+        m.put(
+            "http://localhost/api/admin/users/2/password",
+            json={"message": "User password updated"},
+        )
         user = self.grafana.admin.change_user_password(user_id=2, password="password")
         self.assertEqual(user["message"], "User password updated")
 
     @requests_mock.Mocker()
     def test_change_user_permissions(self, m):
-        m.put("http://localhost/api/admin/users/2/permissions", json={"message": "User permissions updated"})
+        m.put(
+            "http://localhost/api/admin/users/2/permissions",
+            json={"message": "User permissions updated"},
+        )
         user = self.grafana.admin.change_user_permissions(user_id=2, is_grafana_admin=True)
         self.assertEqual(user["message"], "User permissions updated")
 
     @requests_mock.Mocker()
     def test_delete_user(self, m):
-        m.delete("http://localhost/api/admin/users/2", json={"message": "User deleted"})
+        m.delete(
+            "http://localhost/api/admin/users/2",
+            json={"message": "User deleted"},
+        )
         user = self.grafana.admin.delete_user(user_id=2)
         self.assertEqual(user["message"], "User deleted")
 
@@ -184,12 +196,18 @@ class AdminTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_enable_user(self, m):
-        m.post("http://localhost/api/admin/users/2/enable", json={"message": "User enabled"})
+        m.post(
+            "http://localhost/api/admin/users/2/enable",
+            json={"message": "User enabled"},
+        )
         user = self.grafana.admin.set_user_enabled(user_id=2, enabled=True)
         self.assertEqual(user["message"], "User enabled")
 
     @requests_mock.Mocker()
     def test_disable_user(self, m):
-        m.post("http://localhost/api/admin/users/2/disable", json={"message": "User disabled"})
+        m.post(
+            "http://localhost/api/admin/users/2/disable",
+            json={"message": "User disabled"},
+        )
         user = self.grafana.admin.set_user_enabled(user_id=2, enabled=False)
         self.assertEqual(user["message"], "User disabled")

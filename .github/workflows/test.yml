@@ -31,10 +31,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ["ubuntu-20.04"]
+        os: ["ubuntu-latest"]
         python-version: [
-          '3.6', '3.12',
-          'pypy-3.6', 'pypy-3.10',
+          '3.7', '3.12',
+          'pypy-3.7', 'pypy-3.10',
         ]
     steps:
       - uses: actions/checkout@v4
@@ -58,7 +58,7 @@ jobs:
           python -m pip install --editable=.[test,develop]
 
       - name: Check code style
-        if: matrix.python-version != '3.6' && matrix.python-version != 'pypy-3.6'
+        if: matrix.python-version != '3.7' && matrix.python-version != 'pypy-3.7'
         run: |
           poe lint
 

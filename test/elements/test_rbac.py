@@ -1,9 +1,9 @@
 import unittest
 from test.elements.test_rbac_fixtures import PERMISSION_RBAC_DATASOURCE, RBAC_ROLES_ALL
 
-import requests_mock
-
 from grafana_client import GrafanaApi
+
+from ..compat import requests_mock
 
 
 class RbacTestCase(unittest.TestCase):

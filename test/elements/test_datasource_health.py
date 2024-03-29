@@ -23,12 +23,13 @@ from test.elements.test_datasource_fixtures import (
     ZIPKIN_DATASOURCE,
 )
 
-import requests_mock
 from parameterized import parameterized
 
 from grafana_client import GrafanaApi
 from grafana_client.client import GrafanaClientError, GrafanaServerError
 from grafana_client.model import DatasourceHealthResponse, DatasourceIdentifier
+
+from ..compat import requests_mock
 
 
 class DatasourceHealthCheckTestCase(unittest.TestCase):

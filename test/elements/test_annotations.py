@@ -1,7 +1,5 @@
 import unittest
 
-import requests_mock
-
 from grafana_client import GrafanaApi
 from grafana_client.client import (
     GrafanaBadInputError,
@@ -9,6 +7,8 @@ from grafana_client.client import (
     GrafanaServerError,
     GrafanaUnauthorizedError,
 )
+
+from ..compat import requests_mock
 
 
 class AnnotationsTestCase(unittest.TestCase):
@@ -98,7 +98,10 @@ class AnnotationsTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_delete_annotations_by_id(self, m):
-        m.delete("http://localhost/api/annotations/99", json={"message": "Annotation deleted"})
+        m.delete(
+            "http://localhost/api/annotations/99",
+            json={"message": "Annotation deleted"},
+        )
         annotation = self.grafana.annotations.delete_annotations_by_id(annotations_id=99)
         self.assertEqual(annotation["message"], "Annotation deleted")
 
@@ -114,19 +117,31 @@ class AnnotationsTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_delete_annotations_by_id_forbidden(self, m):
-        m.delete("http://localhost/api/annotations/None", json={"message": "Forbidden"}, status_code=403)
+        m.delete(
+            "http://localhost/api/annotations/None",
+            json={"message": "Forbidden"},
+            status_code=403,
+        )
         with self.assertRaises(GrafanaClientError):
             self.grafana.annotations.delete_annotations_by_id(annotations_id=None)
 
     @requests_mock.Mocker()
     def test_delete_annotations_by_id_unauthorized(self, m):
-        m.delete("http://localhost/api/annotations/None", json={"message": "Unauthorized"}, status_code=401)
+        m.delete(
+            "http://localhost/api/annotations/None",
+            json={"message": "Unauthorized"},
+            status_code=401,
+        )
         with self.assertRaises(GrafanaUnauthorizedError):
             self.grafana.annotations.delete_annotations_by_id(annotations_id=None)
 
     @requests_mock.Mocker()
     def test_delete_annotations_by_id_bad_input(self, m):
-        m.delete("http://localhost/api/annotations/None", json={"message": "Bad Input"}, status_code=400)
+        m.delete(
+            "http://localhost/api/annotations/None",
+            json={"message": "Bad Input"},
+            status_code=400,
+        )
         with self.assertRaises(GrafanaBadInputError):
             self.grafana.annotations.delete_annotations_by_id(annotations_id=None)
 

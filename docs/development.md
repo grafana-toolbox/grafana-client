@@ -23,6 +23,16 @@ python -m unittest -k preference -vvv
 
 Before creating a PR, you can run `poe format`, in order to resolve code style issues.
 
+### Async code
+
+If you update any piece of code in `grafana_client/elements/*`, please run:
+
+```
+python script/generate_async.py
+```
+
+Do not edit files in `grafana_client/elements/_async/*` manually.
+
 ## Run Grafana
 ```
 docker run --rm -it --publish=3000:3000 --env='GF_SECURITY_ADMIN_PASSWORD=admin' grafana/grafana:9.3.6

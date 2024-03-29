@@ -1,10 +1,10 @@
 import json
 import unittest
 
-import requests_mock
-
 from grafana_client import GrafanaApi
 from grafana_client.model import PersonalPreferences
+
+from ..compat import requests_mock
 
 
 class TeamsTestCase(unittest.TestCase):
@@ -167,7 +167,10 @@ class TeamsTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_add_team_success(self, m):
-        m.post("http://localhost/api/teams", json={"message": "Team created", "teamId": 2})
+        m.post(
+            "http://localhost/api/teams",
+            json={"message": "Team created", "teamId": 2},
+        )
         team = {"name": "MySecondTestTeam", "email": "email@example.org"}
         new_team = self.grafana.teams.add_team(team)
         self.assertEqual(new_team["teamId"], 2)
@@ -193,14 +196,20 @@ class TeamsTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_update_team(self, m):
-        m.put("http://localhost/api/teams/3", json={"message": "Team updated"})
+        m.put(
+            "http://localhost/api/teams/3",
+            json={"message": "Team updated"},
+        )
         team = {"name": "MyThirdTestTeam", "email": "email@example.org"}
         response = self.grafana.teams.update_team(3, team)
         self.assertEqual(response["message"], "Team updated")
 
     @requests_mock.Mocker()
     def test_delete_team(self, m):
-        m.delete("http://localhost/api/teams/3", json={"message": "Team deleted"})
+        m.delete(
+            "http://localhost/api/teams/3",
+            json={"message": "Team deleted"},
+        )
         response = self.grafana.teams.delete_team(3)
         self.assertEqual(response, {"message": "Team deleted"})
 

@@ -9,7 +9,7 @@ import logging
 import sys
 from optparse import OptionParser
 
-import requests
+import niquests
 from verlib2 import Version
 
 from grafana_client import GrafanaApi
@@ -129,7 +129,7 @@ if __name__ == "__main__":
 
     try:
         grafana_client.connect()
-    except requests.exceptions.ConnectionError:
+    except niquests.exceptions.ConnectionError:
         logger.exception("Connecting to Grafana failed")
         raise SystemExit(1)
 

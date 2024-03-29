@@ -73,6 +73,31 @@ grafana.organization.create_organization(
     organization={"name": "new_organization"})
 ```
 
+Or using asynchronous code... the interfaces are identical except for the fact that you will handle coroutines (async/await).
+
+```python
+from grafana_client import AsyncGrafanaApi
+import asyncio
+
+async def main():
+    # Connect to Grafana API endpoint using the `GrafanaApi` class
+    grafana = AsyncGrafanaApi.from_url("https://username:password@daq.example.org/grafana/")
+    
+    # Create user
+    user = await grafana.admin.create_user({
+        "name": "User", 
+        "email": "user@example.org", 
+        "login": "user", 
+        "password": "userpassword", 
+        "OrgId": 1,
+    })
+    
+    # Change user password
+    user = await grafana.admin.change_user_password(2, "newpassword")
+
+asyncio.run(main())
+```
+
 ### Example programs
 
 There are complete example programs to get you started within the [examples
@@ -133,7 +158,7 @@ grafana = GrafanaApi.from_env()
 ```
 
 Please note that, on top of the specific examples above, the object obtained by
-`credential` can be an arbitrary `requests.auth.AuthBase` instance.
+`credential` can be an arbitrary `niquests.auth.AuthBase` instance.
 
 ## Selecting Organizations
 
@@ -166,7 +191,7 @@ scalar `float` value, or as a tuple of `(<read timeout>, <connect timeout>)`.
 
 ## Proxy
 
-The underlying `requests` library honors the `HTTP_PROXY` and `HTTPS_PROXY`
+The underlying `niquests` library honors the `HTTP_PROXY` and `HTTPS_PROXY`
 environment variables. Setting them before invoking an application using
 `grafana-client` has been confirmed to work. For example:
 ```
@@ -174,6 +199,16 @@ export HTTP_PROXY=10.10.1.10:3128
 export HTTPS_PROXY=10.10.1.11:1080
 ```
 
+## DNS Resolver
+
+`niquests` support using a custom DNS resolver, like but not limited, DNS-over-HTTPS, and DNS-over-QUIC.
+You will have to set `NIQUESTS_DNS_URL` environment variable. For example:
+```
+export NIQUESTS_DNS_URL="doh+cloudflare://"
+```
+
+See the [documentation](https://niquests.readthedocs.io/en/latest/user/quickstart.html#set-dns-via-environment) to learn
+more about accepted URL parameters and protocols.
 
 ## Details
 

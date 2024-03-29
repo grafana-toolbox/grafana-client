@@ -1,9 +1,9 @@
 import unittest
 
-import requests_mock
-
 from grafana_client import GrafanaApi
 from grafana_client.client import GrafanaBadInputError
+
+from ..compat import requests_mock
 
 
 class FolderTestCase(unittest.TestCase):
@@ -84,7 +84,11 @@ class FolderTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_create_folder_empty_uid(self, m):
-        m.post("http://localhost/api/folders", json={"message": "Folder title cannot be empty"}, status_code=400)
+        m.post(
+            "http://localhost/api/folders",
+            json={"message": "Folder title cannot be empty"},
+            status_code=400,
+        )
         with self.assertRaises(GrafanaBadInputError):
             self.grafana.folder.create_folder(title="Departmenet ABC")
 
@@ -234,7 +238,10 @@ class FolderTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_update_folder_permissions(self, m):
-        m.post("http://localhost/api/folders/nErXDvCkzz/permissions", json={"message": "Folder permissions updated"})
+        m.post(
+            "http://localhost/api/folders/nErXDvCkzz/permissions",
+            json={"message": "Folder permissions updated"},
+        )
         folder = self.grafana.folder.update_folder_permissions(
             uid="nErXDvCkzz",
             items=[
@@ -264,6 +271,9 @@ class FolderTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_delete_folder(self, m):
-        m.delete("http://localhost/api/folders/nErXDvCkzz", json={"message": "Folder deleted"})
+        m.delete(
+            "http://localhost/api/folders/nErXDvCkzz",
+            json={"message": "Folder deleted"},
+        )
         folder = self.grafana.folder.delete_folder(uid="nErXDvCkzz")
         self.assertEqual(folder["message"], "Folder deleted")

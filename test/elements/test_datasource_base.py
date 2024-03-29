@@ -10,8 +10,6 @@ from test.elements.test_datasource_fixtures import (
 )
 from unittest.mock import Mock, patch
 
-import requests_mock
-
 from grafana_client import GrafanaApi
 from grafana_client.client import (
     GrafanaBadInputError,
@@ -19,6 +17,8 @@ from grafana_client.client import (
     GrafanaServerError,
 )
 from grafana_client.model import DatasourceIdentifier
+
+from ..compat import requests_mock
 
 
 class DatasourceTestCase(unittest.TestCase):
@@ -101,21 +101,30 @@ class DatasourceTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_delete_datasource_by_id(self, m):
-        m.delete("http://localhost/api/datasources/42", json={"message": "Data source deleted"})
+        m.delete(
+            "http://localhost/api/datasources/42",
+            json={"message": "Data source deleted"},
+        )
 
         result = self.grafana.datasource.delete_datasource_by_id(42)
         self.assertEqual(result, {"message": "Data source deleted"})
 
     @requests_mock.Mocker()
     def test_delete_datasource_by_uid(self, m):
-        m.delete("http://localhost/api/datasources/uid/h8KkCLt7z", json={"message": "Data source deleted"})
+        m.delete(
+            "http://localhost/api/datasources/uid/h8KkCLt7z",
+            json={"message": "Data source deleted"},
+        )
 
         result = self.grafana.datasource.delete_datasource_by_uid("h8KkCLt7z")
         self.assertEqual(result, {"message": "Data source deleted"})
 
     @requests_mock.Mocker()
     def test_delete_datasource_by_name(self, m):
-        m.delete("http://localhost/api/datasources/name/Prometheus", json={"message": "Data source deleted"})
+        m.delete(
+            "http://localhost/api/datasources/name/Prometheus",
+            json={"message": "Data source deleted"},
+        )
 
         result = self.grafana.datasource.delete_datasource_by_name("Prometheus")
         self.assertEqual(result, {"message": "Data source deleted"})
@@ -128,7 +137,8 @@ class DatasourceTestCase(unittest.TestCase):
         )
 
         m.post(
-            "http://localhost/api/datasources/42/enable-permissions", json={"message": "Datasource permissions enabled"}
+            "http://localhost/api/datasources/42/enable-permissions",
+            json={"message": "Datasource permissions enabled"},
         )
 
         result = self.grafana.datasource.enable_datasource_permissions(42)
@@ -216,7 +226,10 @@ class DatasourceTestCase(unittest.TestCase):
             json={"commit": "unknown", "database": "ok", "version": "10.2.1"},
         )
 
-        m.post("http://localhost/api/datasources/42/permissions", json={"message": "Datasource permission added"})
+        m.post(
+            "http://localhost/api/datasources/42/permissions",
+            json={"message": "Datasource permission added"},
+        )
 
         result = self.grafana.datasource.add_datasource_permissions(42, {"userId": 1, "permission": 1})
         self.assertEqual(result, {"message": "Datasource permission added"})
@@ -243,7 +256,10 @@ class DatasourceTestCase(unittest.TestCase):
             json={"commit": "unknown", "database": "ok", "version": "10.2.1"},
         )
 
-        m.delete("http://localhost/api/datasources/42/permissions/1", json={"message": "Datasource permission removed"})
+        m.delete(
+            "http://localhost/api/datasources/42/permissions/1",
+            json={"message": "Datasource permission removed"},
+        )
 
         result = self.grafana.datasource.remove_datasource_permissions(42, 1)
         self.assertEqual(result, {"message": "Datasource permission removed"})
@@ -286,7 +302,10 @@ class DatasourceTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_get_datasource_id_by_name(self, m):
-        m.get("http://localhost/api/datasources/id/Prometheus", json={"id": 42})
+        m.get(
+            "http://localhost/api/datasources/id/Prometheus",
+            json={"id": 42},
+        )
 
         result = self.grafana.datasource.get_datasource_id_by_name("Prometheus")
         self.assertEqual(result["id"], 42)

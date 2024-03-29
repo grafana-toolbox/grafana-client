@@ -8,3 +8,7 @@ coverage:
     patch:
       default:
         informational: true
+ignore:
+  - grafana_client/elements/_async/*
+  - test/*
+  - test/elements/*

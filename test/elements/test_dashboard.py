@@ -1,8 +1,8 @@
 import unittest
 
-import requests_mock
-
 from grafana_client import GrafanaApi
+
+from ..compat import requests_mock
 
 
 class DashboardTestCase(unittest.TestCase):
@@ -116,7 +116,10 @@ class DashboardTestCase(unittest.TestCase):
         from the nested "meta" object.
         This is important when roundtripping dashboard payloads.
         """
-        m.post("http://localhost/api/dashboards/db", json={})
+        m.post(
+            "http://localhost/api/dashboards/db",
+            json={},
+        )
         self.grafana.dashboard.update_dashboard(
             {
                 "meta": {
@@ -137,7 +140,10 @@ class DashboardTestCase(unittest.TestCase):
         This is important when roundtripping dashboard payloads and
         intentionally wanting to move the dashboard to a different folder.
         """
-        m.post("http://localhost/api/dashboards/db", json={})
+        m.post(
+            "http://localhost/api/dashboards/db",
+            json={},
+        )
         self.grafana.dashboard.update_dashboard(
             {
                 "meta": {
@@ -183,13 +189,19 @@ class DashboardTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_delete_dashboard(self, m):
-        m.delete("http://localhost/api/dashboards/uid/cIBgcSjkk", json={"title": "Production Overview"})
+        m.delete(
+            "http://localhost/api/dashboards/uid/cIBgcSjkk",
+            json={"title": "Production Overview"},
+        )
         response = self.grafana.dashboard.delete_dashboard("cIBgcSjkk")
         self.assertEqual(response["title"], "Production Overview")
 
     @requests_mock.Mocker()
     def test_get_dashboards_tags(self, m):
-        m.get("http://localhost/api/dashboards/tags", json=[{"term": "tag1", "count": 1}, {"term": "tag2", "count": 4}])
+        m.get(
+            "http://localhost/api/dashboards/tags",
+            json=[{"term": "tag1", "count": 1}, {"term": "tag2", "count": 4}],
+        )
         tags = self.grafana.dashboard.get_dashboards_tags()
         self.assertEqual(len(tags), 2)
         self.assertEqual(tags[0]["term"], "tag1")

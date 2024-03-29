@@ -1,9 +1,9 @@
 import unittest
 
-import requests_mock
-
 from grafana_client import GrafanaApi
 from grafana_client.model import PersonalPreferences
+
+from ..compat import requests_mock
 
 
 class UsersTestCase(unittest.TestCase):
@@ -173,14 +173,20 @@ class UserTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_get_preferences(self, m):
-        m.get("http://localhost/api/user/preferences", json={"theme": "", "homeDashboardId": 0, "timezone": ""})
+        m.get(
+            "http://localhost/api/user/preferences",
+            json={"theme": "", "homeDashboardId": 0, "timezone": ""},
+        )
 
         result = self.grafana.user.get_preferences()
         self.assertEqual(result["homeDashboardId"], 0)
 
     @requests_mock.Mocker()
     def test_update_preferences(self, m):
-        m.put("http://localhost/api/user/preferences", json={"message": "Preferences updated"})
+        m.put(
+            "http://localhost/api/user/preferences",
+            json={"message": "Preferences updated"},
+        )
         preference = self.grafana.user.update_preferences(
             PersonalPreferences(theme="", homeDashboardId=999, timezone="utc")
         )
@@ -188,6 +194,9 @@ class UserTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_patch_preferences(self, m):
-        m.patch("http://localhost/api/user/preferences", json={"message": "Preferences updated"})
+        m.patch(
+            "http://localhost/api/user/preferences",
+            json={"message": "Preferences updated"},
+        )
         preference = self.grafana.user.patch_preferences(PersonalPreferences(homeDashboardUID="zgjG8dKVz"))
         self.assertEqual(preference["message"], "Preferences updated")
