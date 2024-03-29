@@ -2,36 +2,35 @@
 
 ## Sandbox
 In order to create a development sandbox, you may want to follow this list of
-commands. When you see the software tests succeed, you should be ready to start
-hacking.
-
+commands.
 ```shell
 git clone https://github.com/panodata/grafana-client
 cd grafana-client
 python3 -m venv .venv
 source .venv/bin/activate
 pip install --editable=.[test,develop]
+```
 
-# Run all tests.
-poe test
+## Software Tests
+When you see the software tests succeed, you should be ready to start
+hacking.
+```shell
+# Run linters and software tests.
+poe check
 
 # Run specific tests.
-python -m unittest -k preference -vvv
+python -m unittest -vvv -k preference
 ```
 
-### Formatting
-
-Before creating a PR, you can run `poe format`, in order to resolve code style issues.
-
-### Async code
-
-If you update any piece of code in `grafana_client/elements/*`, please run:
-
-```
-python script/generate_async.py
+## Code Formatting
+Before submitting a PR, please format the code, in order to invoke the async
+translation program and to resolve code style issues.
+```shell
+poe format
 ```
 
-Do not edit files in `grafana_client/elements/_async/*` manually.
+The async translation program populates the `grafana_client/elements/_async`
+folder automatically. Please do not edit files there manually.
 
 ## Run Grafana
 ```
