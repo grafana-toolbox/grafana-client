@@ -35,12 +35,24 @@ class ServiceAccount(Base):
         create_service_account_path = "/serviceaccounts/"
         return await self.client.POST(create_service_account_path, json=service_account)
 
+    async def update(self, service_account_id, service_account):
+        """
+        Update service account by id.
+        https://grafana.com/docs/grafana/latest/developers/http_api/serviceaccount/#update-service-account
+
+        :param service_account_id:
+        :param service_account: {"name": "string", "role": "string"}
+        :return:
+        """
+        path = "/serviceaccounts/%s" % service_account_id
+        return await self.client.PATCH(path, json=service_account)
+
     async def delete(self, service_account_id):
         """
         Delete service account.
         https://grafana.com/docs/grafana/latest/developers/http_api/serviceaccount/#delete-service-account
 
-        :param service_account:
+        :param service_account_id:
         :return:
         """
 

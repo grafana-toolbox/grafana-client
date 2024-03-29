@@ -67,6 +67,15 @@ class ServiceAccountsTestCase(unittest.TestCase):
         self.assertEqual(user["message"], "Service account created")
 
     @requests_mock.Mocker()
+    def test_update(self, m):
+        m.patch(
+            "http://localhost/api/serviceaccounts/42",
+            json={"message": "Service account updated"},
+        )
+        user = self.grafana.serviceaccount.update(42, {"name": "foo", "role": "Admin"})
+        self.assertEqual(user["message"], "Service account updated")
+
+    @requests_mock.Mocker()
     def test_delete(self, m):
         m.delete(
             "http://localhost/api/serviceaccounts/42",
