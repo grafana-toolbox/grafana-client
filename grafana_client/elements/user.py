@@ -85,6 +85,15 @@ class Users(Base):
         get_user_organisations_path = "/users/%s/orgs" % user_id
         return self.client.GET(get_user_organisations_path)
 
+    def get_user_teams(self, user_id):
+        """
+
+        :param user_id:
+        :return:
+        """
+        get_user_teams_path = "/users/%s/teams" % user_id
+        return self.client.GET(get_user_teams_path)
+
 
 class User(Base):
     def __init__(self, client):
@@ -144,6 +153,14 @@ class User(Base):
         """
         get_actual_user_organisations_path = "/user/orgs"
         return self.client.GET(get_actual_user_organisations_path)
+
+    def get_actual_user_teams(self):
+        """
+
+        :return:
+        """
+        get_actual_user_teams_path = "/user/teams"
+        return self.client.GET(get_actual_user_teams_path)
 
     def star_actual_user_dashboard(self, dashboard_id):
         """
