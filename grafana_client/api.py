@@ -42,6 +42,7 @@ from .elements._async import (
     AsyncDatasource,
     AsyncFolder,
     AsyncHealth,
+    AsyncLibraryElement,
     AsyncNotifications,
     AsyncOrganization,
     AsyncOrganizations,
@@ -53,7 +54,6 @@ from .elements._async import (
     AsyncTeams,
     AsyncUser,
     AsyncUsers,
-    AsyncLibraryElement,
 )
 from .util import as_bool
 
