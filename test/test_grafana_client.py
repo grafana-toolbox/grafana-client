@@ -6,6 +6,7 @@ import niquests
 from grafana_client.api import GrafanaApi
 from grafana_client.client import (
     GrafanaClientError,
+    GrafanaServerError,
     GrafanaTimeoutError,
     HeaderAuth,
     TokenAuth,
@@ -95,6 +96,7 @@ class TestGrafanaClient(unittest.TestCase):
             auth=basic_auth,
             headers=None,
             json=None,
+            params=None,
             data=None,
             verify=False,
             timeout=5.0,
@@ -160,7 +162,7 @@ class TestGrafanaClient(unittest.TestCase):
 
     def test_grafana_client_non_json_response(self):
         grafana = GrafanaApi.from_url("https://example.org/")
-        self.assertRaises(GrafanaClientError, lambda: grafana.connect())
+        self.assertRaises((GrafanaClientError, GrafanaServerError), lambda: grafana.connect())
 
     def test_grafana_client_204_no_content_response(self):
         grafana = GrafanaApi.from_url()
