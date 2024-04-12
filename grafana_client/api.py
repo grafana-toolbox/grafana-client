@@ -53,6 +53,7 @@ from .elements._async import (
     AsyncTeams,
     AsyncUser,
     AsyncUsers,
+    AsyncLibraryElement,
 )
 from .util import as_bool
 
@@ -235,6 +236,7 @@ class AsyncGrafanaApi(GrafanaApi):
         self.notifications = AsyncNotifications(self.client)
         self.plugin = AsyncPlugin(self.client)
         self.serviceaccount = AsyncServiceAccount(self.client)
+        self.libraryelement = AsyncLibraryElement(self.client, self)
 
         self._grafana_info = None
 
