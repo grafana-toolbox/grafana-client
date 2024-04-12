@@ -189,7 +189,7 @@ class GrafanaClient:
                 raise
 
     def __getattr__(self, item):
-        def __request_runner(url, json=None, data=None, headers=None, accept_empty_json=False):
+        def __request_runner(url, json=None, data=None, params=None, headers=None, accept_empty_json=False):
             __url = self._make_url(url)
             # Sanity checks.
             self._ensure_valid_json_arg(json)
@@ -200,6 +200,7 @@ class GrafanaClient:
                     __url,
                     json=json,
                     data=data,
+                    params=params,
                     headers=headers,
                     auth=self.auth,
                     verify=self.verify,
@@ -244,7 +245,7 @@ class AsyncGrafanaClient(GrafanaClient):
         self.s.headers.setdefault("Connection", "keep-alive")
 
     def __getattr__(self, item):
-        async def __request_runner(url, json=None, data=None, headers=None, accept_empty_json=False):
+        async def __request_runner(url, json=None, data=None, params=None, headers=None, accept_empty_json=False):
             __url = self._make_url(url)
             # Sanity checks.
             self._ensure_valid_json_arg(json)
@@ -255,6 +256,7 @@ class AsyncGrafanaClient(GrafanaClient):
                     __url,
                     json=json,
                     data=data,
+                    params=params,
                     headers=headers,
                     auth=self.auth,
                     verify=self.verify,
