@@ -12,10 +12,10 @@ class Folder(Base):
         :return:
         """
         path = "/folders"
-        data = {}
+        params = {}
         if parent_uid:
-            data["parentUid"] = parent_uid
-        return await self.client.GET(path, data=data)
+            params["parentUid"] = parent_uid
+        return await self.client.GET(path, params=params)
 
     async def get_folder(self, uid):
         """
