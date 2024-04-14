@@ -1,3 +1,5 @@
+from grafana_client.util import format_param_value
+
 from ..base import Base
 
 
@@ -12,7 +14,9 @@ class Search(Base):
         tag=None,
         type_=None,
         dashboard_ids=None,
+        dashboard_uids=None,
         folder_ids=None,
+        folder_uids=None,
         starred=None,
         limit=None,
     ):
@@ -22,36 +26,41 @@ class Search(Base):
         :param tag:
         :param type_:
         :param dashboard_ids:
+        :param dashboard_uids:
         :param folder_ids:
+        :param folder_uids:
         :param starred:
         :param limit:
         :return:
         """
         list_dashboard_path = "/search"
-        params = []
+        params = {}
 
         if query:
-            params.append("query=%s" % query)
+            params["query"] = query
 
         if tag:
-            params.append("tag=%s" % tag)
+            params["tag"] = format_param_value(tag)
 
         if type_:
-            params.append("type=%s" % type_)
+            params["type"] = type_
 
         if dashboard_ids:
-            params.append("dashboardIds=%s" % dashboard_ids)
+            params["dashboardIds"] = format_param_value(dashboard_ids)
+
+        if dashboard_uids:
+            params["dashboardUIDs"] = format_param_value(dashboard_uids)
 
         if folder_ids:
-            params.append("folderIds=%s" % folder_ids)
+            params["folderIds"] = format_param_value(folder_ids)
+
+        if folder_uids:
+            params["folderUIDs"] = format_param_value(folder_uids)
 
         if starred:
-            params.append("starred=%s" % starred)
+            params["starred"] = starred
 
         if limit:
-            params.append("limit=%s" % limit)
+            params["limit"] = limit
 
-        list_dashboard_path += "?"
-        list_dashboard_path += "&".join(params)
-
-        return await self.client.GET(list_dashboard_path)
+        return await self.client.GET(list_dashboard_path, params=params)

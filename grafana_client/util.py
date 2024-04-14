@@ -39,3 +39,10 @@ def as_bool(value: str) -> bool:
         return _STR_BOOLEAN_MAPPING[value.lower()]
     except KeyError:
         raise ValueError(f"invalid truth value {value}")
+
+
+def format_param_value(maybe_list):
+    if isinstance(maybe_list, list):
+        return ",".join([str(x) for x in maybe_list])
+    else:
+        return maybe_list
