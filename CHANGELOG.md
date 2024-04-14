@@ -3,6 +3,16 @@
 ## unreleased
 
 
+## 4.1.0 (2024-04-14)
+
+* Fixed dashboard search endpoint wrapper.
+* Added support for query parameters on endpoints, also fixing `get_all_folders`.
+* Added missing API wrapper for Library Elements to the Async client.
+* Implemented teams read endpoints for user and actual user.
+
+All fixes and improvements submitted by @chintal. Thank you so much.
+
+
 ## 4.0.1 (2024-03-29)
 
 * Packaging: Do not mark package as "universal wheel" py2, py3.
