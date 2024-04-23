@@ -121,7 +121,7 @@ class GrafanaApi:
     def version(self):
         if not self._grafana_info:
             self._grafana_info = self.health.check()
-        version = self._grafana_info["version"]
+        version = self._grafana_info.get("version", "unknown")
         logger.info(f"Inquired Grafana version: {version}")
         return version
 
