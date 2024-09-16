@@ -1,8 +1,9 @@
 name: Publish
 
 on:
-
   push:
+    tags:
+      - '*.*.*'
 
   # Allow job to be triggered manually.
   workflow_dispatch:
