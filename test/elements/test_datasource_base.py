@@ -1,13 +1,4 @@
 import unittest
-from test.elements.test_datasource_fixtures import (
-    DATAFRAME_RESPONSE_HEALTH_ELASTICSEARCH_VALID,
-    DATAFRAME_RESPONSE_HEALTH_PROMETHEUS,
-    ELASTICSEARCH_DATASOURCE,
-    INFLUXDB1_DATASOURCE,
-    PERMISSION_DATASOURCE,
-    PROMETHEUS_DATA_RESPONSE,
-    PROMETHEUS_DATASOURCE,
-)
 from unittest.mock import Mock, patch
 
 from grafana_client import GrafanaApi
@@ -17,6 +8,15 @@ from grafana_client.client import (
     GrafanaServerError,
 )
 from grafana_client.model import DatasourceIdentifier
+from test.elements.test_datasource_fixtures import (
+    DATAFRAME_RESPONSE_HEALTH_ELASTICSEARCH_VALID,
+    DATAFRAME_RESPONSE_HEALTH_PROMETHEUS,
+    ELASTICSEARCH_DATASOURCE,
+    INFLUXDB1_DATASOURCE,
+    PERMISSION_DATASOURCE,
+    PROMETHEUS_DATA_RESPONSE,
+    PROMETHEUS_DATASOURCE,
+)
 
 from ..compat import requests_mock
 
