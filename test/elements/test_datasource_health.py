@@ -1,4 +1,10 @@
 import unittest
+
+from parameterized import parameterized
+
+from grafana_client import GrafanaApi
+from grafana_client.client import GrafanaClientError, GrafanaServerError
+from grafana_client.model import DatasourceHealthResponse, DatasourceIdentifier
 from test.elements.test_datasource_fixtures import (
     DATAFRAME_RESPONSE_EMPTY,
     DATAFRAME_RESPONSE_HEALTH_PROMETHEUS,
@@ -22,12 +28,6 @@ from test.elements.test_datasource_fixtures import (
     TESTDATA_DATASOURCE,
     ZIPKIN_DATASOURCE,
 )
-
-from parameterized import parameterized
-
-from grafana_client import GrafanaApi
-from grafana_client.client import GrafanaClientError, GrafanaServerError
-from grafana_client.model import DatasourceHealthResponse, DatasourceIdentifier
 
 from ..compat import requests_mock
 

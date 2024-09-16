@@ -1,7 +1,7 @@
 import unittest
-from test.elements.test_rbac_fixtures import PERMISSION_RBAC_DATASOURCE, RBAC_ROLES_ALL
 
 from grafana_client import GrafanaApi
+from test.elements.test_rbac_fixtures import PERMISSION_RBAC_DATASOURCE, RBAC_ROLES_ALL
 
 from ..compat import requests_mock
 
