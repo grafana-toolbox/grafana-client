@@ -1,6 +1,9 @@
 # CHANGELOG
 
 ## unreleased
+
+## 4.1.1 (2024-09-16)
+- Return `None` when version info is disabled in Grafana. Thanks, @schmiddim.
 - Improve Grafana version parsing for patch releases like `11.3.0-75420.patch2-75797`
   Thanks, @Zhuse.
 
