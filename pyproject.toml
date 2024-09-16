@@ -96,3 +96,8 @@ test-coverage = [
 ]
 build = {cmd="python -m build"}
 check = ["lint", "test"]
+
+release = [
+  { cmd = "python -m build" },
+  { cmd = "twine upload --skip-existing dist/*" },
+]
