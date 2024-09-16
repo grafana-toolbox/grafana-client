@@ -6,6 +6,8 @@
 - [o] Share `examples/grafanalib-upload-dashboard.py` with people at `grafanalib`
 - [o] Propagate features to `grafana-wtf`
 - [o] Improve error output on `404 Not found`. See https://github.com/panodata/grafana-client/issues/72
+- [o] Add example using `grafana-dashboard`
+  https://pypi.org/project/grafana-dashboard/
 
 ## Iteration +2
 - [o] Unlock real data queries
