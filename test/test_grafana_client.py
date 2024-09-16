@@ -154,11 +154,22 @@ class TestGrafanaClient(unittest.TestCase):
         self.assertRaises(niquests.exceptions.ConnectionError, lambda: grafana.connect())
 
     @patch("grafana_client.client.GrafanaClient.__getattr__")
-    def test_grafana_client_version(self, mock_get):
+    def test_grafana_client_version_basic(self, mock_get):
         mock_get.return_value = Mock()
         mock_get.return_value.return_value = {"commit": "14e988bd22", "database": "ok", "version": "9.0.1"}
         grafana = GrafanaApi(auth=None, host="localhost", url_path_prefix="", protocol="http", port="3000")
         self.assertEqual(grafana.version, "9.0.1")
+
+    @patch("grafana_client.client.GrafanaClient.__getattr__")
+    def test_grafana_client_version_patch(self, mock_get):
+        mock_get.return_value = Mock()
+        mock_get.return_value.return_value = {
+            "commit": "14e988bd22",
+            "database": "ok",
+            "version": "11.3.0-75420.patch2-75797",
+        }
+        grafana = GrafanaApi(auth=None, host="localhost", url_path_prefix="", protocol="http", port="3000")
+        self.assertEqual(grafana.version, "11.3.0")
 
     def test_grafana_client_non_json_response(self):
         grafana = GrafanaApi.from_url("https://example.org/")
