@@ -122,6 +122,8 @@ class GrafanaApi:
         if not self._grafana_info:
             self._grafana_info = self.health.check()
         version = self._grafana_info.get("version", None)
+        if version:
+            version = str(version).rsplit("-")[0]
         logger.info(f"Inquired Grafana version: {version}")
         return version
 

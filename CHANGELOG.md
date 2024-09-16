@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## unreleased
+- Improve Grafana version parsing for patch releases like `11.3.0-75420.patch2-75797`
+  Thanks, @Zhuse.
 
 
 ## 4.1.0 (2024-04-14)
