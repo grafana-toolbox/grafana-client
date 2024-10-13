@@ -2,6 +2,9 @@
 
 ## unreleased
 
+## 4.1.3 (2024-10-13)
+- Added page support for search API. Thanks, @vbichov.
+
 ## 4.1.2 (2024-09-16)
 - Fix release process
 
