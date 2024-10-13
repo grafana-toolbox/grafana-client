@@ -51,3 +51,29 @@ class AnnotationsTestCase(unittest.TestCase):
 
         with self.assertRaises(GrafanaBadInputError):
             self.grafana.search.search_dashboards()
+
+    @requests_mock.Mocker()
+    def test_search_dashboards_with_page(self, m):
+        m.get(
+            "http://localhost/api/search?page=1",
+            json=[
+                {
+                    "id": 2307,
+                    "uid": "LfQAz3t4z1DSA",
+                    "title": "ERRORS",
+                    "uri": "db/errors",
+                    "url": "/d/LfQAz3t4z1DSA/errors",
+                    "slug": "",
+                    "type": "dash-db",
+                    "tags": [],
+                    "isStarred": False,
+                    "sortMeta": 0,
+                }
+            ],
+        )
+
+        result = self.grafana.search.search_dashboards(
+            page=1,
+        )
+        self.assertEqual(result[0]["id"], 2307)
+        self.assertEqual(len(result), 1)

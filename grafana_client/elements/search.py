@@ -19,6 +19,7 @@ class Search(Base):
         folder_uids=None,
         starred=None,
         limit=None,
+        page=None,
     ):
         """
 
@@ -31,6 +32,7 @@ class Search(Base):
         :param folder_uids:
         :param starred:
         :param limit:
+        :param page:
         :return:
         """
         list_dashboard_path = "/search"
@@ -62,5 +64,8 @@ class Search(Base):
 
         if limit:
             params["limit"] = limit
+
+        if page:
+            params["page"] = page
 
         return self.client.GET(list_dashboard_path, params=params)
