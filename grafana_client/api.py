@@ -8,7 +8,7 @@ import niquests
 import niquests.auth
 from urllib3.exceptions import InsecureRequestWarning
 
-from .client import DEFAULT_TIMEOUT, AsyncGrafanaClient, GrafanaClient
+from .client import DEFAULT_SESSION_POOL_SIZE, DEFAULT_TIMEOUT, AsyncGrafanaClient, GrafanaClient
 from .elements import (
     Admin,
     Alerting,
@@ -72,6 +72,7 @@ class GrafanaApi:
         timeout=DEFAULT_TIMEOUT,
         user_agent: str = None,
         organization_id: int = None,
+        session_pool_size=DEFAULT_SESSION_POOL_SIZE,
     ):
         self.client = GrafanaClient(
             auth,
@@ -83,6 +84,7 @@ class GrafanaApi:
             timeout=timeout,
             user_agent=user_agent,
             organization_id=organization_id,
+            session_pool_size=session_pool_size,
         )
         self.url = None
         self.admin = Admin(self.client)
