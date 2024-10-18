@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/panodata/grafana-client/workflows/Test/badge.svg)](https://github.com/panodata/grafana-client/actions?query=workflow%3ATest)
 [![Test coverage](https://img.shields.io/codecov/c/gh/panodata/grafana-client.svg?style=flat-square)](https://codecov.io/gh/panodata/grafana-client/)
-[![License](https://img.shields.io/github/license/panodata/grafana-client.svg?style=flat-square)](https://github.com/panodata/grafana-client/blob/main/LICENSE) 
+[![License](https://img.shields.io/github/license/panodata/grafana-client.svg?style=flat-square)](https://github.com/panodata/grafana-client/blob/main/LICENSE)
 
 [![Python versions](https://img.shields.io/pypi/pyversions/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
 [![Grafana versions](https://img.shields.io/badge/Grafana-5.x%20--%2011.x-blue.svg?style=flat-square)](https://github.com/grafana/grafana)
@@ -43,10 +43,10 @@ grafana = GrafanaApi.from_url(
 
 # Create user
 user = grafana.admin.create_user({
-    "name": "User", 
-    "email": "user@example.org", 
-    "login": "user", 
-    "password": "userpassword", 
+    "name": "User",
+    "email": "user@example.org",
+    "login": "user",
+    "password": "userpassword",
     "OrgId": 1,
 })
 
@@ -89,10 +89,10 @@ async def main():
 
     # Create user
     user = await grafana.admin.create_user({
-        "name": "User", 
-        "email": "user@example.org", 
-        "login": "user", 
-        "password": "userpassword", 
+        "name": "User",
+        "email": "user@example.org",
+        "login": "user",
+        "password": "userpassword",
         "OrgId": 1,
     })
 
@@ -207,6 +207,14 @@ export HTTP_PROXY=10.10.1.10:3128
 export HTTPS_PROXY=10.10.1.11:1080
 ```
 
+### Pool Size
+
+By default a session pool size of 10 is used. This can be changed by passing
+the `session_pool_size` argument to the `GrafanaApi` constructor:
+```python
+grafana.client.session_pool_size = 32
+```
+
 ### TCP Timeout
 
 The default timeout value is five seconds, used for both connect and read timeout.
@@ -214,7 +222,6 @@ The default timeout value is five seconds, used for both connect and read timeou
 The constructors of `GrafanaApi` and `GrafanaClient`, as well as the factory methods
 `from_url` and `from_env` accept the `timeout` argument, which can be obtained as a
 scalar `float` value, or as a tuple of `(<read timeout>, <connect timeout>)`.
-
 
 
 ## Details
@@ -332,7 +339,7 @@ and conceive this software in one way or another. You know who you are.
 ### Contributing
 
 Any kind of contribution and feedback are very much welcome! Just create an
-issue or submit a patch if you think we should include a new feature, or to 
+issue or submit a patch if you think we should include a new feature, or to
 report or fix a bug.
 
 The issue tracker URL is: https://github.com/panodata/grafana-client/issues
