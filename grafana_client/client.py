@@ -88,6 +88,7 @@ class GrafanaClient:
         timeout=DEFAULT_TIMEOUT,
         user_agent: str = None,
         organization_id: int = None,
+        session_pool_size=DEFAULT_SESSION_POOL_SIZE,
     ):
         self.auth = auth
         self.verify = verify
@@ -96,6 +97,7 @@ class GrafanaClient:
         self.url_port = port
         self.url_path_prefix = url_path_prefix
         self.url_protocol = protocol
+        self.session_pool_size = session_pool_size
 
         def construct_api_url():
             params = {
@@ -118,7 +120,7 @@ class GrafanaClient:
 
         self.user_agent = user_agent or f"{__appname__}/{__version__}"
 
-        self.s = niquests.Session()
+        self.s = niquests.Session(pool_maxsize=session_pool_size)
         self.s.headers["User-Agent"] = self.user_agent
 
         self.organization_id = organization_id
@@ -230,6 +232,7 @@ class AsyncGrafanaClient(GrafanaClient):
         timeout=DEFAULT_TIMEOUT,
         user_agent: str = None,
         organization_id: int = None,
+        session_pool_size=DEFAULT_SESSION_POOL_SIZE,
     ):
         super().__init__(
             auth,
@@ -241,8 +244,9 @@ class AsyncGrafanaClient(GrafanaClient):
             timeout=timeout,
             user_agent=user_agent,
             organization_id=organization_id,
+            session_pool_size=session_pool_size,
         )
-        self.s = niquests.AsyncSession()
+        self.s = niquests.AsyncSession(pool_maxsize=session_pool_size)
         self.s.headers.setdefault("Connection", "keep-alive")
 
     def __getattr__(self, item):
