@@ -22,7 +22,7 @@ A client library for accessing the Grafana HTTP API, written in Python.
 
 Install the package from PyPI.
 ```
-pip install grafana-client --upgrade
+pip install --upgrade grafana-client
 ```
 
 
@@ -33,6 +33,7 @@ pip install grafana-client --upgrade
 This section gives you an idea about how to use the API on behalf of a few
 samples.
 
+#### Synchronous
 ```python
 from grafana_client import GrafanaApi
 
@@ -73,16 +74,19 @@ grafana.organization.create_organization(
     organization={"name": "new_organization"})
 ```
 
-Or using asynchronous code... the interfaces are identical except for the fact that you will handle coroutines (async/await).
+#### Asynchronous
+
+The asynchronous interfaces are identical, except for the fact that you will
+need to properly handle coroutines (async/await).
 
 ```python
-from grafana_client import AsyncGrafanaApi
 import asyncio
+from grafana_client import AsyncGrafanaApi
 
 async def main():
     # Connect to Grafana API endpoint using the `GrafanaApi` class
     grafana = AsyncGrafanaApi.from_url("https://username:password@daq.example.org/grafana/")
-    
+
     # Create user
     user = await grafana.admin.create_user({
         "name": "User", 
@@ -91,7 +95,7 @@ async def main():
         "password": "userpassword", 
         "OrgId": 1,
     })
-    
+
     # Change user password
     user = await grafana.admin.change_user_password(2, "newpassword")
 
@@ -107,7 +111,9 @@ Feel free to use them as blueprints for your own programs. If you think your
 exercises could be useful for others, don't hesitate to share them back.
 
 
-## Authentication
+## Configuration Settings
+
+### Authentication
 
 There are several ways to authenticate to the Grafana HTTP API.
 
@@ -160,7 +166,18 @@ grafana = GrafanaApi.from_env()
 Please note that, on top of the specific examples above, the object obtained by
 `credential` can be an arbitrary `niquests.auth.AuthBase` instance.
 
-## Selecting Organizations
+### DNS Resolver
+
+`niquests` support using a custom DNS resolver, like but not limited, DNS-over-HTTPS, and DNS-over-QUIC.
+You will have to set `NIQUESTS_DNS_URL` environment variable. For example:
+```
+export NIQUESTS_DNS_URL="doh+cloudflare://"
+```
+
+See the [documentation](https://niquests.readthedocs.io/en/latest/user/quickstart.html#set-dns-via-environment) to learn
+more about accepted URL parameters and protocols.
+
+### Grafana Organization
 
 If the Grafana API is authenticated as a user (for example, with HTTP Basic Authentication),
 it will use the user's current organization context.
@@ -180,16 +197,7 @@ grafana = GrafanaApi(..., organization_id=1)
 
 API Tokens are bound to a single organization, so the `organization_id` parameter does not need to be specified.
 
-## Timeout settings
-
-The default timeout value is five seconds, used for both connect and read timeout.
-
-The constructors of `GrafanaApi` and `GrafanaClient`, as well as the factory methods
-`from_url` and `from_env` accept the `timeout` argument, which can be obtained as a
-scalar `float` value, or as a tuple of `(<read timeout>, <connect timeout>)`.
-
-
-## Proxy
+### HTTP Proxy
 
 The underlying `niquests` library honors the `HTTP_PROXY` and `HTTPS_PROXY`
 environment variables. Setting them before invoking an application using
@@ -199,16 +207,15 @@ export HTTP_PROXY=10.10.1.10:3128
 export HTTPS_PROXY=10.10.1.11:1080
 ```
 
-## DNS Resolver
+### TCP Timeout
 
-`niquests` support using a custom DNS resolver, like but not limited, DNS-over-HTTPS, and DNS-over-QUIC.
-You will have to set `NIQUESTS_DNS_URL` environment variable. For example:
-```
-export NIQUESTS_DNS_URL="doh+cloudflare://"
-```
+The default timeout value is five seconds, used for both connect and read timeout.
 
-See the [documentation](https://niquests.readthedocs.io/en/latest/user/quickstart.html#set-dns-via-environment) to learn
-more about accepted URL parameters and protocols.
+The constructors of `GrafanaApi` and `GrafanaClient`, as well as the factory methods
+`from_url` and `from_env` accept the `timeout` argument, which can be obtained as a
+scalar `float` value, or as a tuple of `(<read timeout>, <connect timeout>)`.
+
+
 
 ## Details
 
