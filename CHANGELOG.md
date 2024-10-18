@@ -2,6 +2,9 @@
 
 ## unreleased
 
+## 4.2.0 (2024-10-18)
+- Allowed setting the session pool size in `niquests`. Thanks, @sjoeboo.
+
 ## 4.1.3 (2024-10-13)
 - Added page support for search API. Thanks, @vbichov.
 
