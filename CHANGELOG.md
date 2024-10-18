@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## unreleased
+- CI: Verified support on Python 3.13
 
 ## 4.2.0 (2024-10-18)
 - Allowed setting the session pool size in `niquests`. Thanks, @sjoeboo.
