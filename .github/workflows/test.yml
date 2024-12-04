@@ -67,9 +67,12 @@ jobs:
         run: |
           poe test-coverage
 
-      # https://github.com/codecov/codecov-action
       - name: Upload coverage results to Codecov
         uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          fail_ci_if_error: false
-        continue-on-error: true
+          env_vars: OS,PYTHON
+          fail_ci_if_error: true
+          flags: unittests
+          name: codecov-umbrella
