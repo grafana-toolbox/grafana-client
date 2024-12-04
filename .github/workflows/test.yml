@@ -35,7 +35,7 @@ jobs:
         os: ["ubuntu-latest"]
         python-version: [
           '3.7', '3.13',
-          'pypy-3.7', 'pypy-3.10',
+          'pypy-3.9', 'pypy-3.10',
         ]
     steps:
       - uses: actions/checkout@v4
