@@ -1,8 +1,7 @@
-from json import JSONDecodeError
-
 import niquests
 import niquests.auth
 from niquests import HTTPError, Timeout
+from requests.exceptions import JSONDecodeError
 
 DEFAULT_TIMEOUT: float = 5.0
 DEFAULT_SESSION_POOL_SIZE: int = 10
