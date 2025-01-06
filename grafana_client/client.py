@@ -1,4 +1,4 @@
-from json import JSONDecodeError
+from requests.exceptions import JSONDecodeError
 
 import niquests
 import niquests.auth
