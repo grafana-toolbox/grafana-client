@@ -2,6 +2,9 @@
 
 ## unreleased
 
+## 4.2.2 (2025-01-11)
+- Fixed catching wrong `JSONDecodeError` exception. Thank you, @etiennevincent.
+
 ## 4.2.1 (2025-01-11)
 - CI: Verified support on Python 3.13
 - Fixed catching wrong `JSONDecodeError` exception. Thank you, @etiennevincent.
