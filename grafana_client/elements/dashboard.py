@@ -77,14 +77,14 @@ class Dashboard(Base):
 
     def get_dashboard_permissions(self, dashboard_id):
         warnings.warn(
-            "get_dashboard_permissions is deprecated, " "use corresponding _by_id or _by_uid methods",
+            "get_dashboard_permissions is deprecated, use corresponding _by_id or _by_uid methods",
             DeprecationWarning,
         )
         return self.get_permissions_by_id(dashboard_id)
 
     def update_dashboard_permissions(self, dashboard_id, items):
         warnings.warn(
-            "update_dashboard_permissions is deprecated, " "use corresponding _by_id or _by_uid methods",
+            "update_dashboard_permissions is deprecated, use corresponding _by_id or _by_uid methods",
             DeprecationWarning,
         )
         return self.update_permissions_by_id(dashboard_id, items)
