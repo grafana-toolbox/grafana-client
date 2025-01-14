@@ -49,8 +49,7 @@ def ensure_datasource(grafana: GrafanaApi, datasource: DatasourceModel):
             datasource = grafana.datasource.update_datasource(datasource_existing["id"], datasource)["datasource"]
         else:
             logger.error(
-                f"Failed to create or update data source '{datasource}'. "
-                f"Reason: {ex.message}. Response: {ex.response}"
+                f"Failed to create or update data source '{datasource}'. Reason: {ex.message}. Response: {ex.response}"
             )
             raise
     return datasource

@@ -186,7 +186,7 @@ class GrafanaApi:
                     timeout = float(os.environ["GRAFANA_TIMEOUT"])
                 except Exception as ex:
                     raise ValueError(
-                        f"Unable to parse invalid `float` value from " f"`GRAFANA_TIMEOUT` environment variable: {ex}"
+                        f"Unable to parse invalid `float` value from `GRAFANA_TIMEOUT` environment variable: {ex}"
                     )
         if timeout is None:
             timeout = DEFAULT_TIMEOUT

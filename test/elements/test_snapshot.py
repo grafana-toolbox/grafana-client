@@ -118,20 +118,20 @@ class SnapshotTestCase(unittest.TestCase):
     def test_delete_snapshot_by_key(self, m):
         m.delete(
             "http://localhost/api/snapshots/YYYYYYY",
-            json={"message": "Snapshot deleted. It might take an hour " "before it's cleared from any CDN " "caches."},
+            json={"message": "Snapshot deleted. It might take an hour before it's cleared from any CDN caches."},
         )
         annotation = self.grafana.snapshots.delete_snapshot_by_key(snapshot_id="YYYYYYY")
         self.assertEqual(
-            annotation["message"], "Snapshot deleted. It might take an hour before it's cleared from any " "CDN caches."
+            annotation["message"], "Snapshot deleted. It might take an hour before it's cleared from any CDN caches."
         )
 
     @requests_mock.Mocker()
     def test_delete_snapshot_by_delete_key(self, m):
         m.get(
             "http://localhost/api/snapshots-delete/XXXXXXX",
-            json={"message": "Snapshot deleted. It might take an hour " "before it's cleared from any CDN " "caches."},
+            json={"message": "Snapshot deleted. It might take an hour before it's cleared from any CDN caches."},
         )
         annotation = self.grafana.snapshots.delete_snapshot_by_delete_key(snapshot_delete_key="XXXXXXX")
         self.assertEqual(
-            annotation["message"], "Snapshot deleted. It might take an hour before it's cleared from any " "CDN caches."
+            annotation["message"], "Snapshot deleted. It might take an hour before it's cleared from any CDN caches."
         )
