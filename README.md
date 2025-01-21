@@ -355,6 +355,13 @@ follow the [development documentation].
 
 `grafana-client` is licensed under the terms of the MIT License, see [LICENSE] file.
 
+### Supported by
+
+[![JetBrains logo.](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://jb.gg/OpenSourceSupport)
+
+Special thanks to the people at JetBrains s.r.o. for supporting us with
+excellent development tooling.
+
 
 [Andrew Prokhorenkov]: https://github.com/m0nhawk/grafana_api
 [contributors]: https://github.com/panodata/grafana-client/graphs/contributors
