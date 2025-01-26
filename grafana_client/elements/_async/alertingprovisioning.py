@@ -71,15 +71,6 @@ class AlertingProvisioning(Base):
         update_rule_group_path = "/v1/provisioning/folder/%s/rule-groups/%s" % (folder_uid, group_uid)
         return await self.client.PUT(update_rule_group_path, json=alertrule_group, headers=headers)
 
-    async def update_rule_group_interval(self, folder_uid, group_uid, alertrule_group, disable_provenance=False):
-        """
-        :param folder_uid:
-        :param group_uid:
-        :param alertrule_group:
-        :return:
-        """
-        return self.update_rule_group(folder_uid, group_uid, alertrule_group, disable_provenance)
-
     async def delete_alertrule(self, alertrule_uid):
         """
         @param alertrule_uid:
