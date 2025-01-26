@@ -2,6 +2,10 @@
 
 ## unreleased
 
+## 4.2.3 (2025-01-26)
+- Smartquery: Fix querying Prometheus by adding `hide` parameter.
+  Thanks, @peekjef72.
+
 ## 4.2.2 (2025-01-11)
 - Fixed catching wrong `JSONDecodeError` exception. Thank you, @etiennevincent.
 
