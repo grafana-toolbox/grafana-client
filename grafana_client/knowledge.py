@@ -97,7 +97,7 @@ def datasource_factory(datasource: DatasourceModel) -> DatasourceModel:
         datasource.secureJsonData = {
             "password": "root",
         }
-    elif datasource.type == "postgres":
+    elif datasource.type in ["postgres", "grafana-postgresql-datasource"]:
         datasource.user = "postgres"
         datasource.jsonData = {
             "postgresVersion": 1200,

@@ -2,6 +2,7 @@
 
 ## unreleased
 - Chore: Removed nonsense function `update_rule_group_interval`. Thanks, @vbichov.
+- Smartquery: Fixed querying PostgreSQL with Grafana 11. Thanks, @hbaghar.
 
 ## 4.2.3 (2025-01-26)
 - Smartquery: Fix querying Prometheus by adding `hide` parameter.
