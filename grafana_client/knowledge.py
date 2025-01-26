@@ -366,6 +366,10 @@ def query_factory(datasource, model: Optional[dict] = None, expression: Optional
                 # "version": "8.0.0"
             },
             {
+                "name": "hide",
+                "default": False,
+            },
+            {
                 "name": "instant",
                 "default": False,
             },
