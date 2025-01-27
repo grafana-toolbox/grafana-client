@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## unreleased
+
+## 4.2.4 (2025-01-27)
 - Chore: Removed nonsense function `update_rule_group_interval`. Thanks, @vbichov.
 - Smartquery: Fixed querying PostgreSQL with Grafana 11. Thanks, @hbaghar.
 
