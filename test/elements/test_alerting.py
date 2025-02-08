@@ -37,6 +37,16 @@ class AlertingTestCase(unittest.TestCase):
         self.assertEqual(response["name"], "alert-rule-test")
 
     @requests_mock.Mocker()
+    def test_get_managedalerts_all(self, m):
+        m.get(
+            "http://localhost/api/prometheus/grafanacloud-prom/api/v1/rules",
+            json={"status": "success", "data": {"groups": []}},
+        )
+        response = self.grafana.alerting.get_managedalerts_all()
+        self.assertEqual(response["status"], "success")
+        self.assertEqual(response["data"]["groups"], [])
+
+    @requests_mock.Mocker()
     def test_delete_alertrule(self, m):
         m.delete(
             "http://localhost/api/ruler/grafana/api/v1/rules/alert-folder/alert-rule-test",

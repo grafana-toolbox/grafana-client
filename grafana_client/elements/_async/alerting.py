@@ -15,6 +15,10 @@ class Alerting(Base):
         get_alertrule_path = "/ruler/grafana/api/v1/rules/%s/%s" % (folder_name, alertrule_name)
         return await self.client.GET(get_alertrule_path)
 
+    async def get_managedalerts_all(self):
+        """ """
+        return await self.client.GET("/prometheus/grafanacloud-prom/api/v1/rules")
+
     async def create_alertrule(self, folder_name, alertrule):
         """
         :param folder_name:
