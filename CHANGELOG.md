@@ -2,6 +2,9 @@
 
 ## unreleased
 
+## 4.3.0 (2025-02-08)
+- Added support for querying all data source-managed alerts. Thanks, @dmyerscough.
+
 ## 4.2.4 (2025-01-27)
 - Chore: Removed nonsense function `update_rule_group_interval`. Thanks, @vbichov.
 - Smartquery: Fixed querying PostgreSQL with Grafana 11. Thanks, @hbaghar.
