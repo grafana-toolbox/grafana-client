@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## unreleased
+- Fixed `update_dashboard` to also handle `folderUid` well. Thanks, @CantankerousBullMoose.
 
 ## 4.3.0 (2025-02-08)
 - Added support for querying all data source-managed alerts. Thanks, @dmyerscough.
