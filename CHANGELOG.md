@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## unreleased
+
+## 4.3.1 (2025-02-22)
 - Fixed `update_dashboard` to also handle `folderUid` well. Thanks, @CantankerousBullMoose.
 
 ## 4.3.0 (2025-02-08)
