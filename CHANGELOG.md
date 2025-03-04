@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## unreleased
+
+## 4.3.2 (2025-03-04)
 - Alerting: Allowed the datasource to be specified with managed alerting. Thanks, @dmyerscough.
 - Smartquery: Fixed querying PostgreSQL with Grafana 11. Thanks, @MatthewMarsee.
 
