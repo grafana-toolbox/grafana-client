@@ -259,7 +259,7 @@ def query_factory(datasource, model: Optional[dict] = None, expression: Optional
     elif datasource_type == "opentsdb":
         query = {}
 
-    elif datasource_type in ("postgres", "mssql", "mysql"):
+    elif datasource_type in ("postgres", "mssql", "mysql", "grafana-postgresql-datasource"):
         query = {
             "datasource": {
                 "type": datasource["type"],

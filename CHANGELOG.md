@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## unreleased
+- Smartquery: Fixed querying PostgreSQL with Grafana 11. Thanks, @MatthewMarsee.
 
 ## 4.3.1 (2025-02-22)
 - Fixed `update_dashboard` to also handle `folderUid` well. Thanks, @CantankerousBullMoose.
