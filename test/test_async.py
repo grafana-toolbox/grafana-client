@@ -37,11 +37,11 @@ else:
 
             tasks = []
 
-            for folder in folders:
+            for folder in folders[:2]:
                 if folder["id"] > 0:  # someone created an entry with a negative id...
-                    tasks.append(fetch_dashboard(grafana, folder["uid"]))
-                if len(tasks) == 4:
-                    break
+                    dashboards = await grafana.search.search_dashboards(folder_uids=[folder["uid"]])
+                    for dashboard in dashboards[:4]:
+                        tasks.append(fetch_dashboard(grafana, dashboard["uid"]))
 
             results = await asyncio.gather(*tasks)
 
