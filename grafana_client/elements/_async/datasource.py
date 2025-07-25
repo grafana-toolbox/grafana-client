@@ -353,9 +353,9 @@ class Datasource(Base):
         # Compute request method, body, and endpoint.
         if "method" in request and isinstance(request["method"], str):
             if request["method"] == "POST":
-                send_request = await self.client.POST
+                send_request = self.client.POST
             else:
-                send_request = await self.client.GET
+                send_request = self.client.GET
 
         logger.info(f"Submitting request: {request}")
 
@@ -378,7 +378,7 @@ class Datasource(Base):
                 database_name=datasource.get("database"),
             )
             request_kwargs = {}
-            send_request = await self.client.GET
+            send_request = self.client.GET
 
         elif datasource_type in ("prometheus", "loki") and Version(await self.api.version) <= VERSION_7:
             if (
@@ -411,7 +411,7 @@ class Datasource(Base):
 
         # Submit query.
         try:
-            return send_request(url, **request_kwargs)
+            return await send_request(url, **request_kwargs)
         except (GrafanaClientError, GrafanaServerError) as ex:
             logger.error(
                 f"Querying data source failed. id={datasource_id}, type={datasource_type}. "
