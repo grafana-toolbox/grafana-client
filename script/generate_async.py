@@ -101,13 +101,14 @@ def process(source: Path, target: Path):
 
         module_dump = re.sub(r"( {4}def )(?!_)", r"    async def ", module_dump)
 
-        module_dump = module_dump.replace("self.client.", "await self.client.")
+        module_dump = re.sub(r"self\.client\.(.+)\(", r"await self.client.\1(", module_dump)
 
         for relative_import in [".base", "..client", "..knowledge", "..model"]:
             module_dump = module_dump.replace(f"from {relative_import}", f"from .{relative_import}")
 
         module_dump = module_dump.replace("self.api.version", "await self.api.version")
-        module_dump = module_dump.replace("= self.", "= await self.")
+        module_dump = re.sub(r"= self\.(.+)\(", r"= await self.\1(", module_dump)
+        module_dump = re.sub(r"send_request\(", r"await send_request(", module_dump)
 
         module_processed.append(module_path)
         target_path = Path(str(module_path).replace(str(source), str(target)))

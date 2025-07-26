@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## unreleased
+- Async: Fixed code generator for edge cases at "smartquery" interface. Thanks, @JIAQIA.
 
 ## 4.3.2 (2025-03-04)
 - Alerting: Allowed the datasource to be specified with managed alerting. Thanks, @dmyerscough.
