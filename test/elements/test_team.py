@@ -336,8 +336,8 @@ class TeamsTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_remove_team_external_group_grafana_1020(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": "10.2.0"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": "10.2.0"}},
         )
 
         m.delete(
@@ -350,8 +350,8 @@ class TeamsTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_remove_team_external_group(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": "10.1.0"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": "10.1.0"}},
         )
 
         m.delete(

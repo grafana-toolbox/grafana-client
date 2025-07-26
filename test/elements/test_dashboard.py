@@ -36,8 +36,8 @@ class DashboardTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_dashboard_by_name_grafana7(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "6f8c1d9fe4", "database": "ok", "version": "7.5.11"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "6f8c1d9fe4", "version": "7.5.11"}},
         )
         m.get(
             "http://localhost/api/dashboards/db/Production Overview",
@@ -64,8 +64,8 @@ class DashboardTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_dashboard_by_name_grafana8(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": "8.0.2"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": "8.0.2"}},
         )
         with self.assertRaises(DeprecationWarning) as ex:
             self.grafana.dashboard.get_dashboard_by_name("foobar")

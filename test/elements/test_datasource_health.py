@@ -332,8 +332,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         # Mock the version inquiry request, because `smartquery` needs
         # it, as Loki responses differ between versions.
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": "7.0.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": "7.0.1"}},
         )
         m.get(
             "http://localhost/api/datasources/uid/vCyglaq7z",
@@ -364,8 +364,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         # Mock the version inquiry request, because `smartquery` needs
         # it, as Loki responses differ between versions.
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "14e988bd22", "version": "9.0.1"}},
         )
         m.get(
             "http://localhost/api/datasources/uid/vCyglaq7z",
@@ -396,8 +396,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         # Mock the version inquiry request, because `smartquery` needs
         # it, as Loki responses differ between versions.
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": "7.0.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": "7.0.1"}},
         )
         m.get(
             "http://localhost/api/datasources/uid/vCyglaq7z",
@@ -428,8 +428,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         # Mock the version inquiry request, because `smartquery` needs
         # it, as Loki responses differ between versions.
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "14e988bd22", "version": "9.0.1"}},
         )
         m.get(
             "http://localhost/api/datasources/uid/vCyglaq7z",
@@ -565,8 +565,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         # Mock the version inquiry request, because `smartquery` needs
         # it, as Prometheus responses differ between versions.
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": grafana_version},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": grafana_version}},
         )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
@@ -599,8 +599,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         # Mock the version inquiry request, because `smartquery` needs
         # it, as Prometheus responses differ between versions.
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": grafana_version},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": grafana_version}},
         )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
@@ -633,8 +633,8 @@ class DatasourceHealthCheckTestCase(unittest.TestCase):
         # Mock the version inquiry request, because `smartquery` needs
         # it, as Prometheus responses differ between versions.
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": grafana_version},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": grafana_version}},
         )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
@@ -1161,8 +1161,8 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_health_inquiry_native_prometheus_success(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "14e988bd22", "version": "9.0.1"}},
         )
         m.get(
             "http://localhost/api/datasources/uid/39mf288en",
@@ -1191,8 +1191,8 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_health_inquiry_native_prometheus_failure(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "14e988bd22", "version": "9.0.1"}},
         )
         m.get(
             "http://localhost/api/datasources/uid/39mf288en",
@@ -1221,8 +1221,8 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_health_inquiry_native_unknown_error_400(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "14e988bd22", "version": "9.0.1"}},
         )
         m.get(
             "http://localhost/api/datasources/uid/39mf288en",
@@ -1252,8 +1252,8 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_health_inquiry_native_unknown_error_418(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "14e988bd22", "version": "9.0.1"}},
         )
         m.get(
             "http://localhost/api/datasources/uid/39mf288en",
@@ -1271,8 +1271,8 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_health_inquiry_native_prometheus_error_404(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "14e988bd22", "version": "9.0.1"}},
         )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
@@ -1308,8 +1308,8 @@ class DatasourceHealthInquiryTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_health_inquiry_native_prometheus_error_500(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "14e988bd22", "version": "9.0.1"}},
         )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",

@@ -1,6 +1,11 @@
 # CHANGELOG
 
 ## unreleased
+- AMG compatibility: Fetch Grafana version from `/api/frontend/settings`
+  instead of `/api/health`. Thanks, @squadgazzz.
+  **Breaking change:** This means that authentication is obligatory now, because the
+  new endpoint requires it. Also, `database` status is no longer represented in the
+  new response.
 
 ## 4.3.3 (2025-07-27)
 - Async: Fixed code generator for edge cases at "smartquery" interface. Thanks, @JIAQIA.
