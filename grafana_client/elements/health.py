@@ -8,8 +8,10 @@ class Health(Base):
 
     def check(self):
         """
+        Return Grafana build information, compatible with Grafana, and Amazon Managed Grafana (AMG).
 
         :return:
         """
-        path = "/health"
-        return self.client.GET(path)
+        path = "/frontend/settings"
+        response = self.client.GET(path)
+        return response.get("buildInfo")

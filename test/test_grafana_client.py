@@ -23,6 +23,22 @@ class MockResponse:
         return self.json_data
 
 
+frontend_settings_buildinfo_payload = {
+    "buildInfo": {
+        "buildstamp": 1753567501,
+        "commit": "e0ba4b480954f8a33aa2cff3229f6bcc05777bd9",
+        "commitShort": "e0ba4b4809",
+        "edition": "Open Source",
+        "env": "production",
+        "hasUpdate": True,
+        "hideVersion": False,
+        "latestVersion": "12.1.0",
+        "version": "11.6.2",
+        "versionString": "Grafana v11.6.2 (e0ba4b4809)",
+    }
+}
+
+
 class TestGrafanaClient(unittest.TestCase):
     def test_grafana_client_user_agent_default(self):
         grafana = GrafanaApi.from_url()
@@ -142,12 +158,11 @@ class TestGrafanaClient(unittest.TestCase):
 
     @patch("grafana_client.client.GrafanaClient.__getattr__")
     def test_grafana_client_connect_success(self, mock_get):
-        payload = {"commit": "14e988bd22", "database": "ok", "version": "9.0.1"}
         mock_get.return_value = Mock()
-        mock_get.return_value.return_value = payload
+        mock_get.return_value.return_value = frontend_settings_buildinfo_payload
         grafana = GrafanaApi(auth=None, host="localhost", url_path_prefix="", protocol="http", port="3000")
-        grafana_info = grafana.connect()
-        self.assertEqual(grafana_info, payload)
+        grafana_build_info = grafana.connect()
+        self.assertEqual(grafana_build_info["version"], "11.6.2")
 
     def test_grafana_client_connect_failure(self):
         grafana = GrafanaApi(auth=None, host="localhost", url_path_prefix="", protocol="http", port="32425")
@@ -156,17 +171,17 @@ class TestGrafanaClient(unittest.TestCase):
     @patch("grafana_client.client.GrafanaClient.__getattr__")
     def test_grafana_client_version_basic(self, mock_get):
         mock_get.return_value = Mock()
-        mock_get.return_value.return_value = {"commit": "14e988bd22", "database": "ok", "version": "9.0.1"}
+        mock_get.return_value.return_value = frontend_settings_buildinfo_payload
         grafana = GrafanaApi(auth=None, host="localhost", url_path_prefix="", protocol="http", port="3000")
-        self.assertEqual(grafana.version, "9.0.1")
+        self.assertEqual(grafana.version, "11.6.2")
 
     @patch("grafana_client.client.GrafanaClient.__getattr__")
     def test_grafana_client_version_patch(self, mock_get):
         mock_get.return_value = Mock()
         mock_get.return_value.return_value = {
-            "commit": "14e988bd22",
-            "database": "ok",
-            "version": "11.3.0-75420.patch2-75797",
+            "buildInfo": {
+                "version": "11.3.0-75420.patch2-75797",
+            }
         }
         grafana = GrafanaApi(auth=None, host="localhost", url_path_prefix="", protocol="http", port="3000")
         self.assertEqual(grafana.version, "11.3.0")

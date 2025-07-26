@@ -132,8 +132,8 @@ class DatasourceTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_enable_datasource_permissions(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": "10.2.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": "10.2.1"}},
         )
 
         m.post(
@@ -147,8 +147,8 @@ class DatasourceTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_enable_datasource_permissions_grafana1023(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": "10.2.3"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": "10.2.3"}},
         )
 
         with patch(
@@ -162,8 +162,8 @@ class DatasourceTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_disable_datasource_permissions(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": "10.2.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": "10.2.1"}},
         )
 
         m.post(
@@ -177,8 +177,8 @@ class DatasourceTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_disable_datasource_permissions_grafana1023(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": "10.2.3"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": "10.2.3"}},
         )
 
         with patch(
@@ -192,8 +192,8 @@ class DatasourceTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_datasource_permissions(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": "10.2.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": "10.2.1"}},
         )
 
         m.get(
@@ -207,8 +207,8 @@ class DatasourceTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_datasource_permissions_grafana1023(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": "10.2.3"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": "10.2.3"}},
         )
 
         with patch(
@@ -222,8 +222,8 @@ class DatasourceTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_add_datasource_permissions(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": "10.2.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": "10.2.1"}},
         )
 
         m.post(
@@ -237,8 +237,8 @@ class DatasourceTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_add_datasource_permissions_grafana1023(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": "10.2.3"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": "10.2.3"}},
         )
 
         with patch(
@@ -252,8 +252,8 @@ class DatasourceTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_remove_datasource_permissions(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": "10.2.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": "10.2.1"}},
         )
 
         m.delete(
@@ -267,8 +267,8 @@ class DatasourceTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_remove_datasource_permissions_grafana1023(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": "10.2.3"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": "10.2.3"}},
         )
 
         with patch(
@@ -395,8 +395,8 @@ class DatasourceTestCase(unittest.TestCase):
         # Mock the version inquiry request, because `smartquery` needs
         # it, as Prometheus responses differ between versions.
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "unknown", "database": "ok", "version": "7.0.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "unknown", "version": "7.0.1"}},
         )
         m.post(
             "http://localhost/api/ds/query",
@@ -411,8 +411,8 @@ class DatasourceTestCase(unittest.TestCase):
         # Mock the version inquiry request, because `smartquery` needs
         # it, as Prometheus responses differ between versions.
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "14e988bd22", "version": "9.0.1"}},
         )
         m.post(
             "http://localhost/api/ds/query",
@@ -453,8 +453,8 @@ class DatasourceTestCase(unittest.TestCase):
         # Mock the version inquiry request, because `smartquery` needs
         # it, as Prometheus responses differ between versions.
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "14e988bd22", "version": "9.0.1"}},
         )
         m.get(
             "http://localhost/api/datasources/uid/h8KkCLt7z",
@@ -472,8 +472,8 @@ class DatasourceTestCase(unittest.TestCase):
         # Mock the version inquiry request, because `smartquery` needs
         # it, as Prometheus responses differ between versions.
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "14e988bd22", "database": "ok", "version": "9.0.1"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "14e988bd22", "version": "9.0.1"}},
         )
         datasource = PROMETHEUS_DATASOURCE.copy()
         datasource["access"] = "__UNKNOWN__"

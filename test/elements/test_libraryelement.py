@@ -589,8 +589,8 @@ class LibraryElementTestCase(unittest.TestCase):
         }
     }
 
-    HealthResponsePre8_2: dict = {"commit": "unknown", "database": "ok", "version": "8.1.8"}
-    HealthResponsePost8_2: dict = {"commit": "unknown-dev", "database": "ok", "version": "10.2.2"}
+    HealthResponsePre8_2: dict = {"buildInfo": {"commit": "unknown", "version": "8.1.8"}}
+    HealthResponsePost8_2: dict = {"buildInfo": {"commit": "unknown-dev", "version": "10.2.2"}}
 
     def setUp(self):
         self.grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="http")
@@ -598,7 +598,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_library_element(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePost8_2,
         )
         m.get(
@@ -611,7 +611,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_library_element_grafana_pre_8_2(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePre8_2,
         )
         m.get(
@@ -628,7 +628,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_library_element_notfound(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePost8_2,
         )
         m.get(
@@ -644,7 +644,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_library_element_notfound_grafana_pre_8_2(self, m):
         def custom_matcher(request):
-            if request.path_url == "/api/health":
+            if request.path_url == "/api/frontend/settings":
                 return None
             resp = requests.Response()
             resp.status_code = 404
@@ -653,7 +653,7 @@ class LibraryElementTestCase(unittest.TestCase):
             return resp
 
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePre8_2,
         )
         m.add_matcher(custom_matcher)
@@ -667,7 +667,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_library_element_by_name(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePost8_2,
         )
         m.get(
@@ -680,7 +680,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_library_element_by_name_grafana_pre_8_2(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePre8_2,
         )
         m.get(
@@ -697,7 +697,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_library_element_by_name_notfound(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePost8_2,
         )
         m.get(
@@ -713,7 +713,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_library_element_by_name_notfound_grafana_pre_8_2(self, m):
         def custom_matcher(request):
-            if request.path_url == "/api/health":
+            if request.path_url == "/api/frontend/settings":
                 return None
             resp = requests.Response()
             resp.status_code = 404
@@ -722,7 +722,7 @@ class LibraryElementTestCase(unittest.TestCase):
             return resp
 
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePre8_2,
         )
         m.add_matcher(custom_matcher)
@@ -736,7 +736,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_library_element_connections(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePost8_2,
         )
         m.get(
@@ -753,7 +753,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_library_element_connections_grafana_pre_8_2(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePre8_2,
         )
         m.get(
@@ -770,7 +770,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_library_element_connections_notfound(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePost8_2,
         )
         m.get(
@@ -786,7 +786,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_library_element_connections_notfound_grafana_pre_8_2(self, m):
         def custom_matcher(request):
-            if request.path_url == "/api/health":
+            if request.path_url == "/api/frontend/settings":
                 return None
             resp = requests.Response()
             resp.status_code = 404
@@ -795,7 +795,7 @@ class LibraryElementTestCase(unittest.TestCase):
             return resp
 
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePre8_2,
         )
         m.add_matcher(custom_matcher)
@@ -809,7 +809,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_library_element_connections_noconnections(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePost8_2,
         )
         m.get(
@@ -824,7 +824,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_library_element_connections_noconnections_grafana_pre_8_2(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePre8_2,
         )
         m.get(
@@ -841,7 +841,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_create_library_element(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePost8_2,
         )
         m.post(
@@ -864,7 +864,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_create_library_element_grafana_pre_8_2(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePre8_2,
         )
         m.post(
@@ -886,7 +886,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_create_library_element_already_exists(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePost8_2,
         )
         m.post(
@@ -907,7 +907,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_update_library_element(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePost8_2,
         )
         m.patch(
@@ -938,7 +938,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_update_library_element_grafana_pre_8_2(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePre8_2,
         )
         m.patch(
@@ -961,7 +961,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_update_library_element_notfound(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePost8_2,
         )
         m.patch(
@@ -983,7 +983,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_delete_library_element_connections(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePost8_2,
         )
         m.delete(
@@ -999,7 +999,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_delete_library_element_noconnections(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePost8_2,
         )
         m.delete(
@@ -1014,7 +1014,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_delete_library_element_notfound(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePost8_2,
         )
         m.delete(
@@ -1030,7 +1030,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_delete_library_element_notfound_grafana_pre_8_2(self, m):
         def custom_matcher(request):
-            if request.path_url == "/api/health":
+            if request.path_url == "/api/frontend/settings":
                 return None
             resp = requests.Response()
             resp.status_code = 404
@@ -1039,7 +1039,7 @@ class LibraryElementTestCase(unittest.TestCase):
             return resp
 
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePre8_2,
         )
         m.add_matcher(custom_matcher)
@@ -1053,7 +1053,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_list_library_elements(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePost8_2,
         )
         m.get(
@@ -1073,7 +1073,7 @@ class LibraryElementTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_list_library_elements_grafana_pre_8_2(self, m):
         m.get(
-            "http://localhost/api/health",
+            "http://localhost/api/frontend/settings",
             json=LibraryElementTestCase.HealthResponsePre8_2,
         )
         m.get(

@@ -12,10 +12,9 @@ class HealthTestCase(unittest.TestCase):
     @requests_mock.Mocker()
     def test_healthcheck(self, m):
         m.get(
-            "http://localhost/api/health",
-            json={"commit": "6f8c1d9fe4", "database": "ok", "version": "7.5.11"},
+            "http://localhost/api/frontend/settings",
+            json={"buildInfo": {"commit": "6f8c1d9fe4", "version": "7.5.11"}},
         )
 
         result = self.grafana.health.check()
-        self.assertEqual(result["database"], "ok")
-        self.assertEqual(len(result), 3)
+        self.assertEqual(result["version"], "7.5.11")
