@@ -2,6 +2,8 @@
 
 ## unreleased
 - Async: Fixed code generator for edge cases at "smartquery" interface. Thanks, @JIAQIA.
+- Alerting Provisioning: Added support for the optional `name` query parameter to the
+  `get_contactpoints` method, for filtering by name. Thanks, @devth.
 
 ## 4.3.2 (2025-03-04)
 - Alerting: Allowed the datasource to be specified with managed alerting. Thanks, @dmyerscough.

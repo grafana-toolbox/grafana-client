@@ -81,13 +81,16 @@ class AlertingProvisioning(Base):
         delete_alertrule_path = "/v1/provisioning/alert-rules/%s" % alertrule_uid
         return await self.client.DELETE(delete_alertrule_path)
 
-    async def get_contactpoints(self):
+    async def get_contactpoints(self, name=None):
         """
-        Gets all contact points
+        Gets all contact points, optionally filtering by name.
         @return:
         """
-        get_contactpoints_path = "/v1/provisioning/contact-points"
-        return await self.client.GET(get_contactpoints_path)
+        path = "/v1/provisioning/contact-points"
+        params = {}
+        if name:
+            params = {"name": name}
+        return await self.client.GET(path, params=params)
 
     async def create_contactpoint(self, contactpoint, disable_provenance=False):
         """
