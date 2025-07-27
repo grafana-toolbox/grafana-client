@@ -26,7 +26,7 @@ Synopsis
     export GRAFANA_TOKEN=eyJrIjoiWHg...dGJpZCI6MX0=
 
 .. _example.upload-dashboard.py: https://github.com/weaveworks/grafanalib/blob/main/grafanalib/tests/examples/example.upload-dashboard.py
-.. _grafana-client: https://github.com/panodata/grafana-client
+.. _grafana-client: https://github.com/grafana-toolbox/grafana-client
 .. _grafanalib: https://github.com/weaveworks/grafanalib
 """  # noqa:E501
 

@@ -27,13 +27,13 @@ test:
     - grafana_client.elements
 
 about:
-  home: https://panodata.github.io/grafana-client/
+  home: https://github.com/grafana-toolbox/grafana-client
   license: MIT
   license_family: MIT
   license_file: LICENSE
   summary: Yet another Python library for Grafana API
-  doc_url: https://panodata.github.io/grafana-client/
-  dev_url: https://panodata.github.io/grafana-client/
+  doc_url: https://github.com/grafana-toolbox/grafana-client
+  dev_url: https://github.com/grafana-toolbox/grafana-client
 
 #extra:
 #  recipe-maintainers:

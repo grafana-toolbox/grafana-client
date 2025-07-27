@@ -4,7 +4,7 @@
 In order to create a development sandbox, you may want to follow this list of
 commands.
 ```shell
-git clone https://github.com/panodata/grafana-client
+git clone https://github.com/grafana-toolbox/grafana-client
 cd grafana-client
 python3 -m venv .venv
 source .venv/bin/activate

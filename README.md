@@ -1,8 +1,8 @@
 # grafana-client
 
-[![Tests](https://github.com/panodata/grafana-client/workflows/Test/badge.svg)](https://github.com/panodata/grafana-client/actions?query=workflow%3ATest)
-[![Test coverage](https://img.shields.io/codecov/c/gh/panodata/grafana-client.svg?style=flat-square)](https://codecov.io/gh/panodata/grafana-client/)
-[![License](https://img.shields.io/github/license/panodata/grafana-client.svg?style=flat-square)](https://github.com/panodata/grafana-client/blob/main/LICENSE)
+[![Tests](https://github.com/grafana-toolbox/grafana-client/workflows/Test/badge.svg)](https://github.com/grafana-toolbox/grafana-client/actions?query=workflow%3ATest)
+[![Test coverage](https://img.shields.io/codecov/c/gh/grafana-toolbox/grafana-client.svg?style=flat-square)](https://codecov.io/gh/grafana-toolbox/grafana-client/)
+[![License](https://img.shields.io/github/license/grafana-toolbox/grafana-client.svg?style=flat-square)](https://github.com/grafana-toolbox/grafana-client/blob/main/LICENSE)
 
 [![Python versions](https://img.shields.io/pypi/pyversions/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
 [![Grafana versions](https://img.shields.io/badge/Grafana-5.x%20--%2011.x-blue.svg?style=flat-square)](https://github.com/grafana/grafana)
@@ -10,7 +10,7 @@
 [![Status](https://img.shields.io/pypi/status/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
 [![PyPI](https://img.shields.io/pypi/v/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
 [![Downloads](https://img.shields.io/pypi/dm/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
-<!-- [![Conda](https://img.shields.io/conda/v/panodata/grafana-client.svg?style=flat-square)](https://anaconda.org/panodata/grafana-client) -->
+<!-- [![Conda](https://img.shields.io/conda/v/grafana-toolbox/grafana-client.svg?style=flat-square)](https://anaconda.org/grafana-toolbox/grafana-client) -->
 
 
 ## About
@@ -313,7 +313,7 @@ A list of applications based on `grafana-client`.
 - [grafana-import-tool](https://github.com/peekjef72/grafana-import-tool)
 - [grafana-ldap-sync-script](https://github.com/NovatecConsulting/grafana-ldap-sync-script)
 - [grafana-snapshots-tool](https://github.com/peekjef72/grafana-snapshots-tool)
-- [grafana-wtf](https://github.com/panodata/grafana-wtf)
+- [grafana-wtf](https://github.com/grafana-toolbox/grafana-wtf)
 - [nixops-grafana](https://github.com/tewfik-ghariani/nixops-grafana)
 
 
@@ -342,7 +342,7 @@ Any kind of contribution and feedback are very much welcome! Just create an
 issue or submit a patch if you think we should include a new feature, or to
 report or fix a bug.
 
-The issue tracker URL is: https://github.com/panodata/grafana-client/issues
+The issue tracker URL is: https://github.com/grafana-toolbox/grafana-client/issues
 
 
 ### Development
@@ -364,12 +364,12 @@ excellent development tooling.
 
 
 [Andrew Prokhorenkov]: https://github.com/m0nhawk/grafana_api
-[contributors]: https://github.com/panodata/grafana-client/graphs/contributors
-[development documentation]: https://github.com/panodata/grafana-client/blob/main/docs/development.md
-[examples folder]: https://github.com/panodata/grafana-client/tree/main/examples
+[contributors]: https://github.com/grafana-toolbox/grafana-client/graphs/contributors
+[development documentation]: https://github.com/grafana-toolbox/grafana-client/blob/main/docs/development.md
+[examples folder]: https://github.com/grafana-toolbox/grafana-client/tree/main/examples
 [future maintenance of `grafana_api`]: https://github.com/m0nhawk/grafana_api/issues/88
 [grafana_api]: https://github.com/m0nhawk/grafana_api
 [Grafana Admin API]: https://grafana.com/docs/grafana/latest/http_api/admin/
 [X-Grafana-Org-Id header]: https://grafana.com/docs/grafana/latest/developers/http_api/auth/#x-grafana-org-id-header
 [Grafana HTTP API reference]: https://grafana.com/docs/grafana/latest/http_api/
-[LICENSE]: https://github.com/panodata/grafana-client/blob/main/LICENSE
+[LICENSE]: https://github.com/grafana-toolbox/grafana-client/blob/main/LICENSE

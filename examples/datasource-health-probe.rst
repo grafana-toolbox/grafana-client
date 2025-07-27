@@ -37,7 +37,7 @@ Start Grafana::
 In another shell, acquire the sources of this repository, and activate the
 development sandbox::
 
-    git clone https://github.com/panodata/grafana-client
+    git clone https://github.com/grafana-toolbox/grafana-client
     cd grafana-client
     python3 -m venv .venv
     source .venv/bin/activate

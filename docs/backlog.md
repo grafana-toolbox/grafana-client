@@ -5,13 +5,13 @@
 - [x] Announcement on https://community.grafana.com/
 - [o] Share `examples/grafanalib-upload-dashboard.py` with people at `grafanalib`
 - [o] Propagate features to `grafana-wtf`
-- [o] Improve error output on `404 Not found`. See https://github.com/panodata/grafana-client/issues/72
+- [o] Improve error output on `404 Not found`. See https://github.com/grafana-toolbox/grafana-client/issues/72
 - [o] Add example using `grafana-dashboard`
   https://pypi.org/project/grafana-dashboard/
 
 ## Iteration +2
 - [o] Unlock real data queries
-  - See https://github.com/panodata/grafana-client/pull/5 ff.
+  - See https://github.com/grafana-toolbox/grafana-client/pull/5 ff.
   - Provide initial example program for querying data sources
   - Make example program `datasource-query.py` fully work
 - [o] Use `grafana-wtf` to do the data source health check scan

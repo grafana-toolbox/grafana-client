@@ -280,13 +280,13 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 * Just a release fixup, because 2.0.0 has accidentally been published during testing already.
 
 
-## [2.0.0](https://github.com/panodata/grafana-client/compare/1.0.3...2.0.0) (2022-02-03)
+## [2.0.0](https://github.com/grafana-toolbox/grafana-client/compare/1.0.3...2.0.0) (2022-02-03)
 
 * CI: Make release job grab the complete repository history. Thanks, @m0nhawk!
 * CI: Fix path to `conda/setup.py`. Thanks, @m0nhawk!
 * Improve README: Add examples for creating a user and an organization.
   Thanks, @patsevanton!
-* Fork the repository to https://github.com/panodata/grafana-client.
+* Fork the repository to https://github.com/grafana-toolbox/grafana-client.
   Discussion: https://github.com/m0nhawk/grafana_api/issues/88.
 * Rename Python package from `grafana_api` to `grafana-client` and
   update the repository location.
@@ -307,7 +307,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="1.0.3"></a>
-## [1.0.3](https://github.com/panodata/grafana-client/compare/1.0.2...1.0.3) (2020-08-16)
+## [1.0.3](https://github.com/grafana-toolbox/grafana-client/compare/1.0.2...1.0.3) (2020-08-16)
 
 ### Bug Fixes
 
@@ -342,7 +342,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="1.0.2"></a>
-## [1.0.2](https://github.com/panodata/grafana-client/compare/1.0.1...1.0.2) (2020-05-18)
+## [1.0.2](https://github.com/grafana-toolbox/grafana-client/compare/1.0.1...1.0.2) (2020-05-18)
 
 ### Bug Fixes
 
@@ -358,7 +358,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="1.0.1"></a>
-## [1.0.1](https://github.com/panodata/grafana-client/compare/1.0.0...1.0.1) (2020-03-18)
+## [1.0.1](https://github.com/grafana-toolbox/grafana-client/compare/1.0.0...1.0.1) (2020-03-18)
 
 ### Features
 
@@ -371,7 +371,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="1.0.0"></a>
-## [1.0.0](https://github.com/panodata/grafana-client/compare/0.9.3...1.0.0) (2020-02-07)
+## [1.0.0](https://github.com/grafana-toolbox/grafana-client/compare/0.9.3...1.0.0) (2020-02-07)
 
 ### Features
 
@@ -381,7 +381,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="0.9.3"></a>
-## [0.9.3](https://github.com/panodata/grafana-client/compare/0.9.2...0.9.3) (2020-01-22)
+## [0.9.3](https://github.com/grafana-toolbox/grafana-client/compare/0.9.2...0.9.3) (2020-01-22)
 
 ### Pull Requests
 
@@ -389,7 +389,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="0.9.2"></a>
-## [0.9.2](https://github.com/panodata/grafana-client/compare/0.9.1...0.9.2) (2019-12-17)
+## [0.9.2](https://github.com/grafana-toolbox/grafana-client/compare/0.9.1...0.9.2) (2019-12-17)
 
 ### Pull Requests
 
@@ -398,7 +398,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="0.9.1"></a>
-## [0.9.1](https://github.com/panodata/grafana-client/compare/0.9.0...0.9.1) (2019-10-19)
+## [0.9.1](https://github.com/grafana-toolbox/grafana-client/compare/0.9.0...0.9.1) (2019-10-19)
 
 ### Pull Requests
 
@@ -407,11 +407,11 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="0.9.0"></a>
-## [0.9.0](https://github.com/panodata/grafana-client/compare/0.8.6...0.9.0) (2019-09-16)
+## [0.9.0](https://github.com/grafana-toolbox/grafana-client/compare/0.8.6...0.9.0) (2019-09-16)
 
 
 <a name="0.8.6"></a>
-## [0.8.6](https://github.com/panodata/grafana-client/compare/0.8.5...0.8.6) (2019-09-16)
+## [0.8.6](https://github.com/grafana-toolbox/grafana-client/compare/0.8.5...0.8.6) (2019-09-16)
 
 ### Pull Requests
 
@@ -419,7 +419,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="0.8.5"></a>
-## [0.8.5](https://github.com/panodata/grafana-client/compare/0.8.4...0.8.5) (2019-09-09)
+## [0.8.5](https://github.com/grafana-toolbox/grafana-client/compare/0.8.4...0.8.5) (2019-09-09)
 
 ### Pull Requests
 
@@ -428,7 +428,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="0.8.4"></a>
-## [0.8.4](https://github.com/panodata/grafana-client/compare/v0.5.3...0.8.4) (2019-08-19)
+## [0.8.4](https://github.com/grafana-toolbox/grafana-client/compare/0.5.3...0.8.4) (2019-08-19)
 
 ### Bug Fixes
 
@@ -469,7 +469,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="0.8.3"></a>
-## [0.8.3](https://github.com/panodata/grafana-client/compare/0.8.2...0.8.3) (2019-08-08)
+## [0.8.3](https://github.com/grafana-toolbox/grafana-client/compare/0.8.2...0.8.3) (2019-08-08)
 
 ### Pull Requests
 
@@ -477,15 +477,15 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="0.8.2"></a>
-## [0.8.2](https://github.com/panodata/grafana-client/compare/0.8.1...0.8.2) (2019-07-23)
+## [0.8.2](https://github.com/grafana-toolbox/grafana-client/compare/0.8.1...0.8.2) (2019-07-23)
 
 
 <a name="0.8.1"></a>
-## [0.8.1](https://github.com/panodata/grafana-client/compare/0.8.0...0.8.1) (2019-07-20)
+## [0.8.1](https://github.com/grafana-toolbox/grafana-client/compare/0.8.0...0.8.1) (2019-07-20)
 
 
 <a name="0.8.0"></a>
-## [0.8.0](https://github.com/panodata/grafana-client/compare/0.7.5...0.8.0) (2019-07-20)
+## [0.8.0](https://github.com/grafana-toolbox/grafana-client/compare/0.7.5...0.8.0) (2019-07-20)
 
 ### Features
 
@@ -500,7 +500,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="0.7.5"></a>
-## [0.7.5](https://github.com/panodata/grafana-client/compare/0.7.4...0.7.5) (2019-06-06)
+## [0.7.5](https://github.com/grafana-toolbox/grafana-client/compare/0.7.4...0.7.5) (2019-06-06)
 
 ### Pull Requests
 
@@ -509,7 +509,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="0.7.4"></a>
-## [0.7.4](https://github.com/panodata/grafana-client/compare/0.7.3...0.7.4) (2019-06-05)
+## [0.7.4](https://github.com/grafana-toolbox/grafana-client/compare/0.7.3...0.7.4) (2019-06-05)
 
 ### Bug Fixes
 
@@ -523,7 +523,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="0.7.3"></a>
-## [0.7.3](https://github.com/panodata/grafana-client/compare/0.7.2...0.7.3) (2019-05-04)
+## [0.7.3](https://github.com/grafana-toolbox/grafana-client/compare/0.7.2...0.7.3) (2019-05-04)
 
 ### Pull Requests
 
@@ -531,7 +531,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="0.7.2"></a>
-## [0.7.2](https://github.com/panodata/grafana-client/compare/0.7.1...0.7.2) (2019-04-28)
+## [0.7.2](https://github.com/grafana-toolbox/grafana-client/compare/0.7.1...0.7.2) (2019-04-28)
 
 ### Pull Requests
 
@@ -539,7 +539,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="0.7.1"></a>
-## [0.7.1](https://github.com/panodata/grafana-client/compare/0.7.0...0.7.1) (2019-04-22)
+## [0.7.1](https://github.com/grafana-toolbox/grafana-client/compare/0.7.0...0.7.1) (2019-04-22)
 
 ### Bug Fixes
 
@@ -557,7 +557,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="0.7.0"></a>
-## [0.7.0](https://github.com/panodata/grafana-client/compare/0.6.0...0.7.0) (2019-04-05)
+## [0.7.0](https://github.com/grafana-toolbox/grafana-client/compare/0.6.0...0.7.0) (2019-04-05)
 
 ### Bug Fixes
 
@@ -575,7 +575,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="0.6.0"></a>
-## [0.6.0](https://github.com/panodata/grafana-client/compare/v0.5.2...0.6.0) (2019-03-31)
+## [0.6.0](https://github.com/grafana-toolbox/grafana-client/compare/0.5.2...0.6.0) (2019-03-31)
 
 ### Features
 
@@ -592,7 +592,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="v0.5.3"></a>
-## [v0.5.3](https://github.com/panodata/grafana-client/compare/v0.5.2...v0.5.3) (2019-08-19)
+## [v0.5.3](https://github.com/grafana-toolbox/grafana-client/compare/0.5.2...0.5.3) (2019-08-19)
 
 ### Features
 
@@ -615,11 +615,11 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="v0.5.2"></a>
-## [v0.5.2](https://github.com/panodata/grafana-client/compare/v0.5.1...v0.5.2) (2019-02-26)
+## [v0.5.2](https://github.com/grafana-toolbox/grafana-client/compare/0.5.1...0.5.2) (2019-02-26)
 
 
 <a name="v0.5.1"></a>
-## [v0.5.1](https://github.com/panodata/grafana-client/compare/v0.5.0...v0.5.1) (2019-02-04)
+## [v0.5.1](https://github.com/grafana-toolbox/grafana-client/compare/0.5.0...0.5.1) (2019-02-04)
 
 ### Pull Requests
 
@@ -627,7 +627,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="v0.5.0"></a>
-## [v0.5.0](https://github.com/panodata/grafana-client/compare/v0.3.5...v0.5.0) (2018-11-25)
+## [v0.5.0](https://github.com/grafana-toolbox/grafana-client/compare/0.3.5...0.5.0) (2018-11-25)
 
 ### Pull Requests
 
@@ -654,7 +654,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="v0.3.5"></a>
-## [v0.3.5](https://github.com/panodata/grafana-client/compare/v0.3.4...v0.3.5) (2018-10-17)
+## [v0.3.5](https://github.com/grafana-toolbox/grafana-client/compare/0.3.4...0.3.5) (2018-10-17)
 
 ### Pull Requests
 
@@ -662,7 +662,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="v0.3.4"></a>
-## [v0.3.4](https://github.com/panodata/grafana-client/compare/v0.3.3...v0.3.4) (2018-10-17)
+## [v0.3.4](https://github.com/grafana-toolbox/grafana-client/compare/0.3.3...0.3.4) (2018-10-17)
 
 ### Pull Requests
 
@@ -671,7 +671,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="v0.3.3"></a>
-## [v0.3.3](https://github.com/panodata/grafana-client/compare/v0.3.1...v0.3.3) (2018-10-10)
+## [v0.3.3](https://github.com/grafana-toolbox/grafana-client/compare/0.3.1...0.3.3) (2018-10-10)
 
 ### Features
 
@@ -683,7 +683,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="v0.3.2"></a>
-## [v0.3.2](https://github.com/panodata/grafana-client/compare/v0.2.7...v0.3.2) (2018-10-07)
+## [v0.3.2](https://github.com/grafana-toolbox/grafana-client/compare/0.2.7...0.3.2) (2018-10-07)
 
 ### Pull Requests
 
@@ -692,19 +692,19 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="v0.3.1"></a>
-## [v0.3.1](https://github.com/panodata/grafana-client/compare/v0.3.0...v0.3.1) (2018-10-05)
+## [v0.3.1](https://github.com/grafana-toolbox/grafana-client/compare/0.3.0...0.3.1) (2018-10-05)
 
 
 <a name="v0.3.0"></a>
-## [v0.3.0](https://github.com/panodata/grafana-client/compare/v0.2.9...v0.3.0) (2018-10-04)
+## [v0.3.0](https://github.com/grafana-toolbox/grafana-client/compare/0.2.9...0.3.0) (2018-10-04)
 
 
 <a name="v0.2.9"></a>
-## [v0.2.9](https://github.com/panodata/grafana-client/compare/v0.2.8...v0.2.9) (2018-10-04)
+## [v0.2.9](https://github.com/grafana-toolbox/grafana-client/compare/0.2.8...0.2.9) (2018-10-04)
 
 
 <a name="v0.2.8"></a>
-## [v0.2.8](https://github.com/panodata/grafana-client/compare/v0.2.6...v0.2.8) (2018-06-03)
+## [v0.2.8](https://github.com/grafana-toolbox/grafana-client/compare/0.2.6...0.2.8) (2018-06-03)
 
 ### Pull Requests
 
@@ -714,7 +714,7 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="v0.2.7"></a>
-## [v0.2.7](https://github.com/panodata/grafana-client/compare/v0.1.1...v0.2.7) (2018-04-19)
+## [v0.2.7](https://github.com/grafana-toolbox/grafana-client/compare/0.1.1...0.2.7) (2018-04-19)
 
 ### Pull Requests
 
@@ -723,44 +723,44 @@ All fixes and improvements submitted by @chintal. Thank you so much.
 
 
 <a name="v0.2.6"></a>
-## [v0.2.6](https://github.com/panodata/grafana-client/compare/v0.2.2...v0.2.6) (2018-03-17)
+## [v0.2.6](https://github.com/grafana-toolbox/grafana-client/compare/0.2.2...0.2.6) (2018-03-17)
 
 
 <a name="v0.2.2"></a>
-## [v0.2.2](https://github.com/panodata/grafana-client/compare/v0.2.1...v0.2.2) (2018-01-12)
+## [v0.2.2](https://github.com/grafana-toolbox/grafana-client/compare/0.2.1...0.2.2) (2018-01-12)
 
 
 <a name="v0.2.1"></a>
-## [v0.2.1](https://github.com/panodata/grafana-client/compare/v0.2.0...v0.2.1) (2018-01-12)
+## [v0.2.1](https://github.com/grafana-toolbox/grafana-client/compare/0.2.0...0.2.1) (2018-01-12)
 
 
 <a name="v0.2.0"></a>
-## [v0.2.0](https://github.com/panodata/grafana-client/compare/v0.1.7...v0.2.0) (2018-01-10)
+## [v0.2.0](https://github.com/grafana-toolbox/grafana-client/compare/0.1.7...0.2.0) (2018-01-10)
 
 
 <a name="v0.1.7"></a>
-## [v0.1.7](https://github.com/panodata/grafana-client/compare/v0.1.6...v0.1.7) (2018-01-10)
+## [v0.1.7](https://github.com/grafana-toolbox/grafana-client/compare/0.1.6...0.1.7) (2018-01-10)
 
 
 <a name="v0.1.6"></a>
-## [v0.1.6](https://github.com/panodata/grafana-client/compare/v0.1.5...v0.1.6) (2017-12-29)
+## [v0.1.6](https://github.com/grafana-toolbox/grafana-client/compare/0.1.5...0.1.6) (2017-12-29)
 
 
 <a name="v0.1.5"></a>
-## [v0.1.5](https://github.com/panodata/grafana-client/compare/v0.1.4...v0.1.5) (2017-12-21)
+## [v0.1.5](https://github.com/grafana-toolbox/grafana-client/compare/0.1.4...0.1.5) (2017-12-21)
 
 
 <a name="v0.1.4"></a>
-## [v0.1.4](https://github.com/panodata/grafana-client/compare/v0.1.3...v0.1.4) (2017-12-19)
+## [v0.1.4](https://github.com/grafana-toolbox/grafana-client/compare/0.1.3...0.1.4) (2017-12-19)
 
 
 <a name="v0.1.3"></a>
-## [v0.1.3](https://github.com/panodata/grafana-client/compare/v0.1.2...v0.1.3) (2017-12-17)
+## [v0.1.3](https://github.com/grafana-toolbox/grafana-client/compare/0.1.2...0.1.3) (2017-12-17)
 
 
 <a name="v0.1.2"></a>
-## [v0.1.2](https://github.com/panodata/grafana-client/compare/v0.1.1...v0.1.2) (2017-12-06)
+## [v0.1.2](https://github.com/grafana-toolbox/grafana-client/compare/0.1.1...0.1.2) (2017-12-06)
 
 
 <a name="v0.1.1"></a>
-## [v0.1.1](https://github.com/panodata/grafana-client/compare/v0.1.0...) (2017-12-06)
+## [v0.1.1](https://github.com/grafana-toolbox/grafana-client/compare/0.1.0...) (2017-12-06)
