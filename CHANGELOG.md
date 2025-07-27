@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## unreleased
+
+## 5.0.0 (2025-07-27)
 - AMG compatibility: Fetch Grafana version from `/api/frontend/settings`
   instead of `/api/health`. Thanks, @squadgazzz.
   **Breaking change:** This means that authentication is obligatory now, because the
