@@ -118,6 +118,5 @@ class AlertingProvisioningTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_delete_notification_policy_tree(self, m):
-        m.delete(
-            "/v1/provisioning/policies")
+        m.delete("http://localhost/api/v1/provisioning/policies")
         self.grafana.alertingprovisioning.delete_notification_policy_tree()
