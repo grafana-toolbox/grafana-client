@@ -118,5 +118,7 @@ class AlertingProvisioningTestCase(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_delete_notification_policy_tree(self, m):
-        m.delete("http://localhost/api/v1/provisioning/policies")
+        JSON_RESPONSE = {"receiver": "grafana-default-email", "group_by": ["grafana_folder", "alertname"]}
+
+        m.delete("http://localhost/api/v1/provisioning/policies", json=JSON_RESPONSE)
         self.grafana.alertingprovisioning.delete_notification_policy_tree()
