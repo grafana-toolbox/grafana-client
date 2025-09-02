@@ -115,3 +115,9 @@ class AlertingProvisioningTestCase(unittest.TestCase):
         headers = history[0].headers
         self.assertIn("X-Disable-Provenance", headers)
         self.assertEqual(headers["X-Disable-Provenance"], "true")
+
+    @requests_mock.Mocker()
+    def test_delete_notification_policy_tree(self, m):
+        m.delete(
+            "/v1/provisioning/policies")
+        self.grafana.alertingprovisioning.delete_notification_policy_tree()
