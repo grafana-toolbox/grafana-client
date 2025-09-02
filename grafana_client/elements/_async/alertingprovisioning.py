@@ -196,7 +196,7 @@ class AlertingProvisioning(Base):
         @return:
         """
         delete_mute_timing_path = "/v1/provisioning/mute-timings/%s" % mutetiming_name
-        return await self.client.GET(delete_mute_timing_path)
+        return await self.client.DELETE(delete_mute_timing_path)
 
     async def get_templates(self):
         """
