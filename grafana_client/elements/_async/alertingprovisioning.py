@@ -145,6 +145,14 @@ class AlertingProvisioning(Base):
         set_notification_policy_tree_path = "/v1/provisioning/policies"
         return await self.client.PUT(set_notification_policy_tree_path, json=notification_policy_tree, headers=headers)
 
+    async def delete_notification_policy_tree(self):
+        """
+        Removes notification policy tree
+        @return:
+        """
+        delete_notification_policy_tree_path = "/v1/provisioning/policies"
+        return await self.client.DELETE(delete_notification_policy_tree_path)
+
     async def get_mute_timings(self):
         """
         Gets all mute timings
