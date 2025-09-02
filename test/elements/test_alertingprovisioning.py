@@ -128,3 +128,15 @@ class AlertingProvisioningTestCase(unittest.TestCase):
         JSON_RESPONSE = {}
         m.delete("http://localhost/api/v1/provisioning/mute-timings/test-mute-timing", json=JSON_RESPONSE)
         self.grafana.alertingprovisioning.delete_mute_timing("test-mute-timing")
+
+    @requests_mock.Mocker()
+    def test_get_mute_timing(self, m):
+        JSON_RESPONSE = {
+            "name": "test-mute-timing",
+            "time_intervals": [{}],
+            "version": "c0764d2988e93f94",
+            "provenance": "api",
+        }
+        m.get("http://localhost/api/v1/provisioning/mute-timings/test-mute-timing", json=JSON_RESPONSE)
+        response = self.grafana.alertingprovisioning.get_mute_timing("test-mute-timing")
+        self.assertEqual(response["name"], "test-mute-timing")
