@@ -115,3 +115,10 @@ class AlertingProvisioningTestCase(unittest.TestCase):
         headers = history[0].headers
         self.assertIn("X-Disable-Provenance", headers)
         self.assertEqual(headers["X-Disable-Provenance"], "true")
+
+    @requests_mock.Mocker()
+    def test_delete_notification_policy_tree(self, m):
+        JSON_RESPONSE = {"receiver": "grafana-default-email", "group_by": ["grafana_folder", "alertname"]}
+
+        m.delete("http://localhost/api/v1/provisioning/policies", json=JSON_RESPONSE)
+        self.grafana.alertingprovisioning.delete_notification_policy_tree()
