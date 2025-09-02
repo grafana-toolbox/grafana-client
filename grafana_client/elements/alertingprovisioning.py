@@ -188,7 +188,7 @@ class AlertingProvisioning(Base):
         @return:
         """
         delete_mute_timing_path = "/v1/provisioning/mute-timings/%s" % mutetiming_name
-        return self.client.GET(delete_mute_timing_path)
+        return self.client.DELETE(delete_mute_timing_path)
 
     def get_templates(self):
         """

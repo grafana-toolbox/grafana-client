@@ -115,3 +115,9 @@ class AlertingProvisioningTestCase(unittest.TestCase):
         headers = history[0].headers
         self.assertIn("X-Disable-Provenance", headers)
         self.assertEqual(headers["X-Disable-Provenance"], "true")
+
+    @requests_mock.Mocker()
+    def test_delete_mute_timing(self, m):
+        JSON_RESPONSE = {}
+        m.delete("http://localhost/api/v1/provisioning/mute-timing", json=JSON_RESPONSE)
+        self.grafana.alertingprovisioning.delete_mute_timing("test-mute-timing")
