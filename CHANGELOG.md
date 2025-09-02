@@ -2,6 +2,10 @@
 
 ## unreleased
 
+## 5.0.1 (2025-09-02)
+- Fix: Added method for removal of notification policy tree. Thanks, @serhiy-yevtushenko.
+- Fix: Addressed issues with `delete_mute_timing`. Thanks, @serhiy-yevtushenko.
+
 ## 5.0.0 (2025-07-27)
 - AMG compatibility: Fetch Grafana version from `/api/frontend/settings`
   instead of `/api/health`. Thanks, @squadgazzz.
