@@ -4,7 +4,7 @@ on:
 
   pull_request:
     paths:
-      - '.github/workflows/test.yml'
+      - '.github/workflows/**'
       - 'pyproject.toml'
       - 'setup.cfg'
       - '**.py'
@@ -12,7 +12,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - '.github/workflows/test.yml'
+      - '.github/workflows/**'
       - 'pyproject.toml'
       - 'setup.cfg'
       - '**.py'
