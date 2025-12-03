@@ -3,7 +3,6 @@ name: Test
 on:
 
   pull_request:
-    branches: ~
     paths:
       - '.github/workflows/test.yml'
       - 'pyproject.toml'
@@ -32,11 +31,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-22.04"]
-        python-version: [
-          '3.7', '3.13',
-          'pypy-3.9', 'pypy-3.10',
+        os: [
+          'ubuntu-latest',
         ]
+        python-version: [
+          '3.14',
+          'pypy-3.11',
+        ]
+        include:
+          - os: 'ubuntu-22.04'
+            python-version: '3.7'
     steps:
       - uses: actions/checkout@v5
 
@@ -56,7 +60,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install --editable=.[test,develop]
+          python -m pip install --editable='.[test,develop]'
 
       - name: Check code style
         if: matrix.python-version != '3.7' && matrix.python-version != 'pypy-3.7'
