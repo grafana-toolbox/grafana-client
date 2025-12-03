@@ -37,7 +37,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         $(go env GOPATH)/bin/github-release -v release \
-          --user panodata \
+          --user grafana-toolbox \
           --repo grafana-client \
           --tag ${{ steps.version.outputs.VERSION }} \
           --name ${{ steps.version.outputs.VERSION }}
