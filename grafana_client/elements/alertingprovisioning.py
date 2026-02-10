@@ -105,15 +105,18 @@ class AlertingProvisioning(Base):
         create_contactpoint_path = "/v1/provisioning/contact-points"
         return self.client.POST(create_contactpoint_path, json=contactpoint, headers=headers)
 
-    def update_contactpoint(self, contactpoint_uid, contactpoint):
+    def update_contactpoint(self, contactpoint_uid, contactpoint, disable_provenance=False):
         """
         Updates existing contact point
         @param contactpoint_uid:
         @param contactpoint:
         @return:
         """
+        headers = {}
         update_contactpoint_path = "/v1/provisioning/contact-points/%s" % contactpoint_uid
-        return self.client.PUT(update_contactpoint_path, json=contactpoint)
+        if disable_provenance:
+            headers["X-Disable-Provenance"] = "true"
+        return self.client.PUT(update_contactpoint_path, json=contactpoint, headers=headers)
 
     def delete_contactpoint(self, contactpoint_uid):
         """
