@@ -113,9 +113,9 @@ class AlertingProvisioning(Base):
         @return:
         """
         headers = {}
+        update_contactpoint_path = "/v1/provisioning/contact-points/%s" % contactpoint_uid
         if disable_provenance:
             headers["X-Disable-Provenance"] = "true"
-        update_contactpoint_path = "/v1/provisioning/contact-points/%s" % contactpoint_uid
         return await self.client.PUT(update_contactpoint_path, json=contactpoint, headers=headers)
 
     async def delete_contactpoint(self, contactpoint_uid):
