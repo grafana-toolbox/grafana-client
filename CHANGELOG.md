@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## unreleased
+
+## 5.0.2 (2026-02-15)
 - Fix: In the alert provisioning subsystem, added `disable_provenance` parameter
   to `update_contactpoint`. Thanks, @michaelsthr and @agile-guru.
 
