@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## unreleased
+- Fix: In the alert provisioning subsystem, added `disable_provenance` parameter
+  to `update_contactpoint`. Thanks, @michaelsthr and @agile-guru.
 
 ## 5.0.1 (2025-09-02)
 - Fix: Added method for removal of notification policy tree. Thanks, @serhiy-yevtushenko.
