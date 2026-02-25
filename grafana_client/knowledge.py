@@ -55,6 +55,7 @@ def datasource_factory(datasource: DatasourceModel) -> DatasourceModel:
         datasource.jsonData = {
             "httpMode": "POST",
             "version": "InfluxQL",
+            "dbName": "testdrive",
         }
     elif datasource.type in ["influxdb+flux"]:
         datasource.type = "influxdb"
