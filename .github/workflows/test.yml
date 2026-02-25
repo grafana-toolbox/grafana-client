@@ -36,11 +36,37 @@ jobs:
         ]
         python-version: [
           '3.14',
-          'pypy-3.11',
         ]
+        grafana-version:
+          - "6.7.6"
+          - "7.5.17"
+          - "8.5.27"
+          - "9.5.21"
+          - "10.4.19"
+          - "11.6.12"
+          - "12.3.4"
+
         include:
+
+          # Verify PyPy.
+          - os: 'ubuntu-latest'
+            python-version: 'pypy-3.11'
+            grafana-version: '12.3.4'
+
+          # Verify Python 3.7.
           - os: 'ubuntu-22.04'
             python-version: '3.7'
+            grafana-version: '12.3.4'
+
+    env:
+      OS_TYPE: ${{ matrix.os }}
+      PYTHON_VERSION: ${{ matrix.python-version }}
+      GRAFANA_VERSION: ${{ matrix.grafana-version }}
+
+    name: """
+    Python ${{ matrix.python-version }},
+    Grafana ${{ matrix.grafana-version }}
+    """
     steps:
       - uses: actions/checkout@v6
 
