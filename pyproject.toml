@@ -8,16 +8,6 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 
-[tool.coverage.run]
-source = ["grafana_client"]
-
-[tool.coverage.report]
-show_missing = true
-fail_under = 0
-omit = [
-    "test/*",
-]
-
 [tool.ruff]
 line-length = 120
 extend-exclude = [
@@ -69,8 +59,35 @@ unfixable = ["ERA", "F401", "F841", "T20", "ERA001"]
 [tool.ruff.lint.per-file-ignores]
 "examples/*" = ["ERA001", "T201"]
 "script/*" = ["S603", "S605", "S607", "T201"]
+"test/*" = ["S101"]
 "grafana_client/knowledge.py" = ["ERA001"]
 
+[tool.pytest.ini_options]
+addopts = """
+  -ra -q --verbosity=3 --doctest-modules
+"""
+minversion = "2.0"
+log_level = "DEBUG"
+log_cli_level = "DEBUG"
+testpaths = [
+  "grafana_client",
+  "test",
+]
+xfail_strict = true
+
+[tool.coverage.run]
+branch = false
+source = ["grafana_client"]
+omit = [
+    # omit anything generated / mirror to sync code
+    "grafana_client/elements/_async/*",
+    # omit software tests
+    "test/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 0
 
 # ===================
 # Tasks configuration
