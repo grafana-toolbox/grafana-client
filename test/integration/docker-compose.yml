@@ -1,0 +1,47 @@
+version: '3'
+services:
+
+  grafana:
+    image: docker.io/grafana/grafana:${GRAFANA_VERSION}
+    ports:
+      - "33333:3000"
+    environment:
+      GF_LOG_LEVEL: info
+      #GF_LOG_LEVEL: debug
+
+  cratedb:
+    image: docker.io/crate/crate:nightly
+    ports:
+      - "4200:4200"
+      - "5433:5432"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.29
+    ports:
+      - "9200:9200"
+    environment:
+      discovery.type: single-node
+
+  influxdb1:
+    image: docker.io/influxdb:1.8
+    ports:
+      - 18086:8086
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: adminadmin
+      DOCKER_INFLUXDB_INIT_ORG: example
+      DOCKER_INFLUXDB_INIT_BUCKET: default
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: admintoken
+
+  influxdb2:
+    image: docker.io/influxdb:2
+    ports:
+      - 28086:8086
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: adminadmin
+      DOCKER_INFLUXDB_INIT_ORG: example
+      DOCKER_INFLUXDB_INIT_BUCKET: default
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: admintoken
