@@ -21,6 +21,13 @@ services:
     environment:
       discovery.type: single-node
 
+  graphite:
+    image: docker.io/graphiteapp/graphite-statsd:1.1.10-5
+    ports:
+      - "8125:8125/udp"
+      - "8126:8126"
+      - "8080:8080"
+
   influxdb1:
     image: docker.io/influxdb:1.8
     ports:
@@ -44,3 +51,23 @@ services:
       DOCKER_INFLUXDB_INIT_ORG: example
       DOCKER_INFLUXDB_INIT_BUCKET: default
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: admintoken
+
+  loki:
+    image: docker.io/grafana/loki:3.6
+    ports:
+      - "3100:3100"
+      - "9095:9095"
+
+  mariadb:
+    image: docker.io/mariadb:10
+    ports:
+      - "3306:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+
+  postgresql:
+    image: docker.io/postgres:18
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
