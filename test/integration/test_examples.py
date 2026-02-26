@@ -78,9 +78,9 @@ class DatabaseItem:
 
 
 database_trajectory = [
-    DatabaseItem(type="cratedb", url="host.docker.internal:5433", fixture="docker_cratedb"),
-    DatabaseItem(type="elasticsearch", url="http://host.docker.internal:9200", fixture="docker_elasticsearch"),
-    DatabaseItem(type="influxdb", url="http://admin:adminadmin@host.docker.internal:18086", fixture="docker_influxdb1"),
+    DatabaseItem(type="cratedb", url="172.17.0.1:5433", fixture="docker_cratedb"),
+    DatabaseItem(type="elasticsearch", url="http://172.17.0.1:9200", fixture="docker_elasticsearch"),
+    DatabaseItem(type="influxdb", url="http://admin:adminadmin@172.17.0.1:18086", fixture="docker_influxdb1"),
 ]
 database_ids = [item.type for item in database_trajectory]
 
