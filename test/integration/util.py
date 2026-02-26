@@ -7,9 +7,6 @@ def port_is_up(host, port) -> bool:
 
     https://github.com/lovelysystems/lovely.testlayers/blob/master/src/lovely/testlayers/util.py
     """
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    ex = s.connect_ex((host, port))
-    if ex == 0:
-        s.close()
-        return True
-    return False
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        ex = s.connect_ex((host, port))
+        return ex == 0
