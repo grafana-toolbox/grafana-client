@@ -1,8 +1,8 @@
 import dataclasses
+import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import Callable
 
 import pytest
 
@@ -74,20 +74,20 @@ def docker_elasticsearch(docker_services):
 class DatabaseItem:
     type: str
     url: str
-    fixture: Callable
+    fixture: str
 
 
 database_trajectory = [
-    DatabaseItem(type="cratedb", url="host.docker.internal:5433", fixture=docker_cratedb),
-    DatabaseItem(type="elasticsearch", url="http://host.docker.internal:9200", fixture=docker_elasticsearch),
-    DatabaseItem(type="influxdb", url="http://admin:adminadmin@host.docker.internal:18086", fixture=docker_influxdb1),
+    DatabaseItem(type="cratedb", url="host.docker.internal:5433", fixture="docker_cratedb"),
+    DatabaseItem(type="elasticsearch", url="http://host.docker.internal:9200", fixture="docker_elasticsearch"),
+    DatabaseItem(type="influxdb", url="http://admin:adminadmin@host.docker.internal:18086", fixture="docker_influxdb1"),
 ]
 database_ids = [item.type for item in database_trajectory]
 
 
 @pytest.mark.parametrize("database", database_trajectory, ids=database_ids)
-def test_datasource_health_probe(docker_services, docker_grafana, database):  # noqa: ARG001
-    database.fixture._get_wrapped_function()(docker_services)
+def test_datasource_health_probe(request, docker_grafana, database):
+    request.getfixturevalue(database.fixture)
     cmd = [
         sys.executable,
         "examples/datasource-health-probe.py",
@@ -96,5 +96,11 @@ def test_datasource_health_probe(docker_services, docker_grafana, database):  # 
         "--url",
         database.url,
     ]
-    p = subprocess.run(cmd, env={"GRAFANA_URL": docker_grafana}, check=False)  # noqa: S603
+    p = subprocess.run(  # noqa: S603
+        cmd,
+        env={**os.environ, "GRAFANA_URL": docker_grafana},
+        check=False,
+        text=True,
+        timeout=120,
+    )
     assert p.returncode == 0, f"Executing health probe failed. database={database.type}, url={database.url}"
