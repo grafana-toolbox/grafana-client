@@ -63,10 +63,9 @@ jobs:
       PYTHON_VERSION: ${{ matrix.python-version }}
       GRAFANA_VERSION: ${{ matrix.grafana-version }}
 
-    name: """
-    Python ${{ matrix.python-version }},
-    Grafana ${{ matrix.grafana-version }}
-    """
+    name: >-
+      Python ${{ matrix.python-version }},
+      Grafana ${{ matrix.grafana-version }}
     steps:
       - uses: actions/checkout@v6
 
@@ -102,7 +101,7 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          env_vars: OS,PYTHON
+          env_vars: OS_TYPE,PYTHON_VERSION
           fail_ci_if_error: true
           flags: unittests
           name: codecov-umbrella
