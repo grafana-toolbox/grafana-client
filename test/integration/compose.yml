@@ -1,7 +1,7 @@
 services:
 
   grafana:
-    image: docker.io/grafana/grafana:${GRAFANA_VERSION:-12.3.4}
+    image: docker.io/grafana/grafana:${GRAFANA_VERSION:-12.4.0}
     ports:
       - "33333:3000"
     environment:
