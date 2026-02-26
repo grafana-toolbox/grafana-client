@@ -15,7 +15,7 @@ def docker_compose_files(pytestconfig):  # noqa: ARG001
     """
     Override this fixture in order to specify a custom location to your `docker-compose.yml`.
     """
-    return [Path(__file__).parent / "docker-compose.yml"]
+    return [Path(__file__).parent / "compose.yml"]
 
 
 @pytest.fixture(scope="session")
