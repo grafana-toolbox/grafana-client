@@ -1,6 +1,6 @@
 # grafana-client
 
-[![Tests](https://github.com/grafana-toolbox/grafana-client/workflows/Test/badge.svg)](https://github.com/grafana-toolbox/grafana-client/actions?query=workflow%3ATest)
+[![Tests](https://github.com/grafana-toolbox/grafana-client/actions/workflows/test.yml/badge.svg)](https://github.com/grafana-toolbox/grafana-client/actions/workflows/test.yml)
 [![Test coverage](https://img.shields.io/codecov/c/gh/grafana-toolbox/grafana-client.svg?style=flat-square)](https://codecov.io/gh/grafana-toolbox/grafana-client/)
 [![License](https://img.shields.io/github/license/grafana-toolbox/grafana-client.svg?style=flat-square)](https://github.com/grafana-toolbox/grafana-client/blob/main/LICENSE)
 
