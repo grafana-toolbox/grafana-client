@@ -45,21 +45,21 @@ jobs:
           - "8.5.27"
           - "9.5.21"
           - "10.4.19"
-          - "11.6.12"
-          - "12.3.4"
-          - "12.4.0"
+          - "11.6"
+          - "12.3"
+          - "12.4"
 
         include:
 
           # Verify PyPy.
           - os: 'ubuntu-latest'
             python-version: 'pypy-3.11'
-            grafana-version: '12.3.4'
+            grafana-version: '12.4'
 
           # Verify Python 3.7.
           - os: 'ubuntu-22.04'
             python-version: '3.7'
-            grafana-version: '12.3.4'
+            grafana-version: '12.4'
 
     env:
       OS_TYPE: ${{ matrix.os }}
