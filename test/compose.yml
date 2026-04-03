@@ -53,7 +53,7 @@ services:
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: admintoken
 
   loki:
-    image: docker.io/grafana/loki:3.6
+    image: docker.io/grafana/loki:3.7
     ports:
       - "3100:3100"
       - "9095:9095"
