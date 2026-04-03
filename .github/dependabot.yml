@@ -10,12 +10,12 @@ updates:
     schedule:
       interval: "daily"
 
+  - package-ecosystem: "docker-compose"
+    directory: "/test"
+    schedule:
+      interval: "daily"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "monthly"
-
-  - package-ecosystem: "docker-compose"
-    directory: "/test/integration"
-    schedule:
-      interval: "daily"
