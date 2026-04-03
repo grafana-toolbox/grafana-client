@@ -3,6 +3,8 @@
 ## unreleased
 - Fixed health probe for InfluxDB v1.
 - CI: Verified on Grafana 12.4.0.
+- Dashboard API: Updated function signature of `update_permissions_by_uid`
+  Renamed `dashboard_id` to `dashboard_uid`
 
 ## 5.0.2 (2026-02-15)
 - Fix: In the alert provisioning subsystem, added `disable_provenance` parameter

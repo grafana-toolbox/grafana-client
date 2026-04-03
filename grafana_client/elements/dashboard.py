@@ -99,8 +99,8 @@ class Dashboard(Base):
     def get_permissions_by_uid(self, dashboard_id):
         return self.get_permissions_generic(dashboard_id)
 
-    def update_permissions_by_uid(self, dashboard_id, items):
-        return self.update_permissions_generic(dashboard_id, items)
+    def update_permissions_by_uid(self, dashboard_uid, items):
+        return self.update_permissions_generic(dashboard_uid, items)
 
     def get_permissions_generic(self, identifier, idtype="uid"):
         permissions_path = f"/dashboards/{idtype}/{identifier}/permissions"
