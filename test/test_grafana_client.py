@@ -1,16 +1,21 @@
+import sys
 import unittest
 from unittest.mock import Mock, patch
 
 import niquests.auth
 import niquests.exceptions
+import pytest
 
 from grafana_client.api import GrafanaApi
 from grafana_client.client import (
     GrafanaClientError,
     GrafanaServerError,
+    GrafanaTimeoutError,
     HeaderAuth,
     TokenAuth,
 )
+
+pytestmark = pytest.mark.integration
 
 
 class MockResponse:
@@ -39,6 +44,7 @@ frontend_settings_buildinfo_payload = {
 }
 
 
+@unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class TestGrafanaClient(unittest.TestCase):
     def test_grafana_client_user_agent_default(self):
         grafana = GrafanaApi.from_url()
@@ -185,3 +191,10 @@ class TestGrafanaClient(unittest.TestCase):
         )
         response = grafana.alertingprovisioning.delete_alertrule("foobar")
         self.assertIsNone(response)
+
+
+def test_grafana_client_timeout(docker_grafana):
+    grafana = GrafanaApi.from_url(docker_grafana, timeout=0.0001)
+    with pytest.raises(GrafanaTimeoutError) as excinfo:
+        grafana.folder.get_all_folders()
+    assert excinfo.match("timed out")

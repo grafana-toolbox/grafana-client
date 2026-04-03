@@ -79,12 +79,16 @@ class Folder(Base):
 
     def delete_folder(self, uid):
         """
+        Delete folder.
+
+        `accept_empty_json=True` is needed for Grafana 9 and earlier,
+        because it responds with `200 OK`, but uses an empty JSON body.
 
         :param uid:
         :return:
         """
         path = "/folders/%s" % uid
-        return self.client.DELETE(path)
+        return self.client.DELETE(path, accept_empty_json=True)
 
     def get_folder_by_id(self, folder_id):
         """

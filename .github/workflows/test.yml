@@ -58,8 +58,8 @@ jobs:
       GRAFANA_VERSION: ${{ matrix.grafana-version }}
 
     name: >-
-      Python ${{ matrix.python-version }},
-      Grafana ${{ matrix.grafana-version }}
+      Grafana ${{ matrix.grafana-version }},
+      Python ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v6
 
