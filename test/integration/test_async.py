@@ -5,6 +5,8 @@ import pytest
 from grafana_client import AsyncGrafanaApi
 from grafana_client.client import GrafanaServerError
 
+pytestmark = pytest.mark.integration
+
 
 @pytest.mark.asyncio
 async def test_basic_async_client(docker_grafana):

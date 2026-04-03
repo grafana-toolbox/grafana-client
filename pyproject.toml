@@ -74,6 +74,9 @@ testpaths = [
   "test",
 ]
 xfail_strict = true
+markers = [
+  "integration",
+]
 
 [tool.coverage.run]
 branch = false
@@ -105,7 +108,7 @@ lint = [
 ]
 test = [
   {cmd="python -m unittest -vvv"},
-  {cmd="python -m pytest -k integration"},
+  {cmd="python -m pytest -m integration"},
 ]
 test-coverage = [
   {cmd="coverage erase"},

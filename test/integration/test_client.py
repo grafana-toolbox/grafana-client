@@ -3,6 +3,8 @@ import pytest
 from grafana_client import GrafanaApi
 from grafana_client.client import GrafanaTimeoutError
 
+pytestmark = pytest.mark.integration
+
 
 def test_grafana_client_timeout(docker_grafana):
     grafana = GrafanaApi.from_url(docker_grafana, timeout=0.0001)
