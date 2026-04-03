@@ -29,7 +29,7 @@ class DatasourceTestCase(unittest.TestCase):
     def test_health(self, m):
         m.get(
             "http://localhost/api/datasources/uid/foobar/health",
-            json={"message": "TwinMaker datasource successfully configured (For play.grafana.org)", "status": "OK"},
+            json={"message": "TwinMaker datasource successfully configured", "status": "OK"},
         )
 
         result = self.grafana.datasource.health("foobar")
