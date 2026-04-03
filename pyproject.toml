@@ -105,12 +105,12 @@ lint = [
 ]
 test = [
   {cmd="python -m unittest -vvv"},
-  {cmd="python -m pytest -k integration"},
+  {cmd="python -m pytest --keepalive -k integration"},
 ]
 test-coverage = [
   {cmd="coverage erase"},
   {cmd="coverage run --append -m unittest discover -vvv"},
-  {cmd="coverage run --append -m pytest -k integration"},
+  {cmd="coverage run --append -m pytest --keepalive -k integration"},
   {cmd="coverage xml"},
   {cmd="coverage report"},
 ]
