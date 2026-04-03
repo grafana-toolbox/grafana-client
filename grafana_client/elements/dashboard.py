@@ -108,4 +108,6 @@ class Dashboard(Base):
 
     def update_permissions_generic(self, identifier, items, idtype="uid"):
         permissions_path = f"/dashboards/{idtype}/{identifier}/permissions"
+        if "items" not in items:
+            items = {"items": items}
         return self.client.POST(permissions_path, json=items)
