@@ -64,7 +64,7 @@ unfixable = ["ERA", "F401", "F841", "T20", "ERA001"]
 
 [tool.pytest.ini_options]
 addopts = """
-  -ra -q --verbosity=3 --doctest-modules
+  -ra -q --verbosity=3 --doctest-modules --keepalive
 """
 minversion = "2.0"
 log_level = "DEBUG"
@@ -105,12 +105,12 @@ lint = [
 ]
 test = [
   {cmd="python -m unittest -vvv"},
-  {cmd="python -m pytest --keepalive -k integration"},
+  {cmd="python -m pytest -k integration"},
 ]
 test-coverage = [
   {cmd="coverage erase"},
   {cmd="coverage run --append -m unittest discover -vvv"},
-  {cmd="coverage run --append -m pytest --keepalive -k integration"},
+  {cmd="coverage run --append -m pytest -k integration"},
   {cmd="coverage xml"},
   {cmd="coverage report"},
 ]

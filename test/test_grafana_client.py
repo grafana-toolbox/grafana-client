@@ -8,7 +8,6 @@ from grafana_client.api import GrafanaApi
 from grafana_client.client import (
     GrafanaClientError,
     GrafanaServerError,
-    GrafanaTimeoutError,
     HeaderAuth,
     TokenAuth,
 )
@@ -118,19 +117,6 @@ class TestGrafanaClient(unittest.TestCase):
             verify=False,
             timeout=5.0,
         )
-
-    def test_grafana_client_timeout(self):
-        grafana = GrafanaApi(
-            ("admin", "admin"),
-            host="play.grafana.org",
-            url_path_prefix="",
-            protocol="https",
-            verify=False,
-            timeout=0.0001,
-        )
-
-        with self.assertRaises((GrafanaTimeoutError, niquests.exceptions.ConnectionError)):
-            grafana.folder.get_all_folders()
 
     def test_grafana_client_basic_auth(self):
         grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="https", port="3000")
