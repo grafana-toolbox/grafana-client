@@ -81,26 +81,26 @@ class Dashboard(Base):
             "get_dashboard_permissions is deprecated, use corresponding _by_id or _by_uid methods",
             DeprecationWarning,
         )
-        return self.get_permissions_by_id(dashboard_id)
+        return await self.get_permissions_by_id(dashboard_id)
 
     async def update_dashboard_permissions(self, dashboard_id, items):
         warnings.warn(
             "update_dashboard_permissions is deprecated, use corresponding _by_id or _by_uid methods",
             DeprecationWarning,
         )
-        return self.update_permissions_by_id(dashboard_id, items)
+        return await self.update_permissions_by_id(dashboard_id, items)
 
     async def get_permissions_by_id(self, dashboard_id):
-        return self.get_permissions_generic(dashboard_id, idtype="id")
+        return await self.get_permissions_generic(dashboard_id, idtype="id")
 
     async def update_permissions_by_id(self, dashboard_id, items):
-        return self.update_permissions_generic(dashboard_id, items, idtype="id")
+        return await self.update_permissions_generic(dashboard_id, items, idtype="id")
 
     async def get_permissions_by_uid(self, dashboard_id):
-        return self.get_permissions_generic(dashboard_id)
+        return await self.get_permissions_generic(dashboard_id)
 
     async def update_permissions_by_uid(self, dashboard_uid, items):
-        return self.update_permissions_generic(dashboard_uid, items)
+        return await self.update_permissions_generic(dashboard_uid, items)
 
     async def get_permissions_generic(self, identifier, idtype="uid"):
         permissions_path = f"/dashboards/{idtype}/{identifier}/permissions"

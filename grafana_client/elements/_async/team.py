@@ -141,7 +141,7 @@ class Teams(Base):
         :return:
         """
         warnings.warn("This method is deprecated, please use `get_preferences`", DeprecationWarning)
-        return self.get_preferences(team_id=team_id)
+        return await self.get_preferences(team_id=team_id)
 
     async def update_team_preferences(self, team_id: int, preferences: t.Dict):
         """
@@ -152,7 +152,7 @@ class Teams(Base):
         """
         warnings.warn("This method is deprecated, please use `update_preferences`", DeprecationWarning)
         preferences = PersonalPreferences(**preferences)
-        return self.update_preferences(team_id=team_id, preferences=preferences)
+        return await self.update_preferences(team_id=team_id, preferences=preferences)
 
     async def get_preferences(self, team_id: int):
         """

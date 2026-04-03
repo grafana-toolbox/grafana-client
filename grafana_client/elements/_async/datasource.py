@@ -261,9 +261,9 @@ class Datasource(Base):
             )
         )
         if query_type == "query":
-            return self.query(datasource_id=datasource_id, query=expr, timestamp=time)
+            return await self.query(datasource_id=datasource_id, query=expr, timestamp=time)
         elif query_type == "query_range":
-            return self.query_range(datasource_id=datasource_id, query=expr, start=start, end=end, step=step)
+            return await self.query_range(datasource_id=datasource_id, query=expr, start=start, end=end, step=step)
         else:
             raise KeyError(f"Unknown or invalid query type: {query_type}")
 
@@ -387,13 +387,13 @@ class Datasource(Base):
                 and "instant" in request["data"]["queries"][0]
                 and request["data"]["queries"][0]["instant"]
             ):
-                return self.query(
+                return await self.query(
                     datasource.get("id"),
                     request["expr"],
                     request["data"]["to"],
                 )
             else:
-                return self.query_range(
+                return await self.query_range(
                     datasource.get("id"),
                     request["expr"],
                     request["data"]["from"],

@@ -8,6 +8,8 @@
 - Dashboard API: Improved convenience for `update_permissions_generic`
   The permission items can now be supplied either as a dictionary or as a list
 - QA: Started using integration tests across the board
+- Async: Fixed generation script and corresponding method calls
+  `return self.foo()` => `return await self.foo()`
 
 ## 5.0.2 (2026-02-15)
 - Fix: In the alert provisioning subsystem, added `disable_provenance` parameter
