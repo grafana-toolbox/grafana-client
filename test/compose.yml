@@ -29,7 +29,7 @@ services:
       - "8080:8080"
 
   influxdb1:
-    image: docker.io/influxdb:1.8
+    image: docker.io/influxdb:2.8
     ports:
       - 18086:8086
     environment:
