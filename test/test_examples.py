@@ -8,7 +8,7 @@ import pytest
 from verlib2 import Version
 
 from grafana_client import GrafanaApi
-from test.integration.util import port_is_up
+from test.util import port_is_up
 
 pytestmark = pytest.mark.integration
 
