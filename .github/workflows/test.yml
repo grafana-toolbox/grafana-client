@@ -1,23 +1,9 @@
 name: Test
 
 on:
-
   pull_request:
-    paths:
-      - '.github/workflows/**'
-      - 'pyproject.toml'
-      - 'setup.cfg'
-      - '**.py'
-      - 'test/integration/**'
-
   push:
     branches: [ main ]
-    paths:
-      - '.github/workflows/**'
-      - 'pyproject.toml'
-      - 'setup.cfg'
-      - '**.py'
-      - 'test/integration/**'
 
   # Allow job to be triggered manually.
   workflow_dispatch:
