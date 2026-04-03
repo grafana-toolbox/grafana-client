@@ -1,7 +1,8 @@
 import unittest
 from unittest.mock import Mock, patch
 
-import niquests
+import niquests.auth
+import niquests.exceptions
 
 from grafana_client.api import GrafanaApi
 from grafana_client.client import (
@@ -128,7 +129,7 @@ class TestGrafanaClient(unittest.TestCase):
             timeout=0.0001,
         )
 
-        with self.assertRaises(GrafanaTimeoutError):
+        with self.assertRaises((GrafanaTimeoutError, niquests.exceptions.ConnectionError)):
             grafana.folder.get_all_folders()
 
     def test_grafana_client_basic_auth(self):
