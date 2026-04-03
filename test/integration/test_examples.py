@@ -92,7 +92,7 @@ def docker_loki(docker_services):
     """
     docker_services.start("loki")
     public_port = docker_services.wait_for_service("loki", 3100)
-    time.sleep(5)
+    time.sleep(7)
     return f"http://{docker_services.docker_ip}:{public_port}"
 
 
