@@ -216,7 +216,7 @@ class Organizations(Base):
         :return:
         """
         warnings.warn("This method is deprecated, please use `organization.get_preferences`", DeprecationWarning)
-        return self.api.organization.get_preferences()
+        return await self.api.organization.get_preferences()
 
     async def organization_preference_update(self, theme="", home_dashboard_id=0, timezone="utc"):
         """
@@ -228,4 +228,4 @@ class Organizations(Base):
         """
         warnings.warn("This method is deprecated, please use `organization.update_preferences`", DeprecationWarning)
         preferences = PersonalPreferences(theme=theme, homeDashboardId=home_dashboard_id, timezone=timezone)
-        return self.api.organization.update_preferences(preferences)
+        return await self.api.organization.update_preferences(preferences)

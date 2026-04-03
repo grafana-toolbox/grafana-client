@@ -109,6 +109,7 @@ def process(source: Path, target: Path):
         # Modify function calls.
         module_dump = re.sub(r"self\.client\.(.+)\(", r"await self.client.\1(", module_dump)
         module_dump = re.sub(r"= self\.(.+)\(", r"= await self.\1(", module_dump)
+        module_dump = re.sub(r"return self\.(.+)\(", r"return await self.\1(", module_dump)
         module_dump = re.sub(r"send_request\(", r"await send_request(", module_dump)
 
         # Modify property accesses.

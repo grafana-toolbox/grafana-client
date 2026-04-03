@@ -41,10 +41,10 @@ class DashboardVersions(Base):
         return await self.client.GET(dashboard_versions_path, data=query_args)
 
     async def get_dashboard_versions_by_id(self, dashboard_id: int = None, limit: int = None, start: int = None):
-        return self.get_dashboard_versions(dashboard_id=dashboard_id, limit=limit, start=start)
+        return await self.get_dashboard_versions(dashboard_id=dashboard_id, limit=limit, start=start)
 
     async def get_dashboard_versions_by_uid(self, dashboard_uid: str = None, limit: int = None, start: int = None):
-        return self.get_dashboard_versions(dashboard_uid=dashboard_uid, limit=limit, start=start)
+        return await self.get_dashboard_versions(dashboard_uid=dashboard_uid, limit=limit, start=start)
 
     async def get_dashboard_version(self, dashboard_id: int = None, dashboard_uid: str = None, version_id: int = None):
         api_path = await self.api_path(dashboard_id=dashboard_id, dashboard_uid=dashboard_uid)
@@ -56,10 +56,10 @@ class DashboardVersions(Base):
         return await self.client.GET(dashboard_version_path)
 
     async def get_dashboard_version_by_id(self, dashboard_id: int = None, version_id: int = None):
-        return self.get_dashboard_version(dashboard_id=dashboard_id, version_id=version_id)
+        return await self.get_dashboard_version(dashboard_id=dashboard_id, version_id=version_id)
 
     async def get_dashboard_version_by_uid(self, dashboard_uid: int = None, version_id: int = None):
-        return self.get_dashboard_version(dashboard_uid=dashboard_uid, version_id=version_id)
+        return await self.get_dashboard_version(dashboard_uid=dashboard_uid, version_id=version_id)
 
     async def restore_dashboard(self, dashboard_id: int = None, dashboard_uid: str = None, version_id: int = None):
         api_path = await self.api_path(dashboard_id=dashboard_id, dashboard_uid=dashboard_uid)
@@ -71,10 +71,10 @@ class DashboardVersions(Base):
         return await self.client.POST(restore_dashboard_path, json={"version": version_id})
 
     async def restore_dashboard_by_id(self, dashboard_id: int = None, version_id: int = None):
-        return self.restore_dashboard(dashboard_id=dashboard_id, version_id=version_id)
+        return await self.restore_dashboard(dashboard_id=dashboard_id, version_id=version_id)
 
     async def restore_dashboard_by_uid(self, dashboard_uid: str = None, version_id: int = None):
-        return self.restore_dashboard(dashboard_uid=dashboard_uid, version_id=version_id)
+        return await self.restore_dashboard(dashboard_uid=dashboard_uid, version_id=version_id)
 
     async def calculate_diff(
         self,
