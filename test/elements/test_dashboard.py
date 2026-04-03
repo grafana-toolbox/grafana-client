@@ -9,9 +9,6 @@ pytestmark = pytest.mark.integration
 
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class DashboardTestCase(unittest.TestCase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     @pytest.fixture(autouse=True)
     def use_fixtures(self, grafana_provisioned, dashboard_basic, folder_basic):
         self.grafana = grafana_provisioned
@@ -24,8 +21,8 @@ class DashboardTestCase(unittest.TestCase):
 
     def test_get_dashboard_by_name_grafana7(self):
         if Version(self.grafana.version) < Version("8"):
-            dashboard = self.grafana.dashboard.get_dashboard_by_name("Production Overview")
-            self.assertEqual(dashboard["dashboard"]["title"], "Production Overview")
+            dashboard = self.grafana.dashboard.get_dashboard_by_name("productionoverview")
+            self.assertEqual(dashboard["dashboard"]["title"], "ProductionOverview")
         else:
             pytest.skip("Grafana 8 and higher does not support getting dashboards by slug")
 
@@ -73,7 +70,9 @@ class DashboardTestCase(unittest.TestCase):
                 "dashboard": {"title": "default"},
             }
         )
-        self.assertEqual(db["folderUid"], folder_uid)
+        # folderUid only exists with Grafana 10 and higher.
+        if Version(self.grafana.version) >= Version("10"):
+            self.assertEqual(db["folderUid"], folder_uid)
 
     def test_update_dashboard_roundtrip_folder_2(self):
         """
@@ -99,46 +98,46 @@ class DashboardTestCase(unittest.TestCase):
     def test_get_home_dashboard(self):
         dashboard = self.grafana.dashboard.get_home_dashboard()
         self.assertEqual(dashboard["dashboard"]["title"], "Home")
-        self.assertEqual(dashboard["meta"]["canDelete"], False)
         self.assertEqual(dashboard["meta"]["url"], "")
+        if Version(self.grafana.version) < Version("9"):
+            self.assertEqual(dashboard["meta"]["isHome"], True)
+        if Version(self.grafana.version) >= Version("8"):
+            self.assertEqual(dashboard["meta"]["canDelete"], False)
 
     def test_delete_dashboard(self):
         response = self.grafana.dashboard.delete_dashboard("cIBgcSjkk")
-        self.assertEqual(response["title"], "Production Overview")
+        self.assertEqual(response["title"], "ProductionOverview")
 
     def test_get_dashboards_tags(self):
         tags = self.grafana.dashboard.get_dashboards_tags()
         self.assertEqual(len(tags), 2)
         self.assertEqual(tags[0]["term"], "bazqux")
 
-    def test_get_dashboard_permissions(self):
-        dashboard_uid = self.dashboard["uid"]
-        permissions = [
-            {
-                "role": "Viewer",
-                "permission": 1,
-            },
-            {
-                "role": "Editor",
-                "permission": 2,
-            },
-        ]
-        self.grafana.dashboard.update_permissions_by_uid(dashboard_uid, permissions)
-        permissions = self.grafana.dashboard.get_permissions_by_uid(dashboard_uid)
-        self.assertEqual(len(permissions), 2)
+    permissions = [
+        {"role": "Viewer", "permission": 1},
+        {"role": "Editor", "permission": 2},
+        {"teamId": 1, "permission": 1},
+        {"userId": 1, "permission": 4},
+    ]
 
-    def test_update_dashboard_permissions(self):
+    def test_dashboard_permissions_by_id(self):
+        if Version(self.grafana.version) >= Version("12"):
+            pytest.skip("Grafana 12 no longer supports accessing dashboards by id, use uids instead.")
+        dashboard_id = self.dashboard["id"]
+
+        response = self.grafana.dashboard.update_permissions_by_id(dashboard_id, self.permissions)
+        self.assertEqual(response["message"], "Dashboard permissions updated")
+
+        permissions = self.grafana.dashboard.get_permissions_by_id(dashboard_id)
+        self.assertEqual(len(permissions), 4)
+
+    def test_dashboard_permissions_by_uid(self):
+        if Version(self.grafana.version) < Version("9"):
+            pytest.skip("Grafana 8 and earlier do not support accessing dashboards by uid for permission updates.")
         dashboard_uid = self.dashboard["uid"]
-        permission_data = {
-            "items": [
-                {"role": "Viewer", "permission": 1},
-                {"role": "Editor", "permission": 2},
-                {"teamId": 1, "permission": 1},
-                {"userId": 1, "permission": 4},
-            ]
-        }
-        permissions = self.grafana.dashboard.update_permissions_by_uid(
-            dashboard_uid,
-            permission_data,
-        )
-        self.assertEqual(permissions["message"], "Dashboard permissions updated")
+
+        response = self.grafana.dashboard.update_permissions_by_uid(dashboard_uid, self.permissions)
+        self.assertEqual(response["message"], "Dashboard permissions updated")
+
+        permissions = self.grafana.dashboard.get_permissions_by_uid(dashboard_uid)
+        self.assertEqual(len(permissions), 4)

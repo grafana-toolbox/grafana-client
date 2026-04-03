@@ -9,7 +9,7 @@ pytestmark = pytest.mark.integration
 
 
 @pytest.mark.asyncio
-async def test_basic_async_client(docker_grafana):
+async def test_basic_async_client(docker_grafana, dashboard_basic):
 
     # Connect to Grafana.
     grafana = AsyncGrafanaApi.from_url(docker_grafana)
@@ -18,10 +18,11 @@ async def test_basic_async_client(docker_grafana):
     assert version != "" and "." in version
 
     # Provision dashboard and verify.
+    dashboard_uid = dashboard_basic["uid"]
     dashboard = await grafana.dashboard.update_dashboard(
         {
             "dashboard": {
-                "uid": "cIBgcSjkk",
+                "uid": dashboard_uid,
                 "title": "Production Overview",
                 "tags": ["foobar"],
                 "timezone": "browser",
@@ -34,10 +35,10 @@ async def test_basic_async_client(docker_grafana):
     assert dashboard["meta"]["version"] >= 1
     assert dashboard["dashboard"]["tags"] == ["foobar"]
 
-    # Non-blocking I/O parallel fetch.
+    # Non-blocking I/O semi-parallel fetch.
     tasks = []
-    dashboards = await grafana.search.search_dashboards()
-    for dashboard in dashboards[:4]:
+    dashboards = await grafana.search.search_dashboards(type_="dash-db")
+    for dashboard in dashboards:
         tasks.append(grafana.dashboard.get_dashboard(dashboard["uid"]))
     results = await asyncio.gather(*tasks)
     assert len(results) >= 1

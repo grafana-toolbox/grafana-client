@@ -50,7 +50,7 @@ def dashboard_basic(grafana_api):
         {
             "dashboard": {
                 "uid": dashboard_uid,
-                "title": "Production Overview",
+                "title": "ProductionOverview",
                 "tags": ["foobar", "bazqux"],
                 "timezone": "browser",
             },
