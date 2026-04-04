@@ -1,3 +1,5 @@
+import warnings
+
 from ..base import Base
 
 
@@ -6,7 +8,27 @@ class Annotations(Base):
         super(Annotations, self).__init__(client)
         self.client = client
 
-    async def get_annotation(
+    async def get_annotation(self, *args, **kwargs):
+        """
+        Find annotations.
+        https://grafana.com/docs/grafana/latest/http_api/annotations/#find-annotations
+
+        :param time_from:
+        :param time_to:
+        :param alert_id:
+        :param dashboard_id:
+        :param dashboard_uid:
+        :param panel_id:
+        :param user_id:
+        :param ann_type: Annotation type. On of alert|annotation
+        :param tags:
+        :param limit:
+        :return:
+        """
+        warnings.warn("This method is deprecated, please use `find_annotations`", DeprecationWarning)
+        return await self.find_annotations(*args, **kwargs)
+
+    async def find_annotations(
         self,
         time_from=None,
         time_to=None,
@@ -20,6 +42,7 @@ class Annotations(Base):
         limit=None,
     ):
         """
+        Find annotations.
         https://grafana.com/docs/grafana/latest/http_api/annotations/#find-annotations
 
         :param time_from:
