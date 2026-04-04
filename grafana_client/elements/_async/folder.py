@@ -115,6 +115,8 @@ class Folder(Base):
         :return:
         """
         update_folder_permissions_path = "/folders/%s/permissions" % uid
+        if "items" not in items:
+            items = {"items": items}
         return await self.client.POST(update_folder_permissions_path, json=items)
 
     async def update_folder_permissions_for_user(self, uid, user_id, items):
@@ -128,4 +130,6 @@ class Folder(Base):
         """
 
         update_folder_permissions_path_for_user = "/access-control/folders/%s/users/%s" % (uid, user_id)
+        if "items" not in items:
+            items = {"items": items}
         return await self.client.POST(update_folder_permissions_path_for_user, json=items)
