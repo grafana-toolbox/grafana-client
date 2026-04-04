@@ -91,7 +91,7 @@ def reset_grafana(grafana_api):
     for datasource in grafana_api.datasource.list_datasources():
         grafana_api.datasource.delete_datasource_by_uid(datasource["uid"])
     for user in grafana_api.users.search_users():
-        if not user["isAdmin"]:
+        if user["id"] != 1:
             grafana_api.admin.delete_user(user["id"])
 
 
