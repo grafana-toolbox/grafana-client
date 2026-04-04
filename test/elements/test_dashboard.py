@@ -4,6 +4,8 @@ import unittest
 import pytest
 from verlib2 import Version
 
+from test.model import TestModel
+
 pytestmark = pytest.mark.integration
 
 
@@ -116,19 +118,12 @@ class DashboardTestCase(unittest.TestCase):
         self.assertEqual(len(tags), 2)
         self.assertEqual(tags[0]["term"], "bazqux")
 
-    permissions = [
-        {"role": "Viewer", "permission": 1},
-        {"role": "Editor", "permission": 2},
-        {"teamId": 1, "permission": 1},
-        {"userId": 1, "permission": 4},
-    ]
-
     def test_dashboard_permissions_by_id(self):
         if Version(self.grafana.version) >= Version("12"):
             pytest.skip("Grafana 12 no longer supports accessing dashboards by id, use uids instead.")
         dashboard_id = self.dashboard["id"]
 
-        response = self.grafana.dashboard.update_permissions_by_id(dashboard_id, self.permissions)
+        response = self.grafana.dashboard.update_permissions_by_id(dashboard_id, TestModel.permissions())
         self.assertEqual(response["message"], "Dashboard permissions updated")
 
         permissions = self.grafana.dashboard.get_permissions_by_id(dashboard_id)
@@ -139,7 +134,7 @@ class DashboardTestCase(unittest.TestCase):
             pytest.skip("Grafana 8 and earlier do not support accessing dashboards by uid for permission updates.")
         dashboard_uid = self.dashboard["uid"]
 
-        response = self.grafana.dashboard.update_permissions_by_uid(dashboard_uid, self.permissions)
+        response = self.grafana.dashboard.update_permissions_by_uid(dashboard_uid, TestModel.permissions())
         self.assertEqual(response["message"], "Dashboard permissions updated")
 
         permissions = self.grafana.dashboard.get_permissions_by_uid(dashboard_uid)

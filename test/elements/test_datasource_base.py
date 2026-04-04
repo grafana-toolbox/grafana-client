@@ -91,7 +91,7 @@ class DatasourceTestCase(unittest.TestCase):
     def test_list_datasources(self):
         result = self.grafana.datasource.list_datasources()
         self.assertEqual(result[0]["type"], "prometheus")
-        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result), 2)
 
     def test_get_datasource_proxy_data_query_time(self):
         # http://localhost:3000/api/datasources/proxy/1/api/v1/query?query=up%7binstance%3d%22localhost:9090%22%7d&time=1644164339
@@ -157,7 +157,7 @@ class DatasourceInquiryTestCase(unittest.TestCase):
             "datasource"
         ]
         self.datasource_prometheus = self.grafana.datasource.create_datasource(PROMETHEUS_DATASOURCE)["datasource"]
-        self.datasource_testdata = self.grafana.datasource.create_datasource(TESTDATA_DATASOURCE)["datasource"]
+        self.datasource_testdata = self.grafana.datasource.get_datasource_by_uid(TESTDATA_DATASOURCE["uid"])
 
     def test_health(self):
         if Version(self.grafana.version) < Version("10"):

@@ -1,306 +1,138 @@
+import sys
 import unittest
 
-from grafana_client import GrafanaApi
-from grafana_client.client import GrafanaBadInputError
+import pytest
+from verlib2 import Version
 
-from ..compat import requests_mock
+from grafana_client.client import GrafanaBadInputError, GrafanaClientError
+
+from ..model import TestModel
+
+pytestmark = pytest.mark.integration
 
 
+@unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class FolderTestCase(unittest.TestCase):
-    def setUp(self):
-        self.grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="http")
+    @pytest.fixture(autouse=True)
+    def use_fixtures(self, grafana_provisioned, folder_basic, folder_uid):
+        self.grafana = grafana_provisioned
+        self.folder_basic = folder_basic
+        self.folder_uid = folder_uid
 
-    @requests_mock.Mocker()
-    def test_get_all_folders(self, m):
-        m.get(
-            "http://localhost/api/folders",
-            json=[
-                {
-                    "id": 1,
-                    "uid": "nErXDvCkzz",
-                    "title": "Departmenet ABC",
-                    "url": "/dashboards/f/nErXDvCkzz/department-abc",
-                    "hasAcl": "false",
-                    "canSave": "false",
-                    "canEdit": "false",
-                    "canAdmin": "false",
-                    "createdBy": "admin",
-                    "created": "2018-01-31T17:43:12+01:00",
-                    "updatedBy": "admin",
-                    "updated": "2018-01-31T17:43:12+01:00",
-                    "version": 1,
-                }
-            ],
-        )
-        folders = self.grafana.folder.get_all_folders(parent_uid="gFtOEwFlbb")
-        self.assertEqual(folders[0]["id"], 1)
-        self.assertEqual(len(folders), 1)
+    def test_get_all_folders(self):
+        folders = self.grafana.folder.get_all_folders()
+        self.assertEqual(len(folders), 1, "Wrong number of folders")
+        self.assertEqual(folders[0]["uid"], self.folder_uid)
 
-    @requests_mock.Mocker()
-    def test_get_folder(self, m):
-        m.get(
-            "http://localhost/api/folders/nErXDvCkzzh",
-            json={
-                "id": 1,
-                "uid": "nErXDvCkzzh",
-                "title": "Departmenet ABC",
-                "url": "/dashboards/f/nErXDvCkzz/department-abc",
-                "hasAcl": "false",
-                "canSave": "false",
-                "canEdit": "false",
-                "canAdmin": "false",
-                "createdBy": "admin",
-                "created": "2018-01-31T17:43:12+01:00",
-                "updatedBy": "admin",
-                "updated": "2018-01-31T17:43:12+01:00",
-                "version": 1,
-            },
-        )
-        folders = self.grafana.folder.get_folder(uid="nErXDvCkzzh")
-        self.assertEqual(folders["uid"], "nErXDvCkzzh")
+    def test_get_folder_by_id(self):
+        folder_id = self.folder_basic["id"]
+        folder = self.grafana.folder.get_folder_by_id(folder_id=folder_id)
+        self.assertEqual(folder["id"], folder_id)
 
-    @requests_mock.Mocker()
-    def test_create_folder(self, m):
-        m.post(
-            "http://localhost/api/folders",
-            json={
-                "id": 1,
-                "uid": "nErXDvCkzz",
-                "parentUid": "gFtOEwFlbb",
-                "title": "Departmenet ABC",
-                "url": "/dashboards/f/nErXDvCkzz/department-abc",
-                "hasAcl": "false",
-                "canSave": "false",
-                "canEdit": "false",
-                "canAdmin": "false",
-                "createdBy": "admin",
-                "created": "2018-01-31T17:43:12+01:00",
-                "updatedBy": "admin",
-                "updated": "2018-01-31T17:43:12+01:00",
-                "version": 1,
-            },
-        )
-        folder = self.grafana.folder.create_folder(title="Departmenet ABC", uid="nErXDvCkzz", parent_uid="gFtOEwFlbb")
-        self.assertEqual(folder["uid"], "nErXDvCkzz")
-        self.assertEqual(folder["parentUid"], "gFtOEwFlbb")
+    def test_get_folder_by_uid(self):
+        folder = self.grafana.folder.get_folder(uid=self.folder_uid)
+        self.assertEqual(folder["title"], "Testdrive")
 
-    @requests_mock.Mocker()
-    def test_create_folder_empty_uid(self, m):
-        m.post(
-            "http://localhost/api/folders",
-            json={"message": "Folder title cannot be empty"},
-            status_code=400,
-        )
-        with self.assertRaises(GrafanaBadInputError):
-            self.grafana.folder.create_folder(title="Departmenet ABC")
+    def test_subfolders(self):
+        subfolder_uid = "nErXDvCkzz"
 
-    @requests_mock.Mocker()
-    def test_move_folder(self, m):
-        m.post(
-            "http://localhost/api/folders/nErXDvCkzz/move",
-            json={
-                "id": 1,
-                "uid": "nErXDvCkzz",
-                "parentUid": "gFtOEwFlbb",
-                "title": "Departmenet ABC",
-                "url": "/dashboards/f/nErXDvCkzz/department-abc",
-                "hasAcl": "false",
-                "canSave": "false",
-                "canEdit": "false",
-                "canAdmin": "false",
-                "createdBy": "admin",
-                "created": "2018-01-31T17:43:12+01:00",
-                "updatedBy": "admin",
-                "updated": "2018-01-31T17:43:12+01:00",
-                "version": 1,
-            },
+        folder = self.grafana.folder.create_folder(
+            title="Subdepartment ABC", uid=subfolder_uid, parent_uid=self.folder_uid
         )
-        folder = self.grafana.folder.move_folder(uid="nErXDvCkzz", parent_uid="gFtOEwFlbb")
-        self.assertEqual(folder["uid"], "nErXDvCkzz")
-        self.assertEqual(folder["parentUid"], "gFtOEwFlbb")
+        self.assertEqual(folder["uid"], subfolder_uid)
+        # 'parentUid' only returned for folders by Grafana 11 and higher.
+        if Version(self.grafana.version) >= Version("11"):
+            self.assertEqual(folder["parentUid"], self.folder_uid)
 
-    @requests_mock.Mocker()
-    def test_update_folder(self, m):
-        m.put(
-            "http://localhost/api/folders/nErXDvCkzz",
-            json={
-                "id": 1,
-                "uid": "nErXDvCkzz",
-                "title": "Departmenet DEF",
-                "url": "/dashboards/f/nErXDvCkzz/department-def",
-                "hasAcl": "false",
-                "canSave": "false",
-                "canEdit": "false",
-                "canAdmin": "false",
-                "createdBy": "admin",
-                "created": "2018-01-31T17:43:12+01:00",
-                "updatedBy": "admin",
-                "updated": "2018-01-31T17:43:12+01:00",
-                "version": 1,
-            },
-        )
-        folder = self.grafana.folder.update_folder(title="Departmenet DEF", uid="nErXDvCkzz", version=1, overwrite=True)
+        # Grafana 11 and higher only returns top-level folders, or is the outcome just flaky?
+        folders = self.grafana.folder.get_all_folders()
+        self.assertGreaterEqual(len(folders), 1, "Wrong number of folders")
+
+    def test_create_folder_empty_title(self):
+        with self.assertRaises(GrafanaBadInputError) as excinfo:
+            self.grafana.folder.create_folder(title=None)
+        self.assertEqual(excinfo.exception.status_code, 400)
+        self.assertRegex(excinfo.exception.message, "folder title cannot be empty")
+
+    def test_move_folder(self):
+        """
+        Validate folder move operation on Grafana 11 and higher.
+
+        Grafana 10: Client Error 404: To use this service, you need to activate nested folder feature.
+        """
+        if Version(self.grafana.version) < Version("11"):
+            pytest.skip("Moving folders supported by Grafana 11 and higher.")
+        container = self.grafana.folder.create_folder("container")
+        container_uid = container["uid"]
+        folder = self.grafana.folder.move_folder(uid=self.folder_uid, parent_uid=container_uid)
+        self.assertEqual(folder["uid"], self.folder_uid)
+        self.assertEqual(folder["parentUid"], container_uid)
+
+    def test_update_folder_title(self):
+        folder = self.grafana.folder.update_folder(title="Departmenet DEF", uid=self.folder_uid, overwrite=True)
         self.assertEqual(folder["title"], "Departmenet DEF")
-        self.assertEqual(folder["uid"], "nErXDvCkzz")
+        self.assertEqual(folder["uid"], self.folder_uid)
 
-    @requests_mock.Mocker()
-    def test_update_folder_uid(self, m):
-        m.put(
-            "http://localhost/api/folders/nErXDvCkzz",
-            json={
-                "id": 1,
-                "uid": "oFsYEwDlaa",
-                "title": "Departmenet DEF",
-                "url": "/dashboards/f/oFsYEwDlaa/department-def",
-                "hasAcl": "false",
-                "canSave": "false",
-                "canEdit": "false",
-                "canAdmin": "false",
-                "createdBy": "admin",
-                "created": "2018-01-31T17:43:12+01:00",
-                "updatedBy": "admin",
-                "updated": "2018-01-31T17:43:12+01:00",
-                "version": 1,
-            },
-        )
+    def test_update_folder_uid(self):
+        if Version(self.grafana.version) >= Version("10"):
+            pytest.skip("Updating a folder uid only supported up to Grafana 10.")
+
+        new_folder_uid = "oFsYEwDlaa"
+        new_title = self.folder_basic["title"]
         folder = self.grafana.folder.update_folder(
-            title="Departmenet DEF", uid="nErXDvCkzz", new_uid="oFsYEwDlaa", version=1, overwrite=True
+            title=new_title, uid=self.folder_uid, new_uid=new_folder_uid, overwrite=True
         )
-        self.assertEqual(folder["title"], "Departmenet DEF")
-        self.assertEqual(folder["uid"], "oFsYEwDlaa")
+        self.assertEqual(folder["uid"], new_folder_uid)
 
-    @requests_mock.Mocker()
-    def test_update_folder_some_param(self, m):
-        m.put(
-            "http://localhost/api/folders/nErXDvCkzz",
-            json={
-                "id": 1,
-                "uid": "nErXDvCkzz",
-                "title": "Departmenet DEF",
-                "url": "/dashboards/f/nErXDvCkzz/department-def",
-                "hasAcl": "false",
-                "canSave": "false",
-                "canEdit": "false",
-                "canAdmin": "false",
-                "createdBy": "admin",
-                "created": "2018-01-31T17:43:12+01:00",
-                "updatedBy": "admin",
-                "updated": "2018-01-31T17:43:12+01:00",
-                "version": 1,
-            },
+    def test_update_folder_conflict(self):
+        with self.assertRaises(GrafanaClientError) as excinfo:
+            self.grafana.folder.update_folder(title="Departmenet DEF", uid=self.folder_uid)
+        self.assertEqual(excinfo.exception.status_code, 412)
+        self.assertRegex(
+            excinfo.exception.message, "Client Error 412: [Tt]he (folder|dashboard) has been changed by someone else"
         )
-        folder = self.grafana.folder.update_folder(title="Departmenet DEF", uid="nErXDvCkzz")
-        self.assertEqual(folder["title"], "Departmenet DEF")
 
-    @requests_mock.Mocker()
-    def test_get_folder_by_id(self, m):
-        m.get(
-            "http://localhost/api/folders/id/1",
-            json={
-                "id": 1,
-                "uid": "nErXDvCkzz",
-                "title": "Departmenet ABC",
-                "url": "/dashboards/f/nErXDvCkzz/department-abc",
-                "hasAcl": "false",
-                "canSave": "false",
-                "canEdit": "false",
-                "canAdmin": "false",
-                "createdBy": "admin",
-                "created": "2018-01-31T17:43:12+01:00",
-                "updatedBy": "admin",
-                "updated": "2018-01-31T17:43:12+01:00",
-                "version": 1,
-            },
-        )
-        folder = self.grafana.folder.get_folder_by_id(folder_id=1)
-        self.assertEqual(folder["id"], 1)
+    def test_get_folder_permissions(self):
+        folder_permissions = self.grafana.folder.get_folder_permissions(uid=self.folder_uid)
+        if Version(self.grafana.version) >= Version("9"):
+            self.assertEqual(folder_permissions[0]["permissionName"], "Admin")
+        else:
+            self.assertEqual(folder_permissions[0]["permissionName"], "View")
 
-    @requests_mock.Mocker()
-    def test_get_folder_permissions(self, m):
-        m.get(
-            "http://localhost/api/folders/nErXDvCkzz/permissions",
-            json=[
-                {
-                    "id": 1,
-                    "folderId": -1,
-                    "created": "2017-06-20T02:00:00+02:00",
-                    "updated": "2017-06-20T02:00:00+02:00",
-                    "userId": 0,
-                    "userLogin": "",
-                    "userEmail": "",
-                    "teamId": 0,
-                    "team": "",
-                    "role": "Viewer",
-                    "permission": 1,
-                    "permissionName": "View",
-                    "uid": "nErXDvCkzz",
-                    "title": "",
-                    "slug": "",
-                    "isFolder": "false",
-                    "url": "",
-                },
-                {
-                    "id": 2,
-                    "dashboardId": -1,
-                    "created": "2017-06-20T02:00:00+02:00",
-                    "updated": "2017-06-20T02:00:00+02:00",
-                    "userId": 0,
-                    "userLogin": "",
-                    "userEmail": "",
-                    "teamId": 0,
-                    "team": "",
-                    "role": "Editor",
-                    "permission": 2,
-                    "permissionName": "Edit",
-                    "uid": "",
-                    "title": "",
-                    "slug": "",
-                    "isFolder": "false",
-                    "url": "",
-                },
-            ],
-        )
-        folder_permissions = self.grafana.folder.get_folder_permissions(uid="nErXDvCkzz")
-        self.assertEqual(folder_permissions[0]["permissionName"], "View")
-
-    @requests_mock.Mocker()
-    def test_update_folder_permissions(self, m):
-        m.post(
-            "http://localhost/api/folders/nErXDvCkzz/permissions",
-            json={"message": "Folder permissions updated"},
-        )
+    def test_update_folder_permissions_standard(self):
         folder = self.grafana.folder.update_folder_permissions(
-            uid="nErXDvCkzz",
-            items=[
-                {"role": "Viewer", "permission": 1},
-                {"role": "Editor", "permission": 2},
-                {"teamId": 1, "permission": 1},
-                {"userId": 11, "permission": 4},
-            ],
+            uid=self.folder_uid,
+            items=TestModel.permissions(),
         )
-        self.assertEqual(folder["message"], "Folder permissions updated")
+        self.assertRegex(folder["message"], "(Folder|Dashboard) permissions updated")
 
-    @requests_mock.Mocker()
-    def test_update_folder_permissions_for_user(self, m):
-        m.post(
-            "http://localhost/api/access-control/folders/nErXDvCkzz/users/12345",
-            json={"message": "Folder permissions updated"},
-        )
+    def test_update_folder_permissions_for_user(self):
+        if Version(self.grafana.version) < Version("9"):
+            pytest.skip("Updating folder permissions for users supported by Grafana 9 and higher.")
+        user = self.grafana.admin.create_user({"name": "foo", "login": "foo", "password": "secret"})
         folder = self.grafana.folder.update_folder_permissions_for_user(
-            uid="nErXDvCkzz",
-            user_id="12345",
-            items=[
-                {"permission": "View"},
-                {"permission": "Edit"},
-            ],
+            uid=self.folder_uid,
+            user_id=user["id"],
+            items=TestModel.permissions(),
         )
-        self.assertEqual(folder["message"], "Folder permissions updated")
+        self.assertEqual(folder["message"], "Permission removed")
 
-    @requests_mock.Mocker()
-    def test_delete_folder(self, m):
-        m.delete(
-            "http://localhost/api/folders/nErXDvCkzz",
-            json={"message": "Folder deleted"},
-        )
-        folder = self.grafana.folder.delete_folder(uid="nErXDvCkzz")
-        self.assertEqual(folder["message"], "Folder deleted")
+    def test_update_folder_permissions_unknown_user(self):
+        if Version(self.grafana.version) < Version("9"):
+            pytest.skip("Updating folder permissions for users supported by Grafana 9 and higher.")
+        with self.assertRaises(GrafanaBadInputError) as excinfo:
+            self.grafana.folder.update_folder_permissions_for_user(
+                uid=self.folder_uid,
+                user_id="12345",
+                items=TestModel.permissions(),
+            )
+        if Version(self.grafana.version) >= Version("11"):
+            self.assertRegex(excinfo.exception.message, "user not found")
+        else:
+            self.assertRegex(excinfo.exception.message, "failed to set user permission")
+
+    def test_delete_folder(self):
+        folder = self.grafana.folder.delete_folder(uid=self.folder_uid)
+        version9 = Version("9") <= Version(self.grafana.version) < Version("10")
+        if not version9:
+            self.assertRegex(folder["message"], "Folder.+deleted")
