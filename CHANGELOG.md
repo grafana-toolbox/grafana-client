@@ -5,8 +5,9 @@
 - CI: Verified on Grafana 12.4.0.
 - Dashboard API: Updated function signature of `update_permissions_by_uid`
   Renamed `dashboard_id` to `dashboard_uid`
-- Dashboard API: Improved convenience for `update_permissions_generic`
-  The permission items can now be supplied either as a dictionary or as a list
+- Dashboard and folder API: Improved convenience when updating permissions:
+  The permission items can now be supplied either as a dictionary or as a list,
+  both wrapped or unwrapped
 - Datasources API: Fixed request payloads for `{enable,disable}-permissions` endpoints
 - Datasources API: Improved Elasticsearch error handling
 - QA: Started using integration tests across the board
