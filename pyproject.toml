@@ -113,7 +113,7 @@ test = [
 test-coverage = [
   {cmd="coverage erase"},
   {cmd="coverage run --append -m unittest discover -vvv"},
-  {cmd="coverage run --append -m pytest -k integration"},
+  {cmd="coverage run --append -m pytest -m integration"},
   {cmd="coverage xml"},
   {cmd="coverage report"},
 ]
