@@ -103,10 +103,11 @@ class Annotations(Base):
         panel_id=None,
         time_from=None,
         time_to=None,
-        tags=[],
+        tags=None,
         text=None,
     ):
         """
+        Create annotation.
         https://grafana.com/docs/grafana/latest/http_api/annotations/#create-annotation
 
         :param dashboard_id:
@@ -118,7 +119,7 @@ class Annotations(Base):
         :param text:
         :return:
         """
-
+        tags = tags or []
         annotations_path = "/annotations"
         payload = {
             "panelId": panel_id,
@@ -137,7 +138,7 @@ class Annotations(Base):
     async def add_annotation_graphite(
         self,
         what=None,
-        tags=[],
+        tags=None,
         when=None,
         data=None,
     ):
@@ -151,6 +152,7 @@ class Annotations(Base):
         :return:
         """
 
+        tags = tags or []
         annotations_path = "/annotations/graphite"
         payload = {"what": what, "tags": tags, "when": when, "data": data}
 
@@ -161,7 +163,7 @@ class Annotations(Base):
         annotations_id,
         time_from=None,
         time_to=None,
-        tags=[],
+        tags=None,
         text=None,
     ):
         """
@@ -173,6 +175,7 @@ class Annotations(Base):
         :param text:
         :return:
         """
+        tags = tags or []
         annotations_path = f"/annotations/{annotations_id}"
         payload = {"time": time_from, "timeEnd": time_to, "tags": tags, "text": text}
 
@@ -183,7 +186,7 @@ class Annotations(Base):
         annotations_id,
         time_from=None,
         time_to=None,
-        tags=[],
+        tags=None,
         text=None,
     ):
         """
@@ -196,6 +199,7 @@ class Annotations(Base):
         :param text:
         :return:
         """
+        tags = tags or []
         annotations_path = f"/annotations/{annotations_id}"
         payload = {}
 
