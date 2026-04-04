@@ -7,6 +7,7 @@
   Renamed `dashboard_id` to `dashboard_uid`
 - Dashboard API: Improved convenience for `update_permissions_generic`
   The permission items can now be supplied either as a dictionary or as a list
+- Datasources API: Fixed request payloads for `{enable,disable}-permissions` endpoints
 - QA: Started using integration tests across the board
 - Async: Fixed generation script and corresponding method calls
   `return self.foo()` => `return await self.foo()`
