@@ -462,6 +462,7 @@ def query_factory(datasource, model: Optional[dict] = None, expression: Optional
 
 # Define health-check status queries for all database types.
 # TODO: Complete the list for all popular databases.
+# TODO: Modernize Elasticsearch querying.
 HEALTHCHECK_EXPRESSION_MAP = {
     "elasticsearch": "url:///datasources/proxy/{datasource_id}/{database_name}/_mapping",
     "fetzerch-sunandmoon-datasource": "url:///datasources/uid/{datasource_uid}",
