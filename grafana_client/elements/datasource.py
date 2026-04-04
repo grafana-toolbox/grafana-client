@@ -178,7 +178,7 @@ class Datasource(Base):
             raise NotImplementedError("Deprecated since Grafana 10.2.3")
 
         get_datasource_path = "/datasources/%s/enable-permissions" % datasource_id
-        return self.client.POST(get_datasource_path)
+        return self.client.POST(get_datasource_path, json={})
 
     def disable_datasource_permissions(self, datasource_id):
         """
@@ -191,7 +191,7 @@ class Datasource(Base):
             raise NotImplementedError("Deprecated since Grafana 10.2.3")
 
         get_datasource_path = "/datasources/%s/disable-permissions" % datasource_id
-        return self.client.POST(get_datasource_path)
+        return self.client.POST(get_datasource_path, json={})
 
     def get_datasource_permissions(self, datasource_id):
         """
