@@ -5,6 +5,14 @@ services:
     ports:
       - "33333:3000"
     environment:
+
+      # Turn off vendor analytics.
+      # https://github.com/grafana/loki/issues/10648#issuecomment-2948371184
+      GF_ANALYTICS_CHECK_FOR_UPDATES: false
+      GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: false
+      GF_ANALYTICS_REPORTING_ENABLED: false
+
+      # Configure log level.
       GF_LOG_LEVEL: info
       #GF_LOG_LEVEL: debug
 
