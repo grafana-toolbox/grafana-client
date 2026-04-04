@@ -18,6 +18,7 @@ class DatabaseItem:
     fixture: str
 
 
+# TODO: Add Prometheus and InfluxDB 2.
 database_trajectory = [
     DatabaseItem(type="cratedb", url="172.17.0.1:5433", fixture="docker_cratedb"),
     DatabaseItem(type="elasticsearch", url="http://172.17.0.1:9200", fixture="docker_elasticsearch"),
@@ -37,10 +38,13 @@ def test_datasource_health_probe(request, docker_grafana, database):
     grafana = GrafanaApi.from_url(docker_grafana)
     grafana_version = grafana.version
     if Version(grafana_version) < Version("10"):
-        pytest.skip(f"Skipping health probe testing on Grafana {grafana_version}")
+        pytest.skip("Health probes are supported by Grafana 10 and higher.")
+
+    if database.type == "elasticsearch" and Version(grafana_version) < Version("11"):
+        pytest.skip("Health probes for Elasticsearch are supported by Grafana 11 and higher.")
 
     if database.type == "graphite" and Version(grafana_version) < Version("12"):
-        pytest.skip(f"Skipping health probe testing for Graphite on Grafana {grafana_version}")
+        pytest.skip("Health probes for Graphite are supported by Grafana 12 and higher.")
 
     # Spin up service.
     request.getfixturevalue(database.fixture)

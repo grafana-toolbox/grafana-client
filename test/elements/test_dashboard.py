@@ -72,8 +72,8 @@ class DashboardTestCase(unittest.TestCase):
                 "dashboard": {"title": "default"},
             }
         )
-        # folderUid only exists with Grafana 10 and higher.
-        if Version(self.grafana.version) >= Version("10"):
+        # folderUid only exists with Grafana 11 and higher.
+        if Version(self.grafana.version) >= Version("11"):
             self.assertEqual(db["folderUid"], folder_uid)
 
     def test_update_dashboard_roundtrip_folder_2(self):

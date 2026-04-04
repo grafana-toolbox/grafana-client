@@ -71,3 +71,8 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
+
+  prometheus:
+    image: docker.io/prom/prometheus:v3.11.0
+    ports:
+      - "9090:9090"

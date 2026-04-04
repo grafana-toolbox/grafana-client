@@ -96,3 +96,18 @@ def docker_postgresql(docker_services):
     )
     time.sleep(2)
     return f"{docker_services.docker_ip}:{public_port}"
+
+
+@pytest.fixture(scope="session")
+def docker_prometheus(docker_services):
+    """
+    Provide Prometheus service.
+    """
+    docker_services.start("prometheus")
+    public_port = docker_services.port_for("prometheus", 9090)
+    docker_services.wait_until_responsive(
+        check=lambda: port_is_up(docker_services.docker_ip, public_port),
+        timeout=30,
+        pause=1,
+    )
+    return f"{docker_services.docker_ip}:{public_port}"

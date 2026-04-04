@@ -1,3 +1,10 @@
+"""
+Role-based access control API is only available in Grafana Cloud or Grafana Enterprise.
+
+https://grafana.com/docs/grafana/latest/administration/roles-and-permissions/access-control/
+https://grafana.com/docs/grafana/latest/developer-resources/api-reference/http-api/access_control/
+"""
+
 RBAC_ROLES_ALL = [
     {
         "version": 5,

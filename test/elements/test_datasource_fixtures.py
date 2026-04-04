@@ -7,7 +7,7 @@ ELASTICSEARCH_DATASOURCE = {
     "type": "elasticsearch",
     "access": "proxy",
     "database": "bazqux",
-    "url": "http://localhost:9200",
+    "url": "http://172.17.0.1:9200",
     "jsonData": {
         "esVersion": "7.10.0",
         "timeField": "@timestamp",
@@ -28,7 +28,7 @@ INFLUXDB1_DATASOURCE = {
     "name": "InfluxDB",
     "type": "influxdb",
     "access": "proxy",
-    "url": "http://localhost:8086",
+    "url": "http://172.17.0.1:18086",
     "jsonData": {"httpMode": "POST", "version": "InfluxQL"},
 }
 
@@ -95,7 +95,7 @@ PROMETHEUS_DATASOURCE = {
     "typeName": "Prometheus",
     "typeLogoUrl": "public/app/plugins/datasource/prometheus/img/prometheus_logo.svg",
     "access": "proxy",
-    "url": "http://localhost:9090",
+    "url": "http://172.17.0.1:9090",
     "password": "",
     "user": "",
     "database": "",
