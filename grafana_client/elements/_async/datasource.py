@@ -338,6 +338,7 @@ class Datasource(Base):
         access_type = datasource["access"]
 
         # Sanity checks.
+        model = {}
         if not request and not expression:
             raise ValueError("request or expression must be given")
         elif not request:
@@ -536,15 +537,20 @@ class Datasource(Base):
             response = ex.response
             if isinstance(response, dict):
                 if datasource_type == "elasticsearch":
-                    error = response["error"]
-                    status_code = response["status"]
-                    if "root_cause" in error:
-                        error = error["root_cause"][0]
-                        error_type = error["type"]
-                        error_reason = error["reason"]
-                        message = f"Status: {status_code}. Type: {error_type}. Reason: {error_reason}"
+                    if "error" in response:
+                        error = response["error"]
+                        status_code = response["status"]
+                        if "root_cause" in error:
+                            error = error["root_cause"][0]
+                            error_type = error["type"]
+                            error_reason = error["reason"]
+                            message = f"Status: {status_code}. Type: {error_type}. Reason: {error_reason}"
+                        else:
+                            message = str(error)
+                    elif "message" in response:
+                        message = response["message"]
                     else:
-                        message = str(error)
+                        raise ValueError("Unknown Elasticsearch error response")
 
                 elif "results" in ex.response:
                     message = response["results"]["test"]["error"]
