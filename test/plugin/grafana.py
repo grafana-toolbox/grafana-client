@@ -1,3 +1,5 @@
+import typing as t
+
 import pytest
 
 from grafana_client import GrafanaApi
@@ -22,7 +24,7 @@ def grafana_api(docker_grafana) -> GrafanaApi:
     return GrafanaApi.from_url(docker_grafana)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def datasource_testdata(grafana_api):
     from test.elements.test_datasource_fixtures import TESTDATA_DATASOURCE
 
@@ -54,9 +56,13 @@ def dashboard_basic(grafana_api):
     )
 
 
+@pytest.fixture()
+def folder_uid() -> str:
+    return "cfi05mqnc3k00a"
+
+
 @pytest.fixture(scope="function")
-def folder_basic(grafana_api):
-    folder_uid = "cfi05mqnc3k00a"
+def folder_basic(grafana_api, folder_uid) -> t.Dict[str, str]:
     try:
         grafana_api.folder.delete_folder(folder_uid)
     except GrafanaClientError as ex:
@@ -65,7 +71,7 @@ def folder_basic(grafana_api):
     return grafana_api.folder.create_folder(title="Testdrive", uid=folder_uid)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def team_basic(grafana_api):
     try:
         grafana_api.teams.add_team({"name": "Foo Fighters"})
@@ -75,10 +81,34 @@ def team_basic(grafana_api):
 
 
 @pytest.fixture(scope="function")
-def grafana_provisioned(grafana_api, datasource_testdata, dashboard_basic, folder_basic, team_basic) -> GrafanaApi:  # noqa: ARG001
+def reset_grafana(grafana_api):
+    for folder in grafana_api.folder.get_all_folders():
+        try:
+            grafana_api.folder.delete_folder(folder["uid"], force_delete_rules=True)
+        except GrafanaClientError as ex:
+            if ex.status_code != 404:
+                raise
+    for datasource in grafana_api.datasource.list_datasources():
+        grafana_api.datasource.delete_datasource_by_uid(datasource["uid"])
+    for user in grafana_api.users.search_users():
+        if not user["isAdmin"]:
+            grafana_api.admin.delete_user(user["id"])
+
+
+# ruff: disable[ARG001]
+@pytest.fixture(scope="function")
+def grafana_provisioned(
+    grafana_api,
+    reset_grafana,
+    datasource_testdata,
+    dashboard_basic,
+    folder_basic,
+    team_basic,
+) -> GrafanaApi:
     """
     Provide Grafana API instance.
     """
-    for datasource in grafana_api.datasource.list_datasources():
-        grafana_api.datasource.delete_datasource_by_uid(datasource["uid"])
     return grafana_api
+
+
+# ruff: enable[ARG001]
