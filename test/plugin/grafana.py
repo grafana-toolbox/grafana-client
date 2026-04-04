@@ -35,9 +35,13 @@ def datasource_testdata(grafana_api):
             raise
 
 
+@pytest.fixture()
+def dashboard_uid() -> str:
+    return "cIBgcSjkk"
+
+
 @pytest.fixture(scope="function")
-def dashboard_basic(grafana_api):
-    dashboard_uid = "cIBgcSjkk"
+def dashboard_basic(grafana_api, dashboard_uid):
     try:
         grafana_api.dashboard.delete_dashboard(dashboard_uid)
     except GrafanaClientError as ex:
