@@ -1,3 +1,5 @@
+from grafana_client.util import as_bool
+
 from .base import Base
 
 
@@ -77,17 +79,28 @@ class Folder(Base):
         path = "/folders/%s" % uid
         return self.client.PUT(path, json=body)
 
-    def delete_folder(self, uid):
+    def delete_folder(self, uid, force_delete_rules="false"):
         """
         Delete folder.
 
-        `accept_empty_json=True` is needed for Grafana 9 and earlier,
-        because it responds with `200 OK`, but uses an empty JSON body.
+        https://grafana.com/docs/grafana/latest/developer-resources/api-reference/http-api/folder/#delete-folder-1
 
-        :param uid:
+        :param uid:                The unique identifier of the folder to delete.
+                                   This will be the name in the folder response.
+        :param force_delete_rules: If Grafana Alerting is enabled, you can set an optional query
+                                   parameter forceDeleteRules=false so that requests will fail
+                                   with 400 (Bad Request) error if the folder contains any Grafana alerts.
+                                   However, if this parameter is set to true then it will delete any
+                                   Grafana alerts under this folder.
         :return:
         """
         path = "/folders/%s" % uid
+
+        if as_bool(force_delete_rules):
+            path += "?forceDeleteRules=true"
+
+        # `accept_empty_json=True` is needed for Grafana 9 and earlier,
+        # because it responds with `200 OK`, but uses an empty JSON body.
         return self.client.DELETE(path, accept_empty_json=True)
 
     def get_folder_by_id(self, folder_id):
