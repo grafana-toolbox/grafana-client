@@ -8,6 +8,7 @@
 - Dashboard and folder API: Improved convenience when updating permissions:
   The permission items can now be supplied either as a dictionary or as a list,
   both wrapped or unwrapped
+- Folder API: Add parameter `force_delete_rules` to remove non-empty folders
 - Datasources API: Fixed request payloads for `{enable,disable}-permissions` endpoints
 - Datasources API: Improved Elasticsearch error handling
 - QA: Started using integration tests across the board
