@@ -91,7 +91,10 @@ class DashboardVersionsTestCase(unittest.TestCase):
 
     def test_calculate_diff_success(self):
         if Version(self.grafana.version) >= Version("9"):
-            pytest.skip("Grafana 8 and higher do dashboard diffing entirely in the frontend.")
+            pytest.skip(
+                "Grafana 8 and higher do dashboard diffing entirely in the frontend, "
+                "Grafana 9 deprecated corresponding backend support."
+            )
         dashboard_id = self.dashboard["id"]
         self.update_dashboard()
         result = self.grafana.dashboard_versions.calculate_diff(
@@ -104,7 +107,10 @@ class DashboardVersionsTestCase(unittest.TestCase):
 
     def test_calculate_diff_failure(self):
         if Version(self.grafana.version) >= Version("9"):
-            pytest.skip("Grafana 8 and higher do dashboard diffing entirely in the frontend.")
+            pytest.skip(
+                "Grafana 8 and higher do dashboard diffing entirely in the frontend, "
+                "Grafana 9 deprecated corresponding backend support."
+            )
         dashboard_id = self.dashboard["id"]
         with self.assertRaises(LookupError) as ctx:
             self.grafana.dashboard_versions.calculate_diff(

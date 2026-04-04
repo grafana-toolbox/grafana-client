@@ -16,8 +16,9 @@ class DashboardTestCase(unittest.TestCase):
         self.folder = folder_basic
 
     def test_get_dashboard_by_uid(self):
-        dashboard = self.grafana.dashboard.get_dashboard("cIBgcSjkk")
-        self.assertEqual(dashboard["dashboard"]["uid"], "cIBgcSjkk")
+        dashboard_uid = self.dashboard["uid"]
+        dashboard = self.grafana.dashboard.get_dashboard(dashboard_uid)
+        self.assertEqual(dashboard["dashboard"]["uid"], dashboard_uid)
 
     def test_get_dashboard_by_name_grafana7(self):
         if Version(self.grafana.version) < Version("8"):
@@ -41,16 +42,17 @@ class DashboardTestCase(unittest.TestCase):
         """
         Verify a general dashboard update.
         """
+        dashboard_uid = self.dashboard["uid"]
         dashboard = self.grafana.dashboard.update_dashboard(
             {
                 "dashboard": {
-                    "uid": "cIBgcSjkk",
+                    "uid": dashboard_uid,
                     "title": "Production Overview NG",
                 },
                 "overwrite": True,
             }
         )
-        self.assertEqual(dashboard["uid"], "cIBgcSjkk")
+        self.assertEqual(dashboard["uid"], dashboard_uid)
         self.assertEqual(dashboard["status"], "success")
         self.assertEqual(dashboard["version"], 2)
 
@@ -105,7 +107,8 @@ class DashboardTestCase(unittest.TestCase):
             self.assertEqual(dashboard["meta"]["canDelete"], False)
 
     def test_delete_dashboard(self):
-        response = self.grafana.dashboard.delete_dashboard("cIBgcSjkk")
+        dashboard_uid = self.dashboard["uid"]
+        response = self.grafana.dashboard.delete_dashboard(dashboard_uid)
         self.assertEqual(response["title"], "ProductionOverview")
 
     def test_get_dashboards_tags(self):
