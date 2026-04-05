@@ -41,7 +41,8 @@ def dashboard_uid() -> str:
 
 
 @pytest.fixture(scope="function")
-def dashboard_basic(grafana_api, dashboard_uid):
+def dashboard_basic(grafana_api, dashboard_uid, folder_basic):
+    folder_uid = folder_basic["uid"]
     try:
         grafana_api.dashboard.delete_dashboard(dashboard_uid)
     except GrafanaClientError as ex:
@@ -55,6 +56,7 @@ def dashboard_basic(grafana_api, dashboard_uid):
                 "tags": ["foobar", "bazqux"],
                 "timezone": "browser",
             },
+            "folderUid": folder_uid,
             "overwrite": True,
         }
     )
@@ -118,7 +120,7 @@ def organization_testdrive(grafana_api, organization_name: str):
 
 
 @pytest.fixture(scope="function")
-def reset_grafana(grafana_api):
+def reset_grafana(grafana_api, dashboard_uid):
 
     # Reset context.
     grafana_api.organizations.switch_organization(organization_id=1)
@@ -143,6 +145,14 @@ def reset_grafana(grafana_api):
         if org["id"] != 1:
             grafana_api.organizations.delete_organization(org["id"])
     grafana_api.organizations.update_organization(organization_id=1, organization={"name": "Main Org."})
+
+    # Reset user dashboard stars.
+    # TODO: It looks like starring a dashboard hasn't made it into an API wrapper yet.
+    try:
+        grafana_api.client.DELETE(f"/user/stars/dashboard/uid/{dashboard_uid}")
+    except GrafanaClientError as ex:
+        if ex.status_code != 404:
+            raise
 
 
 # ruff: disable[ARG001]

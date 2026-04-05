@@ -1,4 +1,4 @@
-from grafana_client.util import format_param_value
+from grafana_client.util import as_bool, format_param_value
 
 from ..base import Base
 
@@ -38,34 +38,34 @@ class Search(Base):
         list_dashboard_path = "/search"
         params = {}
 
-        if query:
+        if query is not None:
             params["query"] = query
 
-        if tag:
+        if tag is not None:
             params["tag"] = format_param_value(tag)
 
-        if type_:
+        if type_ is not None:
             params["type"] = type_
 
-        if dashboard_ids:
+        if dashboard_ids is not None:
             params["dashboardIds"] = format_param_value(dashboard_ids)
 
-        if dashboard_uids:
+        if dashboard_uids is not None:
             params["dashboardUIDs"] = format_param_value(dashboard_uids)
 
-        if folder_ids:
+        if folder_ids is not None:
             params["folderIds"] = format_param_value(folder_ids)
 
-        if folder_uids:
+        if folder_uids is not None:
             params["folderUIDs"] = format_param_value(folder_uids)
 
-        if starred:
-            params["starred"] = starred
+        if as_bool(starred):
+            params["starred"] = "true"
 
-        if limit:
+        if limit is not None:
             params["limit"] = limit
 
-        if page:
+        if page is not None:
             params["page"] = page
 
         return await self.client.GET(list_dashboard_path, params=params)
