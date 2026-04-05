@@ -81,7 +81,7 @@ def folder_basic(grafana_api, folder_uid) -> t.Dict[str, str]:
 @pytest.fixture(scope="function")
 def team_basic(grafana_api):
     try:
-        grafana_api.teams.add_team({"name": "Foo Fighters"})
+        return grafana_api.teams.add_team({"name": "Foo Fighters"})
     except GrafanaClientError as ex:
         if ex.status_code != 409:
             raise
@@ -140,7 +140,7 @@ def reset_grafana(grafana_api, dashboard_uid):
     for datasource in grafana_api.datasource.list_datasources():
         grafana_api.datasource.delete_datasource_by_uid(datasource["uid"])
 
-    # Reset tokens, service accounts, users, and organizations.
+    # Reset tokens, service accounts, users, teams, and organizations.
     if grafana_version >= Version("9"):
         for account in grafana_api.serviceaccount.search_streaming():
             account_id = account["id"]
@@ -150,6 +150,9 @@ def reset_grafana(grafana_api, dashboard_uid):
     for user in grafana_api.users.search_users():
         if user["id"] != 1:
             grafana_api.admin.delete_user(user["id"])
+    for team in grafana_api.teams.search_teams():
+        if team["id"] != 1:
+            grafana_api.teams.delete_team(team["id"])
     for org in grafana_api.organizations.list_organization():
         if org["id"] != 1:
             grafana_api.organizations.delete_organization(org["id"])
