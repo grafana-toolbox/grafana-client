@@ -5,6 +5,7 @@ from verlib2 import Version
 
 from grafana_client import GrafanaApi
 from grafana_client.client import GrafanaClientError
+from grafana_client.model import PersonalPreferences
 
 
 @pytest.fixture(scope="session")
@@ -125,6 +126,7 @@ def reset_grafana(grafana_api, dashboard_uid):
 
     # Reset context.
     grafana_api.organizations.switch_organization(organization_id=1)
+    grafana_api.user.update_preferences(PersonalPreferences(homeDashboardUID=""))
 
     grafana_version = Version(grafana_api.version)
 
