@@ -1,202 +1,271 @@
+import sys
 import unittest
+from unittest import mock
+
+import pytest
+from verlib2 import Version
 
 from grafana_client import GrafanaApi
+from grafana_client.client import GrafanaBadInputError, GrafanaClientError, GrafanaUnauthorizedError
 from grafana_client.model import PersonalPreferences
 
-from ..compat import requests_mock
+pytestmark = pytest.mark.integration
 
 
+@unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class UsersTestCase(unittest.TestCase):
-    def setUp(self):
-        self.grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="http")
+    @pytest.fixture(autouse=True)
+    def use_fixtures(self, grafana_provisioned: GrafanaApi, user_testdrive):
+        self.grafana = grafana_provisioned
+        self.user = user_testdrive
+        self.user_id = self.user["id"]
 
-    @requests_mock.Mocker()
-    def test_update_user(self, m):
-        m.put(
-            "http://localhost/api/users/foo",
-            json={},
-        )
-        user = self.grafana.users.update_user("foo", {})
-        self.assertEqual(user, {})
+    def test_update_user_success(self):
+        response = self.grafana.users.update_user(self.user_id, {"login": "foo"})
+        self.assertEqual("User updated", response["message"])
 
-    @requests_mock.Mocker()
-    def test_get_user(self, m):
-        m.get(
-            "http://localhost/api/users/foo",
-            json={},
-        )
-        user = self.grafana.users.get_user("foo")
-        self.assertEqual(user, {})
+    def test_update_user_empty(self):
+        with self.assertRaises(GrafanaBadInputError) as context:
+            self.grafana.users.update_user(self.user_id, {})
+        self.assertEqual(400, context.exception.status_code)
+        if Version(self.grafana.version) >= Version("10"):
+            self.assertIn("Need to specify either username or email", context.exception.message)
+        else:
+            self.assertIn("Validation error, need to specify either username or email", context.exception.message)
 
-    @requests_mock.Mocker()
-    def test_find_user(self, m):
-        m.get(
-            "http://localhost/api/users/lookup?loginOrEmail=foo",
-            json={},
-        )
-        user = self.grafana.users.find_user("foo")
-        self.assertEqual(user, {})
+    def test_update_user_unknown(self):
+        with self.assertRaises(GrafanaClientError) as context:
+            self.grafana.users.update_user("unknown", {})
+        if Version(self.grafana.version) >= Version("11"):
+            self.assertEqual(404, context.exception.status_code)
+            self.assertIn("User not found", context.exception.message)
+        else:
+            self.assertEqual(400, context.exception.status_code)
+            if Version(self.grafana.version) >= Version("8"):
+                self.assertIn("id is invalid", context.exception.message)
+            else:
+                self.assertIn("Validation error, need to specify either username or email", context.exception.message)
 
-    @requests_mock.Mocker()
-    def test_search_users_default(self, m):
-        m.get(
-            "http://localhost/api/users?query=foo&page=1",
-            json=[{"name": "foo"}, {"name": "bar"}],
-        )
-        m.get(
-            "http://localhost/api/users?query=foo&page=2",
-            json=[],
-        )
-        users = self.grafana.users.search_users("foo")
-        self.assertEqual(len(users), 2)
+    def test_get_user_success(self):
+        user = self.grafana.users.get_user(self.user_id)
+        self.assertEqual("testdrive", user["login"])
+        self.assertEqual("testdrive", user["email"])
+        self.assertEqual("", user["name"])
 
-    @requests_mock.Mocker()
-    def test_search_users_default_empty(self, m):
-        m.get(
-            "http://localhost/api/users?query=foo&page=1",
-            json=[],
-        )
-        users = self.grafana.users.search_users("foo")
-        self.assertEqual(len(users), 0)
+    def test_get_user_unknown(self):
+        grafana7 = Version("7") <= Version(self.grafana.version) < Version("8")
+        with self.assertRaises(GrafanaClientError) as context:
+            self.grafana.users.get_user("unknown")
+        if Version(self.grafana.version) >= Version("11") or grafana7:
+            self.assertEqual(404, context.exception.status_code)
+            self.assertRegex(context.exception.message, "[Uu]ser not found")
+        else:
+            self.assertEqual(400, context.exception.status_code)
+            self.assertIn("id is invalid", context.exception.message)
 
-    @requests_mock.Mocker()
-    def test_search_users_page2(self, m):
-        m.get(
-            "http://localhost/api/users?query=foo&page=2",
-            json=[{}],
-        )
-        users = self.grafana.users.search_users("foo", page=2)
-        self.assertEqual(users, [{}])
+    def test_find_user_success(self):
+        user = self.grafana.users.find_user("testdrive")
+        self.assertEqual("testdrive", user["login"])
 
-    @requests_mock.Mocker()
-    def test_search_users_perpage(self, m):
-        m.get(
-            "http://localhost/api/users?query=foo&page=1&perpage=1",
-            json=[{"name": "foo"}, {"name": "bar"}],
-        )
-        m.get(
-            "http://localhost/api/users?query=foo&page=2&perpage=1",
-            json=[],
-        )
-        users = self.grafana.users.search_users("foo", perpage=1)
-        self.assertEqual(len(users), 2)
+    def test_find_user_unknown(self):
+        with self.assertRaises(GrafanaClientError) as context:
+            self.grafana.users.find_user("unknown")
+        self.assertEqual(404, context.exception.status_code)
+        self.assertIn("user not found", context.exception.message)
 
-    @requests_mock.Mocker()
-    def test_search_users_perpage_no_endless_loop(self, m):
-        m.get(
-            "http://localhost/api/users?query=foo&page=1&perpage=5",
-            json=[{"name": "foo"}, {"name": "bar"}],
-        )
-        m.get(
-            "http://localhost/api/users?query=foo&page=2&perpage=5",
-            json=[],
-        )
-        users = self.grafana.users.search_users("foo", perpage=5)
-        self.assertEqual(len(users), 2)
+    def test_search_users_success(self):
+        users = self.grafana.users.search_users("testdrive")
+        self.assertEqual(1, len(users), "Wrong number of users")
 
-    @requests_mock.Mocker()
-    def test_get_user_organisations(self, m):
-        m.get(
-            "http://localhost/api/users/foo/orgs",
-            json=[],
-        )
-        users = self.grafana.users.get_user_organisations("foo")
-        self.assertEqual(users, [])
+    def test_search_users_unknown(self):
+        users = self.grafana.users.search_users("unknown")
+        self.assertEqual(0, len(users), "Wrong number of users")
+
+    def test_search_users_page2(self):
+        users = self.grafana.users.search_users("testdrive", page=2)
+        self.assertEqual(0, len(users), "Wrong number of users")
+
+    def test_search_users_perpage(self):
+        users = self.grafana.users.search_users("testdrive", perpage=1)
+        self.assertEqual(1, len(users), "Wrong number of users")
+
+    def test_search_users_perpage_no_endless_loop(self):
+        users = self.grafana.users.search_users("testdrive", perpage=5)
+        self.assertEqual(1, len(users), "Wrong number of users")
+
+    def test_get_user_organisations(self):
+        users = self.grafana.users.get_user_organisations(self.user_id)
+        self.assertEqual(1, len(users), "Wrong number of organisations")
+        self.assertEqual([{"name": "Testdrive Org.", "orgId": mock.ANY, "role": "Viewer"}], users)
 
 
+@unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class UserTestCase(unittest.TestCase):
-    def setUp(self):
-        self.grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="http")
+    @pytest.fixture(autouse=True)
+    def use_fixtures(self, grafana_provisioned: GrafanaApi, user_testdrive, organization_testdrive, dashboard_basic):
+        self.grafana = grafana_provisioned
+        self.user = user_testdrive
+        self.organization = organization_testdrive
+        self.user_id = self.user["id"]
+        self.organization_id = self.organization["orgId"]
+        self.dashboard_id = dashboard_basic["id"]
+        self.dashboard_uid = dashboard_basic["uid"]
 
-    @requests_mock.Mocker()
-    def test_get_actual_user(self, m):
-        m.get(
-            "http://localhost/api/user",
-            json={},
-        )
-        result = self.grafana.user.get_actual_user()
-        self.assertEqual(result, {})
+    def test_get_actual_user_success(self):
+        user = self.grafana.user.get_actual_user()
+        self.assertEqual("admin", user["login"])
 
-    @requests_mock.Mocker()
-    def test_change_actual_user_password(self, m):
-        m.put(
-            "http://localhost/api/user/password",
-            json={},
-        )
-        result = self.grafana.user.change_actual_user_password("old", "new")
-        self.assertEqual(result, {})
+    @pytest.mark.skip("Changing the password would leave the test suite stranded (Unauthorized).")
+    def test_change_password_success(self):
+        response = self.grafana.user.change_actual_user_password("admin", "adminadmin")
+        self.assertEqual("User password changed", response["message"])
 
-    @requests_mock.Mocker()
-    def test_switch_user_organisation(self, m):
-        m.post(
-            "http://localhost/api/users/foo/using/acme",
-            json={},
-        )
-        result = self.grafana.user.switch_user_organisation("foo", "acme")
-        self.assertEqual(result, {})
+    def test_change_password_invalid(self):
+        def probe():
+            self.grafana.user.change_actual_user_password("invalid", "new")
 
-    @requests_mock.Mocker()
-    def test_switch_actual_user_organisation(self, m):
-        m.post(
-            "http://localhost/api/user/using/acme",
-            json={},
-        )
-        result = self.grafana.user.switch_actual_user_organisation("acme")
-        self.assertEqual(result, {})
+        if Version(self.grafana.version) >= Version("11"):
+            with self.assertRaises(GrafanaBadInputError) as context:
+                probe()
+            self.assertEqual(400, context.exception.status_code)
+            self.assertIn("Invalid old password", context.exception.message)
+        else:
+            with self.assertRaises(GrafanaUnauthorizedError) as context:
+                probe()
+            self.assertEqual(401, context.exception.status_code)
+            self.assertIn("Unauthorized", context.exception.message)
 
-    @requests_mock.Mocker()
-    def test_get_actual_user_organisations(self, m):
-        m.get(
-            "http://localhost/api/user/orgs",
-            json=[],
-        )
+    def test_change_password_too_short(self):
+        with self.assertRaises(GrafanaBadInputError) as context:
+            self.grafana.user.change_actual_user_password("admin", "new")
+        self.assertEqual(400, context.exception.status_code)
+        self.assertIn("New password is too short", context.exception.message)
+
+    # @pytest.mark.skip("Currently fails (Unauthorized).")
+    def test_switch_user_organisation_success(self):
+        response = self.grafana.user.switch_user_organisation(self.user_id, self.organization_id)
+        self.assertEqual("Active organization changed", response["message"])
+
+    def test_switch_user_organisation_unknown_user(self):
+        with self.assertRaises(GrafanaUnauthorizedError) as context:
+            self.grafana.user.switch_user_organisation(99, self.organization_id)
+        self.assertEqual(401, context.exception.status_code)
+        self.assertIn("Unauthorized", context.exception.message)
+
+    def test_switch_user_organisation_unknown_org(self):
+        def probe():
+            return self.grafana.user.switch_user_organisation(self.user_id, "acme")
+
+        if Version(self.grafana.version) >= Version("8"):
+            with self.assertRaises(GrafanaBadInputError) as context:
+                probe()
+            self.assertEqual(400, context.exception.status_code)
+            self.assertIn("orgId is invalid", context.exception.message)
+        else:
+            with self.assertRaises(GrafanaUnauthorizedError) as context:
+                probe()
+            self.assertEqual(401, context.exception.status_code)
+            self.assertIn("Unauthorized", context.exception.message)
+
+    def test_switch_actual_user_organisation_success(self):
+        response = self.grafana.user.switch_actual_user_organisation(self.organization_id)
+        self.assertEqual("Active organization changed", response["message"])
+
+    def test_switch_actual_user_organisation_unknown(self):
+        with self.assertRaises(GrafanaClientError) as context:
+            self.grafana.user.switch_actual_user_organisation("unknown")
+        if Version(self.grafana.version) >= Version("8"):
+            self.assertEqual(400, context.exception.status_code)
+            self.assertIn("id is invalid", context.exception.message)
+        else:
+            self.assertEqual(401, context.exception.status_code)
+            self.assertIn("Unauthorized", context.exception.message)
+
+    def test_get_actual_user_organisations(self):
         result = self.grafana.user.get_actual_user_organisations()
-        self.assertEqual(result, [])
-
-    @requests_mock.Mocker()
-    def test_star_actual_user_dashboard(self, m):
-        m.post(
-            "http://localhost/api/user/stars/dashboard/987vb7t33",
-            json={},
-        )
-        result = self.grafana.user.star_actual_user_dashboard("987vb7t33")
-        self.assertEqual(result, {})
-
-    @requests_mock.Mocker()
-    def test_unstar_actual_user_dashboard(self, m):
-        m.delete(
-            "http://localhost/api/user/stars/dashboard/987vb7t33",
-            json={},
-        )
-        result = self.grafana.user.unstar_actual_user_dashboard("987vb7t33")
-        self.assertEqual(result, {})
-
-    @requests_mock.Mocker()
-    def test_get_preferences(self, m):
-        m.get(
-            "http://localhost/api/user/preferences",
-            json={"theme": "", "homeDashboardId": 0, "timezone": ""},
+        self.assertEqual(
+            [
+                {"name": "Main Org.", "orgId": 1, "role": "Admin"},
+                {"name": "Testdrive Org.", "orgId": mock.ANY, "role": "Admin"},
+            ],
+            result,
         )
 
-        result = self.grafana.user.get_preferences()
-        self.assertEqual(result["homeDashboardId"], 0)
+    def test_star_dashboard_by_uid(self):
+        if Version(self.grafana.version) < Version("9"):
+            pytest.skip("Starring dashboards by uid only supported by Grafana 9 and higher.")
+        response = self.grafana.user.star_dashboard(self.dashboard_uid)
+        self.assertEqual("Dashboard starred!", response["message"])
 
-    @requests_mock.Mocker()
-    def test_update_preferences(self, m):
-        m.put(
-            "http://localhost/api/user/preferences",
-            json={"message": "Preferences updated"},
-        )
-        preference = self.grafana.user.update_preferences(
-            PersonalPreferences(theme="", homeDashboardId=999, timezone="utc")
-        )
-        self.assertEqual(preference["message"], "Preferences updated")
+    def test_unstar_dashboard_by_uid(self):
+        if Version(self.grafana.version) < Version("9"):
+            pytest.skip("Starring dashboards by uid only supported by Grafana 9 and higher.")
+        response = self.grafana.user.unstar_dashboard(self.dashboard_uid)
+        self.assertEqual("Dashboard unstarred", response["message"])
 
-    @requests_mock.Mocker()
-    def test_patch_preferences(self, m):
-        m.patch(
-            "http://localhost/api/user/preferences",
-            json={"message": "Preferences updated"},
-        )
-        preference = self.grafana.user.patch_preferences(PersonalPreferences(homeDashboardUID="zgjG8dKVz"))
-        self.assertEqual(preference["message"], "Preferences updated")
+    def test_star_dashboard_by_id(self):
+        if Version(self.grafana.version) >= Version("12"):
+            pytest.skip("Starring dashboards by id only supported until Grafana 11.")
+        response = self.grafana.user.star_dashboard(self.dashboard_id)
+        self.assertEqual("Dashboard starred!", response["message"])
+
+    def test_unstar_dashboard_by_id(self):
+        if Version(self.grafana.version) >= Version("12"):
+            pytest.skip("Starring dashboards by id only supported until Grafana 11.")
+        response = self.grafana.user.unstar_dashboard(self.dashboard_id)
+        self.assertEqual("Dashboard unstarred", response["message"])
+
+    def test_get_preferences(self):
+        prefs = self.grafana.user.get_preferences()
+        if Version(self.grafana.version) >= Version("9"):
+            self.assertEqual({}, prefs)
+        elif Version(self.grafana.version) >= Version("8"):
+            self.assertEqual(["homeDashboardId", "navbar", "theme", "timezone", "weekStart"], sorted(prefs.keys()))
+        else:
+            self.assertEqual({"homeDashboardId": 0, "theme": "", "timezone": ""}, prefs)
+
+    def test_update_preferences_success(self):
+        response = self.grafana.user.update_preferences(PersonalPreferences(theme="", timezone="utc"))
+        self.assertEqual("Preferences updated", response["message"])
+
+    def test_update_preferences_unknown_dashboard(self):
+        def probe():
+            return self.grafana.user.update_preferences(PersonalPreferences(homeDashboardId=999))
+
+        if Version(self.grafana.version) >= Version("12"):
+            with self.assertRaises(GrafanaClientError) as context:
+                probe()
+            self.assertEqual(404, context.exception.status_code)
+            self.assertIn("Dashboard not found", context.exception.message)
+        else:
+            response = probe()
+            self.assertEqual("Preferences updated", response["message"])
+
+    def test_patch_preferences_success(self):
+
+        def probe():
+            return self.grafana.user.patch_preferences(PersonalPreferences(homeDashboardUID=self.dashboard_uid))
+
+        if Version(self.grafana.version) >= Version("8"):
+            response = probe()
+            self.assertEqual("Preferences updated", response["message"])
+        else:
+            with self.assertRaises(GrafanaClientError) as context:
+                probe()
+            self.assertEqual(404, context.exception.status_code)
+            self.assertRegex(context.exception.message, "Not found")
+
+    def test_patch_preferences_unknown_dashboard(self):
+        grafana7 = Version("7") <= Version(self.grafana.version) < Version("8")
+
+        def probe():
+            return self.grafana.user.patch_preferences(PersonalPreferences(homeDashboardUID="unknown"))
+
+        if Version(self.grafana.version) >= Version("9") or grafana7:
+            with self.assertRaises(GrafanaClientError) as context:
+                probe()
+            self.assertEqual(404, context.exception.status_code)
+            self.assertRegex(context.exception.message, "(Dashboard )?[Nn]ot found")
+        else:
+            response = probe()
+            self.assertEqual("Preferences updated", response["message"])
