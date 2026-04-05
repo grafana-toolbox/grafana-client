@@ -107,7 +107,6 @@ class ServiceAccount(Base):
         https://grafana.com/docs/grafana/latest/developer-resources/api-reference/http-api/serviceaccount/#search-service-accounts-with-paging
         """
         list_of_sa = []
-        sa_on_page = None
         show_sa_path = "/serviceaccounts/search"
         params = []
         if query:
