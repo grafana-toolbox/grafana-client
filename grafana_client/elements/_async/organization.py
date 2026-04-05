@@ -28,12 +28,20 @@ class Organization(Base):
 
     async def create_organization(self, organization):
         """
+        Create Organization
+        https://grafana.com/docs/grafana/v12.0/developers/http_api/org/#create-organization
 
         :param organization:
         :return:
         """
         create_orgs_path = "/orgs"
-        return await self.client.POST(create_orgs_path, json={"name": organization["name"]})
+        if isinstance(organization, str):
+            organization_name = organization
+        elif isinstance(organization, dict):
+            organization_name = organization["name"]
+        else:
+            raise TypeError("Organization must be str or dict")
+        return await self.client.POST(create_orgs_path, json={"name": organization_name})
 
     async def update_current_organization(self, organization):
         """
@@ -182,6 +190,8 @@ class Organizations(Base):
 
     async def organization_user_add(self, organization_id, user):
         """
+        Add User in Organization
+        https://grafana.com/docs/grafana/v12.0/developers/http_api/org/#add-user-in-organization
 
         :param organization_id:
         :param user:
@@ -192,6 +202,8 @@ class Organizations(Base):
 
     async def organization_user_update(self, organization_id, user_id, user_role):
         """
+        Update Users in Organization
+        https://grafana.com/docs/grafana/v10.0/developers/http_api/org/#update-users-in-organization
 
         :param organization_id:
         :param user_id:
@@ -203,6 +215,8 @@ class Organizations(Base):
 
     async def organization_user_delete(self, organization_id, user_id):
         """
+        Delete User in Organization
+        https://grafana.com/docs/grafana/v12.0/developers/http_api/org/#delete-user-in-organization
 
         :param organization_id:
         :param user_id:
