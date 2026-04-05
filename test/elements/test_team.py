@@ -1,362 +1,167 @@
-import json
+import sys
 import unittest
 
+import pytest
+from verlib2 import Version
+
 from grafana_client import GrafanaApi
+from grafana_client.client import GrafanaClientError, GrafanaServerError
 from grafana_client.model import PersonalPreferences
 
-from ..compat import requests_mock
+pytestmark = pytest.mark.integration
 
 
+@unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class TeamsTestCase(unittest.TestCase):
-    def setUp(self):
-        self.grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="http")
+    @pytest.fixture(autouse=True)
+    def use_fixtures(self, grafana_provisioned: GrafanaApi, user_testdrive, dashboard_uid: str):
+        self.grafana = grafana_provisioned
+        self.user = user_testdrive
+        self.user_id = self.user["id"]
+        self.dashboard_uid = dashboard_uid
+        self.first_team = self.grafana.teams.add_team("my team")
+        self.second_team = self.grafana.teams.add_team("SecondTeam")
+        self.first_team_id = self.first_team["teamId"]
+        self.second_team_id = self.second_team["teamId"]
 
-    @requests_mock.Mocker()
-    def test_search_teams_url_encodes_query(self, m):
-        m.get(
-            "http://localhost/api/teams/search?query=my%20team&page=1",
-            json={
-                "totalCount": 1,
-                "teams": [
-                    {
-                        "id": 1,
-                        "orgId": 1,
-                        "name": "MyTestTeam",
-                        "email": "",
-                        "avatarUrl": "/avatar/3f49c15916554246daa714b9bd0ee398",
-                        "memberCount": 1,
-                    }
-                ],
-                "page": 1,
-                "perPage": 1000,
-            },
-        )
+    def test_search_teams_url_encodes_query(self):
         teams = self.grafana.teams.search_teams("my team")
-        self.assertEqual(teams[0]["name"], "MyTestTeam")
-        self.assertEqual(len(teams), 1)
+        self.assertEqual(1, len(teams))
+        self.assertEqual("my team", teams[0]["name"])
 
-    @requests_mock.Mocker()
-    def test_search_teams_loads_all_pages(self, m):
-        m.get(
-            "http://localhost/api/teams/search?query=team&page=1&perpage=1",
-            json={
-                "totalCount": 2,
-                "teams": [
-                    {
-                        "id": 1,
-                        "orgId": 1,
-                        "name": "MyTestTeam",
-                        "email": "",
-                        "avatarUrl": "/avatar/3f49c15916554246daa714b9bd0ee398",
-                        "memberCount": 1,
-                    }
-                ],
-                "page": 1,
-                "perPage": 1,
-            },
-        )
-
-        m.get(
-            "http://localhost/api/teams/search?query=team&page=2&perpage=1",
-            json={
-                "totalCount": 2,
-                "teams": [
-                    {
-                        "id": 2,
-                        "orgId": 1,
-                        "name": "SecondTeam",
-                        "email": "",
-                        "avatarUrl": "/avatar/3f49c15916554246daa714b9bd0ee398",
-                        "memberCount": 23,
-                    }
-                ],
-                "page": 2,
-                "perPage": 1,
-            },
-        )
-        m.get(
-            "http://localhost/api/teams/search?query=team&page=3&perpage=1",
-            json={
-                "totalCount": 2,
-                "teams": [],
-                "page": 3,
-                "perPage": 1,
-            },
-        )
+    def test_search_teams_loads_all_pages(self):
         teams = self.grafana.teams.search_teams("team", perpage=1)
-        self.assertEqual(teams[0]["name"], "MyTestTeam")
-        self.assertEqual(teams[1]["name"], "SecondTeam")
-        self.assertEqual(len(teams), 2)
+        self.assertEqual(2, len(teams))
+        self.assertEqual("my team", teams[1]["name"])
+        self.assertEqual("SecondTeam", teams[0]["name"])
 
-    @requests_mock.Mocker()
-    def test_search_teams_only_loads_requested_page(self, m):
-        m.get(
-            "http://localhost/api/teams/search?query=my%20team&page=2",
-            json={
-                "totalCount": 10,
-                "teams": [
-                    {
-                        "id": 2,
-                        "orgId": 1,
-                        "name": "MyTestTeam",
-                        "email": "",
-                        "avatarUrl": "/avatar/3f49c15916554246daa714b9bd0ee398",
-                        "memberCount": 1,
-                    }
-                ],
-                "page": 1,
-                "perPage": 1,
-            },
-        )
-        teams = self.grafana.teams.search_teams("my team", 2)
-        self.assertEqual(teams[0]["name"], "MyTestTeam")
-        self.assertEqual(len(teams), 1)
+    def test_search_teams_only_loads_requested_page(self):
+        teams = self.grafana.teams.search_teams("my team", page=2)
+        self.assertEqual(0, len(teams))
 
-    @requests_mock.Mocker()
-    def test_search_teams_perpage(self, m):
-        m.get(
-            "http://localhost/api/teams/search?query=my%20team&page=1&perpage=5",
-            json={"page": 1, "totalCount": 7, "teams": [{"name": "FirstTeam"}, {"name": "SecondTeam"}], "perPage": 5},
-        )
-        m.get(
-            "http://localhost/api/teams/search?query=my%20team&page=2&perpage=5",
-            json={"page": 2, "totalCount": 7, "teams": [], "perPage": 5},
-        )
-        teams = self.grafana.teams.search_teams("my team", perpage=5)
-        self.assertEqual(len(teams), 2)
+    def test_search_teams_perpage(self):
+        teams = self.grafana.teams.search_teams("team", perpage=5)
+        self.assertEqual(2, len(teams))
 
-    @requests_mock.Mocker()
-    def test_get_team_by_name(self, m):
-        m.get(
-            "http://localhost/api/teams/search?name=my%20team",
-            json={
-                "totalCount": 1,
-                "teams": [
-                    {
-                        "id": 2,
-                        "orgId": 1,
-                        "name": "my team",
-                        "email": "",
-                        "avatarUrl": "/avatar/3f49c15916554246daa714b9bd0ee398",
-                        "memberCount": 1,
-                    }
-                ],
-                "page": 1,
-                "perPage": 1000,
-            },
-        )
+    def test_get_team_by_name(self):
         teams = self.grafana.teams.get_team_by_name("my team")
-        self.assertEqual(teams[0]["name"], "my team")
-        self.assertEqual(len(teams), 1)
+        self.assertEqual("my team", teams[0]["name"])
+        self.assertEqual(1, len(teams))
 
-    @requests_mock.Mocker()
-    def test_get_team(self, m):
-        m.get(
-            "http://localhost/api/teams/1",
-            json={
-                "id": 1,
-                "orgId": 1,
-                "name": "MyTestTeam",
-                "email": "",
-                "created": "2017-12-15T10:40:45+01:00",
-                "updated": "2017-12-15T10:40:45+01:00",
-            },
-        )
-        team = self.grafana.teams.get_team("1")
-        self.assertEqual(team["name"], "MyTestTeam")
+    def test_get_team_by_id_success(self):
+        team = self.grafana.teams.get_team(1)
+        self.assertEqual("Foo Fighters", team["name"])
 
-    @requests_mock.Mocker()
-    def test_add_team_success(self, m):
-        m.post(
-            "http://localhost/api/teams",
-            json={"message": "Team created", "teamId": 2},
-        )
+    def test_get_team_by_id_unknown(self):
+        with self.assertRaises(GrafanaClientError) as context:
+            self.grafana.teams.get_team(99)
+        self.assertEqual(404, context.exception.status_code)
+        self.assertIn("Team not found", context.exception.message)
+
+    def test_add_team_success(self):
         team = {"name": "MySecondTestTeam", "email": "email@example.org"}
-        new_team = self.grafana.teams.add_team(team)
-        self.assertEqual(new_team["teamId"], 2)
+        response = self.grafana.teams.add_team(team)
+        self.assertEqual("Team created", response["message"])
 
-    @requests_mock.Mocker()
-    def test_add_team_invalid_payload(self, m):
-        """
-        Accidentally send serialized JSON instead of a data structure.
-        """
-        m.post(
-            "http://localhost/api/teams",
-            json={"message": "bad request data", "traceID": "00000000000000000000000000000000"},
-            status_code=400,
-        )
-        team_as_json = json.dumps({"name": "MySecondTestTeam", "email": "email@example.org"})
-
-        with self.assertRaises(TypeError) as ex:
-            self.grafana.teams.add_team(team_as_json)
-        self.assertEqual(
-            "JSON request payload has invalid shape. Accepted are dictionaries and lists. The type is: <class 'str'>",
-            str(ex.exception),
-        )
-
-    @requests_mock.Mocker()
-    def test_update_team(self, m):
-        m.put(
-            "http://localhost/api/teams/3",
-            json={"message": "Team updated"},
-        )
+    def test_update_team_success(self):
         team = {"name": "MyThirdTestTeam", "email": "email@example.org"}
-        response = self.grafana.teams.update_team(3, team)
-        self.assertEqual(response["message"], "Team updated")
+        response = self.grafana.teams.update_team(self.first_team_id, team)
+        self.assertEqual("Team updated", response["message"])
 
-    @requests_mock.Mocker()
-    def test_delete_team(self, m):
-        m.delete(
-            "http://localhost/api/teams/3",
-            json={"message": "Team deleted"},
-        )
-        response = self.grafana.teams.delete_team(3)
-        self.assertEqual(response, {"message": "Team deleted"})
+    def test_update_team_unknown(self):
+        def probe():
+            self.grafana.teams.update_team(99, {})
 
-    @requests_mock.Mocker()
-    def test_get_team_members(self, m):
-        m.get(
-            "http://localhost/api/teams/1/members",
-            json=[
-                {
-                    "orgId": 1,
-                    "teamId": 1,
-                    "userId": 3,
-                    "email": "user1@email.com",
-                    "login": "user1",
-                    "avatarUrl": "/avatar/1b3c32f6386b0185c40d359cdc733a79",
-                }
-            ],
-        )
-        members = self.grafana.teams.get_team_members("1")
-        self.assertEqual(members[0]["login"], "user1")
+        if Version(self.grafana.version) >= Version("12"):
+            with self.assertRaises(GrafanaClientError) as context:
+                probe()
+            self.assertEqual(404, context.exception.status_code)
+            self.assertIn("Team not found", context.exception.message)
+        else:
+            with self.assertRaises(GrafanaServerError) as context:
+                probe()
+            self.assertEqual(500, context.exception.status_code)
+            self.assertIn("Failed to update Team", context.exception.message)
 
-    @requests_mock.Mocker()
-    def test_add_team_member(self, m):
-        m.post(
-            "http://localhost/api/teams/1/members",
-            json={"message": "Member added to Team"},
-        )
-        history = m.request_history
-        add_res = self.grafana.teams.add_team_member("1", "3")
-        self.assertEqual(history[0].json()["userId"], "3")
-        self.assertEqual(add_res["message"], "Member added to Team")
+    def test_delete_team_success(self):
+        response = self.grafana.teams.delete_team(self.first_team_id)
+        self.assertEqual("Team deleted", response["message"])
 
-    @requests_mock.Mocker()
-    def test_remove_team_member(self, m):
-        m.delete(
-            "http://localhost/api/teams/13/members/2",
-            json={"message": "Team member removed"},
-        )
-        remove_res = self.grafana.teams.remove_team_member("13", "2")
-        self.assertEqual(remove_res["message"], "Team member removed")
+    def test_delete_team_unknown(self):
+        with self.assertRaises(GrafanaClientError) as context:
+            self.grafana.teams.delete_team(99)
+        self.assertEqual(404, context.exception.status_code)
+        self.assertRegex(context.exception.message, "(Team not found|Failed to delete Team. ID not found)")
 
-    @requests_mock.Mocker()
-    def test_get_team_preferences(self, m):
+    def test_get_team_members(self):
+        members = self.grafana.teams.get_team_members(self.first_team_id)
+        if Version(self.grafana.version) >= Version("9"):
+            self.assertEqual("admin", members[0]["login"])
+        else:
+            self.assertEqual([], members)
+
+    def test_add_team_member(self):
+        response = self.grafana.teams.add_team_member(self.first_team_id, self.user_id)
+        self.assertEqual("Member added to Team", response["message"])
+
+    def test_remove_team_member(self):
+        self.grafana.teams.add_team_member(self.first_team_id, self.user_id)
+        response = self.grafana.teams.remove_team_member(self.first_team_id, self.user_id)
+        self.assertEqual("Team Member removed", response["message"])
+
+    def test_get_team_preferences(self):
         """
         Legacy method.
         """
-        m.get(
-            "http://localhost/api/teams/1/preferences",
-            json={"theme": "", "homeDashboardId": 0, "timezone": ""},
-        )
-        prefs = self.grafana.teams.get_team_preferences("1")
-        self.assertEqual(prefs["homeDashboardId"], 0)
+        prefs = {"theme": "light", "homeDashboardId": 0, "timezone": "utc"}
+        self.grafana.teams.update_team_preferences(self.first_team_id, prefs)
+        prefs = self.grafana.teams.get_team_preferences(self.first_team_id)
+        self.assertEqual("utc", prefs["timezone"])
 
-    @requests_mock.Mocker()
-    def test_update_team_preferences(self, m):
+    def test_update_team_preferences(self):
         """
         Legacy method, using a dictionary.
         """
-        m.put(
-            "http://localhost/api/teams/1/preferences",
-            json={"message": "Preferences updated"},
-        )
         prefs = {"theme": "light", "homeDashboardId": 0, "timezone": "utc"}
+        response = self.grafana.teams.update_team_preferences(self.first_team_id, prefs)
+        self.assertEqual("Preferences updated", response["message"])
 
-        updates = self.grafana.teams.update_team_preferences("1", prefs)
-        history = m.request_history
-        json_payload = history[0].json()
-        self.assertEqual(json_payload["theme"], "light")
-        self.assertEqual(updates["message"], "Preferences updated")
-
-    @requests_mock.Mocker()
-    def test_get_preferences(self, m):
+    def test_get_preferences(self):
         """
         Modern method.
         """
-        m.get(
-            "http://localhost/api/teams/1/preferences",
-            json={"theme": "", "homeDashboardId": 0, "timezone": ""},
-        )
-        prefs = self.grafana.teams.get_preferences("1")
-        self.assertEqual(prefs["homeDashboardId"], 0)
+        prefs = self.grafana.teams.get_preferences(self.second_team_id)
+        if Version(self.grafana.version) >= Version("9"):
+            self.assertEqual({}, prefs)
+        elif Version(self.grafana.version) >= Version("8"):
+            self.assertEqual(["homeDashboardId", "navbar", "theme", "timezone", "weekStart"], sorted(prefs.keys()))
+        else:
+            self.assertEqual(["homeDashboardId", "theme", "timezone"], sorted(prefs.keys()))
 
-    @requests_mock.Mocker()
-    def test_update_preferences(self, m):
+    def test_update_preferences(self):
         """
         Modern method, using a `PersonalPreferences` instance.
         """
-        m.put(
-            "http://localhost/api/teams/1/preferences",
-            json={"message": "Preferences updated"},
-        )
         prefs = PersonalPreferences(theme="light", homeDashboardId=0, timezone="utc")
+        response = self.grafana.teams.update_preferences(self.first_team_id, prefs)
+        self.assertEqual("Preferences updated", response["message"])
 
-        updates = self.grafana.teams.update_preferences("1", prefs)
-        history = m.request_history
-        json_payload = history[0].json()
-        self.assertEqual(json_payload["theme"], "light")
-        self.assertEqual(updates["message"], "Preferences updated")
-
-    @requests_mock.Mocker()
-    def test_get_team_external_group(self, m):
-        m.get(
-            "http://localhost/api/teams/1/groups",
-            json=[
-                {
-                    "orgId": 1,
-                    "teamId": 1,
-                    "groupId": "group",
-                }
-            ],
-        )
-        groups = self.grafana.teams.get_team_external_group("1")
+    def test_get_team_external_group(self):
+        self.check_external_groups()
+        self.grafana.teams.add_team_external_group(self.first_team_id, "group")
+        groups = self.grafana.teams.get_team_external_group(self.first_team_id)
         self.assertEqual(groups[0]["groupId"], "group")
 
-    @requests_mock.Mocker()
-    def test_add_team_external_group(self, m):
-        m.post(
-            "http://localhost/api/teams/1/groups",
-            json={"message": "Group added to Team"},
-        )
-        r = self.grafana.teams.add_team_external_group("1", "group")
-        self.assertEqual(r["message"], "Group added to Team")
+    def test_add_team_external_group(self):
+        self.check_external_groups()
+        response = self.grafana.teams.add_team_external_group(self.first_team_id, "group")
+        self.assertEqual("Group added to Team", response["message"])
 
-    @requests_mock.Mocker()
-    def test_remove_team_external_group_grafana_1020(self, m):
-        m.get(
-            "http://localhost/api/frontend/settings",
-            json={"buildInfo": {"commit": "unknown", "version": "10.2.0"}},
-        )
+    def test_remove_team_external_group(self):
+        self.check_external_groups()
+        response = self.grafana.teams.remove_team_external_group(self.first_team_id, "a_external_group")
+        self.assertEqual("Team group removed", response["message"])
 
-        m.delete(
-            "http://localhost/api/teams/42/groups?groupId=a_external_group",
-            json={"message": "Team group removed"},
-        )
-        r = self.grafana.teams.remove_team_external_group("42", "a_external_group")
-        self.assertEqual(r["message"], "Team group removed")
-
-    @requests_mock.Mocker()
-    def test_remove_team_external_group(self, m):
-        m.get(
-            "http://localhost/api/frontend/settings",
-            json={"buildInfo": {"commit": "unknown", "version": "10.1.0"}},
-        )
-
-        m.delete(
-            "http://localhost/api/teams/42/groups/a_external_group",
-            json={"message": "Team group removed"},
-        )
-        r = self.grafana.teams.remove_team_external_group("42", "a_external_group")
-        self.assertEqual(r["message"], "Team group removed")
+    def check_external_groups(self):
+        if Version(self.grafana.version) >= Version("7"):
+            pytest.skip("External groups not supported by Grafana 7 and higher.")
