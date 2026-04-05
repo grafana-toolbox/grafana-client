@@ -1,6 +1,7 @@
 import typing as t
 
 import pytest
+from verlib2 import Version
 
 from grafana_client import GrafanaApi
 from grafana_client.client import GrafanaClientError
@@ -125,6 +126,8 @@ def reset_grafana(grafana_api, dashboard_uid):
     # Reset context.
     grafana_api.organizations.switch_organization(organization_id=1)
 
+    grafana_version = Version(grafana_api.version)
+
     # Reset folders and dashboards.
     for folder in grafana_api.folder.get_all_folders():
         try:
@@ -137,7 +140,13 @@ def reset_grafana(grafana_api, dashboard_uid):
     for datasource in grafana_api.datasource.list_datasources():
         grafana_api.datasource.delete_datasource_by_uid(datasource["uid"])
 
-    # Reset users and organizations.
+    # Reset tokens, service accounts, users, and organizations.
+    if grafana_version >= Version("9"):
+        for account in grafana_api.serviceaccount.search_streaming():
+            account_id = account["id"]
+            for token in grafana_api.serviceaccount.get_tokens(account_id):
+                grafana_api.serviceaccount.delete_token(account_id, token["id"])
+            grafana_api.serviceaccount.delete(account_id)
     for user in grafana_api.users.search_users():
         if user["id"] != 1:
             grafana_api.admin.delete_user(user["id"])
@@ -148,11 +157,8 @@ def reset_grafana(grafana_api, dashboard_uid):
 
     # Reset user dashboard stars.
     # TODO: It looks like starring a dashboard hasn't made it into an API wrapper yet.
-    try:
+    if grafana_version >= Version("11"):
         grafana_api.client.DELETE(f"/user/stars/dashboard/uid/{dashboard_uid}")
-    except GrafanaClientError as ex:
-        if ex.status_code != 404:
-            raise
 
 
 # ruff: disable[ARG001]
