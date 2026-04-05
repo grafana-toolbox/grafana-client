@@ -83,6 +83,8 @@ class Teams(Base):
         :return:
         """
         add_team_path = "/teams"
+        if isinstance(team, str):
+            team = {"name": team}
         return await self.client.POST(add_team_path, json=team)
 
     async def update_team(self, team_id, team):
