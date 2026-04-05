@@ -1,3 +1,12 @@
+"""
+Alerting provisioning HTTP API.
+
+Starting with v9.0, the Legacy Alerting Notification Channels API is deprecated.
+It has been removed with Grafana 11.
+
+https://grafana.com/docs/grafana/v12.0/developers/http_api/alerting_provisioning/
+"""
+
 from .base import Base
 
 

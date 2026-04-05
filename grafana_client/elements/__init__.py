@@ -1,6 +1,6 @@
 from .admin import Admin
-from .alerting import Alerting
-from .alertingprovisioning import AlertingProvisioning
+from .alerting_legacy import Alerting, Notifications
+from .alerting_provisioning import AlertingProvisioning
 from .annotations import Annotations
 from .base import Base
 from .dashboard import Dashboard
@@ -9,7 +9,6 @@ from .datasource import Datasource
 from .folder import Folder
 from .health import Health
 from .libraryelement import LibraryElement
-from .notifications import Notifications
 from .organization import Organization, Organizations
 from .plugin import Plugin
 from .rbac import Rbac
