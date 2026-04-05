@@ -1,8 +1,12 @@
 """
-https://grafana.com/docs/grafana/latest/developers/http_api/serviceaccount/
+Service accounts API.
+
 https://grafana.com/docs/grafana/latest/administration/service-accounts/
-https://grafana.com/docs/grafana/latest/developers/http_api/create-api-tokens-for-org/
+https://grafana.com/docs/grafana/latest/developer-resources/api-reference/http-api/serviceaccount/
+https://grafana.com/docs/grafana/latest/developer-resources/api-reference/http-api/examples/create-api-tokens-for-org/
 """
+
+import typing as t
 
 from .base import Base
 
@@ -97,13 +101,12 @@ class ServiceAccount(Base):
         )
         return self.client.DELETE(delete_service_account_token_path)
 
-    def search(self, query=None, page=None, perpage=None):
+    def search(self, query=None, page=None, perpage=None) -> t.List[t.Dict]:
         """
-
-        :return:
+        Search service accounts with paging.
+        https://grafana.com/docs/grafana/latest/developer-resources/api-reference/http-api/serviceaccount/#search-service-accounts-with-paging
         """
         list_of_sa = []
-        sa_on_page = None
         show_sa_path = "/serviceaccounts/search"
         params = []
         if query:
@@ -136,9 +139,10 @@ class ServiceAccount(Base):
 
         return list_of_sa
 
-    def search_one(self, service_account_name=""):
+    def search_one(self, service_account_name="") -> t.Dict:
         """
         Find a single service account by name. Raises errors on multiple or no matches.
+        https://grafana.com/docs/grafana/latest/developer-resources/api-reference/http-api/serviceaccount/#search-service-accounts-with-paging
 
         :param service_account_name:
         :return:
@@ -150,3 +154,19 @@ class ServiceAccount(Base):
             raise ValueError("More than one service account matched")
         else:
             raise ValueError("No service account matched")
+
+    def search_streaming(self, query=None, page=None, perpage=None) -> t.Generator[t.Dict, None, None]:
+        """
+        Search service accounts with automatic paging. Returns a generator of dictionaries.
+        https://grafana.com/docs/grafana/latest/developer-resources/api-reference/http-api/serviceaccount/#search-service-accounts-with-paging
+        """
+        for bundle in self.search(query=query, page=page, perpage=perpage):
+            for account in bundle["serviceAccounts"]:
+                yield account
+
+    def search_all(self, query=None, page=None, perpage=None) -> t.List[t.Dict]:
+        """
+        Search service accounts with automatic paging. Returns a list of dictionaries.
+        https://grafana.com/docs/grafana/latest/developer-resources/api-reference/http-api/serviceaccount/#search-service-accounts-with-paging
+        """
+        return list(self.search_streaming(query=query, page=page, perpage=perpage))
