@@ -22,6 +22,15 @@ class Rbac(Base):
         roles_path = "/access-control/roles"
         return await self.client.GET(roles_path)
 
+    async def create_rbac_role(self, role):
+        """
+        The Rbac is only available in Grafana Enterprise.
+
+        :return:
+        """
+        roles_path = "/access-control/roles"
+        return await self.client.POST(roles_path, json=role)
+
     async def add_rbac_role_team(self, team_id, role_uid):
         """
         The Rbac is only available in Grafana Enterprise.
