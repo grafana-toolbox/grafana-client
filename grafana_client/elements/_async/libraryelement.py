@@ -20,8 +20,6 @@ class LibraryElement(Base):
         :param element_uid:
         :return:
         """
-        if await self.api.version and Version(await self.api.version) < VERSION_8_2:
-            raise DeprecationWarning("Grafana versions earlier than 8.2 do not support library elements")
         get_element_path = f"/library-elements/{element_uid}"
         return await self.client.GET(get_element_path)
 
@@ -31,8 +29,6 @@ class LibraryElement(Base):
         :param element_name:
         :return:
         """
-        if await self.api.version and Version(await self.api.version) < VERSION_8_2:
-            raise DeprecationWarning("Grafana versions earlier than 8.2 do not support library elements")
         get_element_path = f"/library-elements/name/{element_name}"
         return await self.client.GET(get_element_path)
 
@@ -42,8 +38,6 @@ class LibraryElement(Base):
         :param element_uid:
         :return:
         """
-        if await self.api.version and Version(await self.api.version) < VERSION_8_2:
-            raise DeprecationWarning("Grafana versions earlier than 8.2 do not support library elements")
         get_element_connections_path = f"/library-elements/{element_uid}/connections"
         return await self.client.GET(get_element_connections_path)
 
@@ -59,8 +53,6 @@ class LibraryElement(Base):
         :param folder_uid:
         :return:
         """
-        if await self.api.version and Version(await self.api.version) < VERSION_8_2:
-            raise DeprecationWarning("Grafana versions earlier than 8.2 do not support library elements")
         json: dict = dict()
         # If the model contains a "meta" entry, use the "folderUid" entry if folder_uid isn't given
         if folder_uid is not None:
@@ -101,8 +93,6 @@ class LibraryElement(Base):
         :param folder_uid:
         :return:
         """
-        if await self.api.version and Version(await self.api.version) < VERSION_8_2:
-            raise DeprecationWarning("Grafana versions earlier than 8.2 do not support library elements")
         json: dict = dict()
         # If the model contains a "meta" entry, use the "folderUid" entry if folder_uid isn't given
         if folder_uid is not None:
@@ -142,8 +132,6 @@ class LibraryElement(Base):
         :param element_uid:
         :return:
         """
-        if await self.api.version and Version(await self.api.version) < VERSION_8_2:
-            raise DeprecationWarning("Grafana versions earlier than 8.2 do not support library elements")
         delete_element_path = f"/library-elements/{element_uid}"
         return await self.client.DELETE(delete_element_path)
 
@@ -171,8 +159,6 @@ class LibraryElement(Base):
 
         :return:
         """
-        if await self.api.version and Version(await self.api.version) < VERSION_8_2:
-            raise DeprecationWarning("Grafana versions earlier than 8.2 do not support library elements")
         list_elements_path = "/library-elements"
         params = []
 

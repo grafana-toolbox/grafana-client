@@ -19,6 +19,8 @@
 - QA: Started using integration tests across the board
 - Async: Fixed generation script and corresponding method calls
   `return self.foo()` => `return await self.foo()`
+- Deprecations: Emit warnings when using the Legacy Alerting APIs. Stop receiving
+  exceptions when using the Library Elements API.
 
 ## 5.0.2 (2026-02-15)
 - Fix: In the alert provisioning subsystem, added `disable_provenance` parameter
