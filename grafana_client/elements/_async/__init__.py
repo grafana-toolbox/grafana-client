@@ -1,6 +1,7 @@
 from .admin import Admin as AsyncAdmin
-from .alerting import Alerting as AsyncAlerting
-from .alertingprovisioning import AlertingProvisioning as AsyncAlertingProvisioning
+from .alerting_legacy import Alerting as AsyncAlerting
+from .alerting_legacy import Notifications as AsyncNotifications
+from .alerting_provisioning import AlertingProvisioning as AsyncAlertingProvisioning
 from .annotations import Annotations as AsyncAnnotations
 from .dashboard import Dashboard as AsyncDashboard
 from .dashboard_versions import DashboardVersions as AsyncDashboardVersions
@@ -8,7 +9,6 @@ from .datasource import Datasource as AsyncDatasource
 from .folder import Folder as AsyncFolder
 from .health import Health as AsyncHealth
 from .libraryelement import LibraryElement as AsyncLibraryElement
-from .notifications import Notifications as AsyncNotifications
 from .organization import Organization as AsyncOrganization
 from .organization import Organizations as AsyncOrganizations
 from .plugin import Plugin as AsyncPlugin

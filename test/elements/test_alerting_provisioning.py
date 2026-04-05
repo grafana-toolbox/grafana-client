@@ -1,4 +1,10 @@
 """
+Alerting provisioning HTTP API.
+
+Starting with v9.0, the Legacy Alerting Notification Channels API is deprecated.
+It has been removed with Grafana 11.
+
+https://grafana.com/docs/grafana/v12.0/developers/http_api/alerting_provisioning/
 https://www.percona.com/blog/copying-alert-rules-from-one-percona-monitoring-and-management-server-to-another/
 """
 
