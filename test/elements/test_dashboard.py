@@ -4,6 +4,7 @@ import unittest
 import pytest
 from verlib2 import Version
 
+from grafana_client.client import GrafanaBadInputError, GrafanaClientError
 from test.model import TestModel
 
 pytestmark = pytest.mark.integration
@@ -22,23 +23,25 @@ class DashboardTestCase(unittest.TestCase):
         dashboard = self.grafana.dashboard.get_dashboard(dashboard_uid)
         self.assertEqual(dashboard["dashboard"]["uid"], dashboard_uid)
 
-    def test_get_dashboard_by_name_grafana7(self):
+    def te2st_get_dashboard_by_name_grafana7(self):
         if Version(self.grafana.version) < Version("8"):
             dashboard = self.grafana.dashboard.get_dashboard_by_name("productionoverview")
             self.assertEqual(dashboard["dashboard"]["title"], "ProductionOverview")
         else:
             pytest.skip("Grafana 8 and higher does not support getting dashboards by slug")
 
-    def test_get_dashboard_by_name_grafana8(self):
+    def test_get_dashboard_by_name(self):
+        def probe():
+            return self.grafana.dashboard.get_dashboard_by_name("productionoverview")
+
         if Version(self.grafana.version) >= Version("8"):
-            with self.assertRaises(DeprecationWarning) as ex:
-                self.grafana.dashboard.get_dashboard_by_name("foobar")
-            self.assertEqual(
-                "Grafana 8 and higher does not support getting dashboards by slug",
-                str(ex.exception),
-            )
+            with self.assertRaises(GrafanaClientError) as context:
+                probe()
+            self.assertEqual(404, context.exception.status_code)
+            self.assertIn("Not found", context.exception.message)
         else:
-            pytest.skip("Skipping test on Grafana 7 and lower")
+            dashboard = probe()
+            self.assertEqual(self.dashboard["uid"], dashboard["dashboard"]["uid"])
 
     def test_update_dashboard_basic(self):
         """
@@ -119,9 +122,17 @@ class DashboardTestCase(unittest.TestCase):
         self.assertEqual(tags[0]["term"], "bazqux")
 
     def test_dashboard_permissions_by_id(self):
+        grafana8 = Version("8") <= Version(self.grafana.version) < Version("9")
         if Version(self.grafana.version) >= Version("12"):
             pytest.skip("Grafana 12 no longer supports accessing dashboards by id, use uids instead.")
         dashboard_id = self.dashboard["id"]
+
+        if grafana8:
+            with self.assertRaises(GrafanaBadInputError) as context:
+                self.grafana.dashboard.update_permissions_by_id(dashboard_id, TestModel.permissions())
+            self.assertEqual(400, context.exception.status_code)
+            self.assertIn("you can only override a permission to be higher", context.exception.message)
+            return
 
         response = self.grafana.dashboard.update_permissions_by_id(dashboard_id, TestModel.permissions())
         self.assertEqual(response["message"], "Dashboard permissions updated")

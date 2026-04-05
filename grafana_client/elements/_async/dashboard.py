@@ -28,8 +28,6 @@ class Dashboard(Base):
         :param dashboard_name:
         :return:
         """
-        if await self.api.version and Version(await self.api.version) >= VERSION_8:
-            raise DeprecationWarning("Grafana 8 and higher does not support getting dashboards by slug")
         get_dashboard_path = "/dashboards/db/%s" % dashboard_name
         return await self.client.GET(get_dashboard_path)
 

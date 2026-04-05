@@ -9,7 +9,16 @@ https://grafana.com/docs/grafana/v10.0/developers/http_api/alerting/
 https://grafana.com/docs/grafana/v10.0/developers/http_api/alerting_notification_channels/
 """
 
+import warnings
+
 from .base import Base
+
+
+def emit_deprecation_warning():
+    warnings.warn(
+        "The Legacy Alerting (Notification Channels) APIs were deprecated with Grafana 9 and removed with Grafana 11.",
+        DeprecationWarning,
+    )
 
 
 class Alerting(Base):
@@ -23,11 +32,13 @@ class Alerting(Base):
         :param alertrule_name:
         :return:
         """
+        emit_deprecation_warning()
         get_alertrule_path = "/ruler/grafana/api/v1/rules/%s/%s" % (folder_name, alertrule_name)
         return self.client.GET(get_alertrule_path)
 
     def get_managedalerts_all(self, datasource="grafanacloud-prom"):
         """ """
+        emit_deprecation_warning()
         get_managedalerts_path = "/prometheus/%s/api/v1/rules" % datasource
         return self.client.GET(get_managedalerts_path)
 
@@ -37,6 +48,7 @@ class Alerting(Base):
         :param alertrule:
         :return:
         """
+        emit_deprecation_warning()
         create_alertrule_path = "/ruler/grafana/api/v1/rules/%s" % folder_name
         return self.client.POST(create_alertrule_path, json=alertrule)
 
@@ -46,7 +58,7 @@ class Alerting(Base):
         @param alertrule:
         @return:
         """
-
+        emit_deprecation_warning()
         update_alertrule_path = "/ruler/grafana/api/v1/rules/%s" % folder_name
         return self.client.POST(update_alertrule_path, json=alertrule)
 
@@ -56,7 +68,7 @@ class Alerting(Base):
         :param alertrule_name:
         @return:
         """
-
+        emit_deprecation_warning()
         delete_alertrule_path = "/ruler/grafana/api/v1/rules/%s/%s" % (folder_name, alertrule_name)
         return self.client.DELETE(delete_alertrule_path)
 
@@ -72,6 +84,7 @@ class Notifications(Base):
 
         :return: all notification channels that the authenticated user has permission to view
         """
+        emit_deprecation_warning()
         get_channels_path = "/alert-notifications"
         return self.client.GET(get_channels_path)
 
@@ -81,6 +94,7 @@ class Notifications(Base):
 
         :return: all notification channels, but with less detailed information
         """
+        emit_deprecation_warning()
         lookup_channels_path = "/alert-notifications/lookup"
         return self.client.GET(lookup_channels_path)
 
@@ -91,6 +105,7 @@ class Notifications(Base):
         :param channel_uid: notification channel uid
         :return: notification channel for the given channel uid
         """
+        emit_deprecation_warning()
         get_channel_by_uid_path = "/alert-notifications/uid/%s" % channel_uid
         return self.client.GET(get_channel_by_uid_path)
 
@@ -101,6 +116,7 @@ class Notifications(Base):
         :param: notification channel id
         :return: notification channel for the given channel id
         """
+        emit_deprecation_warning()
         get_channel_by_id_path = "/alert-notifications/%s" % channel_id
         return self.client.GET(get_channel_by_id_path)
 
@@ -111,6 +127,7 @@ class Notifications(Base):
         :param: channel to be created
         :return: created channel
         """
+        emit_deprecation_warning()
         create_channel_path = "/alert-notifications"
         return self.client.POST(create_channel_path, json=channel)
 
@@ -122,6 +139,7 @@ class Notifications(Base):
         :param channel: updated version of channel
         :return: updated version of channel
         """
+        emit_deprecation_warning()
         update_channel_by_uid_path = "/alert-notifications/uid/%s" % uid
         return self.client.PUT(update_channel_by_uid_path, json=channel)
 
@@ -133,6 +151,7 @@ class Notifications(Base):
         :param channel: updated version of channel
         :return: updated version of channel
         """
+        emit_deprecation_warning()
         update_channel_by_id_path = "/alert-notifications/%s" % id
         return self.client.PUT(update_channel_by_id_path, json=channel)
 
@@ -143,6 +162,7 @@ class Notifications(Base):
         :param notification_uid: notification channel uid
         :return: result of deletion
         """
+        emit_deprecation_warning()
         delete_notification_by_uid_path = "/alert-notifications/uid/%s" % notification_uid
         return self.client.DELETE(delete_notification_by_uid_path)
 
@@ -153,5 +173,6 @@ class Notifications(Base):
         :param notification_id: notification channel id
         :return: result of deletion
         """
+        emit_deprecation_warning()
         delete_notification_by_id_path = "/alert-notifications/%s" % notification_id
         return self.client.DELETE(delete_notification_by_id_path)
