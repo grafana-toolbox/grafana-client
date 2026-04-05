@@ -14,6 +14,8 @@
 - Organization API: `create_organization` now also accepts the organization name as string
 - Team API: `add_team` now also accepts the team name as string
 - Service account API: Added convenience methods `search_streaming` and `search_all`
+- Actual User API: Improve dashboard starring, just use `start_dashboard` and
+  `unstar_dashboard` from now on, supporting both dashboard ids and uids.
 - QA: Started using integration tests across the board
 - Async: Fixed generation script and corresponding method calls
   `return self.foo()` => `return await self.foo()`
