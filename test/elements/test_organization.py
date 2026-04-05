@@ -1,221 +1,255 @@
+import sys
 import unittest
 
+import pytest
+from verlib2 import Version
+
 from grafana_client import GrafanaApi
+from grafana_client.client import GrafanaBadInputError, GrafanaClientError, GrafanaServerError, GrafanaUnauthorizedError
 from grafana_client.model import PersonalPreferences
 
-from ..compat import requests_mock
+pytestmark = pytest.mark.integration
 
 
+@unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class OrganizationTestCase(unittest.TestCase):
-    def setUp(self):
-        self.grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="http")
+    @pytest.fixture(autouse=True)
+    def use_fixtures(self, grafana_provisioned: GrafanaApi, organization_testdrive, user_testdrive, dashboard_uid):
+        self.grafana = grafana_provisioned
 
-    @requests_mock.Mocker()
-    def test_delete_snapshot_by_key(self, m):
-        m.delete(
-            "http://localhost/api/orgs/1/users/2",
-            json={"message": "User removed from organization"},
-        )
-        annotation = self.grafana.organizations.organization_user_delete(organization_id=1, user_id=2)
-        self.assertEqual(annotation["message"], "User removed from organization")
+        if Version(self.grafana.version) < Version("8"):
+            pytest.skip("Unauthorized with vanilla Grafana 7")
 
-    @requests_mock.Mocker()
-    def test_organization_preference_get(self, m):
-        m.get(
-            "http://localhost/api/org/preferences",
-            json={"theme": "", "homeDashboardId": 0, "timezone": ""},
+        self.dashboard_uid = dashboard_uid
+        self.user = user_testdrive
+        self.user_id = self.user["id"]
+        self.organization = organization_testdrive
+        self.organization_id = self.organization["orgId"]
+        self.angel_user = self.grafana.admin.create_user(
+            {
+                "login": "angel",
+                "password": "secret",
+                "OrgId": 1,
+            }
         )
 
-        result = self.grafana.organizations.organization_preference_get()
-        self.assertEqual(result["homeDashboardId"], 0)
+    def test_delete_user_by_id(self):
+        annotation = self.grafana.organizations.organization_user_delete(organization_id=1, user_id=self.user_id)
+        self.assertEqual("User removed from organization", annotation["message"])
 
-    @requests_mock.Mocker()
-    def test_organization_preference_update(self, m):
-        m.put(
-            "http://localhost/api/org/preferences",
-            json={"message": "Preferences updated"},
+    def test_preferences_update_get(self):
+        response = self.grafana.organization.update_preferences(
+            PersonalPreferences(theme="", homeDashboardUID=self.dashboard_uid, timezone="utc")
         )
-        preference = self.grafana.organizations.organization_preference_update(
-            theme="", home_dashboard_id=0, timezone="utc"
-        )
-        self.assertEqual(preference["message"], "Preferences updated")
-
-    @requests_mock.Mocker()
-    def test_get_preferences(self, m):
-        m.get(
-            "http://localhost/api/org/preferences",
-            json={"theme": "", "homeDashboardId": 0, "timezone": ""},
-        )
+        self.assertEqual(response["message"], "Preferences updated")
 
         result = self.grafana.organization.get_preferences()
-        self.assertEqual(result["homeDashboardId"], 0)
+        self.assertEqual("utc", result["timezone"])
+        if Version(self.grafana.version) < Version("9"):
+            self.assertEqual(0, result["homeDashboardId"])
+        if Version(self.grafana.version) >= Version("9"):
+            self.assertEqual(self.dashboard_uid, result["homeDashboardUID"])
 
-    @requests_mock.Mocker()
-    def test_update_preferences(self, m):
-        m.put(
-            "http://localhost/api/org/preferences",
-            json={"message": "Preferences updated"},
-        )
-        preference = self.grafana.organization.update_preferences(
-            PersonalPreferences(theme="", homeDashboardId=999, timezone="utc")
-        )
-        self.assertEqual(preference["message"], "Preferences updated")
+    def test_preferences_patch(self):
+        response = self.grafana.organization.patch_preferences(PersonalPreferences(timezone="browser"))
+        self.assertEqual("Preferences updated", response["message"])
 
-    @requests_mock.Mocker()
-    def test_patch_preferences(self, m):
-        m.patch(
-            "http://localhost/api/org/preferences",
-            json={"message": "Preferences updated"},
+    def test_organization_user_update_success(self):
+        response = self.grafana.organizations.organization_user_update(
+            organization_id=self.organization_id, user_id=self.user_id, user_role="Admin"
         )
-        preference = self.grafana.organization.patch_preferences(PersonalPreferences(homeDashboardUID="zgjG8dKVz"))
-        self.assertEqual(preference["message"], "Preferences updated")
+        self.assertEqual("Organization user updated", response["message"])
 
-    @requests_mock.Mocker()
-    def test_organization_user_update(self, m):
-        m.patch(
-            "http://localhost/api/orgs/1/users/2",
-            json={"message": "Organization user updated"},
-        )
-        preference = self.grafana.organizations.organization_user_update(
-            organization_id=1, user_id=2, user_role="Admin"
-        )
-        self.assertEqual(preference["message"], "Organization user updated")
+    def test_organization_user_update_unknown_org(self):
+        grafana10 = Version("10") <= Version(self.grafana.version) < Version("11")
 
-    @requests_mock.Mocker()
-    def test_organization_user_add(self, m):
-        m.post(
-            "http://localhost/api/orgs/1/users",
-            json={"message": "User added to organization"},
-        )
-        preference = self.grafana.organizations.organization_user_add(
-            organization_id=1, user={"loginOrEmail": "user", "role": "Viewer"}
-        )
-        self.assertEqual(preference["message"], "User added to organization")
+        def probe():
+            self.grafana.organizations.organization_user_update(
+                organization_id=99, user_id=self.user_id, user_role="Admin"
+            )
 
-    @requests_mock.Mocker()
-    def test_organization_user_list(self, m):
-        m.get(
-            "http://localhost/api/orgs/1/users",
-            json=[{"orgId": 1, "userId": 1, "email": "admin@mygraf.com", "login": "admin", "role": "Admin"}],
+        if not grafana10:
+            with self.assertRaises(GrafanaServerError) as context:
+                probe()
+            self.assertEqual(500, context.exception.status_code, "Wrong status code")
+            self.assertIn("Failed update org user", context.exception.message)
+        else:
+            with self.assertRaises(GrafanaClientError) as context:
+                probe()
+            self.assertEqual(403, context.exception.status_code, "Wrong status code")
+            self.assertIn("Permissions needed: org.users:write", context.exception.message)
+
+    def test_organization_user_update_unknown_user(self):
+        with self.assertRaises(GrafanaServerError) as context:
+            self.grafana.organizations.organization_user_update(
+                organization_id=self.organization_id, user_id=99, user_role="Admin"
+            )
+        self.assertEqual(500, context.exception.status_code, "Wrong status code")
+        self.assertIn("Failed update org user", context.exception.message)
+
+    def test_organization_user_add(self):
+        response = self.grafana.organizations.organization_user_add(
+            organization_id=self.organization_id, user={"loginOrEmail": "angel", "role": "Viewer"}
         )
+        self.assertEqual("User added to organization", response["message"])
+
+    def test_organization_user_list(self):
         users = self.grafana.organizations.organization_user_list(organization_id=1)
-        self.assertEqual(len(users), 1)
+        self.assertEqual(2, len(users))
 
-    @requests_mock.Mocker()
-    def test_list_organization(self, m):
-        m.get(
-            "http://localhost/api/orgs",
-            json=[{"orgId": 1, "userId": 1, "email": "admin@mygraf.com", "login": "admin", "role": "Admin"}],
-        )
+    def test_list_organization(self):
         users = self.grafana.organizations.list_organization()
-        self.assertEqual(len(users), 1)
+        self.assertEqual(2, len(users))
 
-    @requests_mock.Mocker()
-    def test_get_current_organization(self, m):
-        m.get(
-            "http://localhost/api/org",
-            json={"id": 1, "name": "Main Org."},
-        )
+    def test_get_current_organization(self):
         orgs = self.grafana.organization.get_current_organization()
-        self.assertEqual(orgs["name"], "Main Org.")
+        self.assertEqual("Main Org.", orgs["name"])
 
-    @requests_mock.Mocker()
-    def test_update_current_organization(self, m):
-        m.put(
-            "http://localhost/api/org",
-            json={"message": "Organization updated"},
-        )
-        org = self.grafana.organization.update_current_organization(organization={"name": "Main Org."})
-        self.assertEqual(org["message"], "Organization updated")
+    def test_update_current_organization(self):
+        response = self.grafana.organization.update_current_organization(organization={"name": "Main Org."})
+        self.assertEqual("Organization updated", response["message"])
 
-    @requests_mock.Mocker()
-    def test_update_organization(self, m):
-        m.put(
-            "http://localhost/api/orgs/1",
-            json={"message": "Organization updated"},
-        )
-        preference = self.grafana.organizations.update_organization(
-            organization_id=1, organization={"name": "Main Org 2."}
-        )
-        self.assertEqual(preference["message"], "Organization updated")
+    def test_delete_current_organization(self):
+        with self.assertRaises(GrafanaBadInputError) as context:
+            self.grafana.organizations.delete_organization(organization_id=1)
+        self.assertEqual(400, context.exception.status_code, "Wrong status code")
+        if Version(self.grafana.version) >= Version("12"):
+            self.assertIn("Cannot delete your active organization", context.exception.message)
+        else:
+            self.assertIn("Can not delete org for current user", context.exception.message)
 
-    @requests_mock.Mocker()
-    def test_delete_organization(self, m):
-        m.delete(
-            "http://localhost/api/orgs/1",
-            json={"message": "Organization deleted"},
+    def test_update_organization_success(self):
+        response = self.grafana.organizations.update_organization(
+            organization_id=1, organization={"name": "Other Org 99."}
         )
-        preference = self.grafana.organizations.delete_organization(organization_id=1)
-        self.assertEqual(preference["message"], "Organization deleted")
+        self.assertEqual("Organization updated", response["message"])
 
-    @requests_mock.Mocker()
-    def test_create_organization(self, m):
-        m.post(
-            "http://localhost/api/orgs",
-            json={"orgId": "1", "message": "Organization created"},
-        )
-        preference = self.grafana.organization.create_organization(organization={"name": "New Org."})
-        self.assertEqual(preference["message"], "Organization created")
+    def test_update_organization_unknown(self):
+        grafana10 = Version("10") <= Version(self.grafana.version) < Version("11")
 
-    @requests_mock.Mocker()
-    def test_delete_user_current_organization(self, m):
-        m.delete(
-            "http://localhost/api/org/users/1",
-            json={"message": "User removed from organization"},
-        )
-        preference = self.grafana.organization.delete_user_current_organization(user_id=1)
-        self.assertEqual(preference["message"], "User removed from organization")
+        def probe():
+            self.grafana.organizations.update_organization(organization_id=99, organization={"name": "Other Org 99."})
 
-    @requests_mock.Mocker()
-    def test_add_user_current_organization(self, m):
-        m.post(
-            "http://localhost/api/org/users",
-            json={"message": "User added to organization"},
-        )
-        preference = self.grafana.organization.add_user_current_organization({"role": "Admin", "loginOrEmail": "admin"})
-        self.assertEqual(preference["message"], "User added to organization")
+        if not grafana10:
+            with self.assertRaises(GrafanaServerError) as context:
+                probe()
+            self.assertEqual(500, context.exception.status_code, "Wrong status code")
+            self.assertIn("Failed to update organization", context.exception.message)
+        else:
+            with self.assertRaises(GrafanaClientError) as context:
+                probe()
+            self.assertEqual(403, context.exception.status_code, "Wrong status code")
+            self.assertIn("Permissions needed: orgs:write", context.exception.message)
 
-    @requests_mock.Mocker()
-    def test_update_user_current_organization(self, m):
-        m.patch(
-            "http://localhost/api/org/users/1",
-            json={"message": "Organization user updated"},
-        )
-        preference = self.grafana.organization.update_user_current_organization(
-            user_id=1,
-            user={
-                "role": "Viewer",
-            },
-        )
-        self.assertEqual(preference["message"], "Organization user updated")
+    def test_delete_organization_success(self):
+        response = self.grafana.organizations.delete_organization(organization_id=self.organization_id)
+        self.assertEqual("Organization deleted", response["message"])
 
-    @requests_mock.Mocker()
-    def test_get_current_organization_users(self, m):
-        m.get(
-            "http://localhost/api/org/users",
-            json=[{"orgId": 1, "userId": 1, "email": "admin@mygraf.com", "login": "admin", "role": "Admin"}],
+    def test_delete_organization_unknown(self):
+        grafana10 = Version("10") <= Version(self.grafana.version) < Version("11")
+        with self.assertRaises(GrafanaClientError) as context:
+            self.grafana.organizations.delete_organization(organization_id=99)
+        if not grafana10:
+            self.assertEqual(404, context.exception.status_code, "Wrong status code")
+            self.assertIn("Failed to delete organization. ID not found", context.exception.message)
+        else:
+            self.assertEqual(403, context.exception.status_code, "Wrong status code")
+            self.assertIn("Permissions needed: orgs:delete", context.exception.message)
+
+    def test_create_organization_success(self):
+        response = self.grafana.organization.create_organization(organization="New Org.")
+        self.assertEqual("Organization created", response["message"])
+
+    def test_create_organization_duplicate_name(self):
+        with self.assertRaises(GrafanaClientError) as context:
+            self.grafana.organization.create_organization(organization="Main Org.")
+        self.assertEqual(409, context.exception.status_code, "Wrong status code")
+        self.assertIn("Organization name taken", context.exception.message)
+
+    def test_delete_user_current_organization_success(self):
+        response = self.grafana.organization.delete_user_current_organization(user_id=self.user_id)
+        self.assertEqual("User removed from organization", response["message"])
+
+    @pytest.mark.skip(reason="Please investigate!")
+    def test_delete_user_current_organization_not_member(self):
+        response = self.grafana.organization.delete_user_current_organization(user_id=self.user_id)
+        # TODO: Review -- shouldn't this be `User removed from organization`?
+        #       https://grafana.com/docs/grafana/v12.0/developers/http_api/org/#delete-user-in-current-organization
+        self.assertEqual("User deleted", response["message"])
+
+    def test_delete_user_current_organization_last_admin_forbidden(self):
+        with self.assertRaises(GrafanaBadInputError) as context:
+            self.grafana.organization.delete_user_current_organization(user_id=1)
+        self.assertIn("Cannot remove last organization admin", context.exception.message)
+
+    def test_add_user_current_organization_success(self):
+        self.grafana.admin.create_user(
+            {
+                "login": "new-user",
+                "password": "secret",
+                "OrgId": self.organization_id,
+            }
         )
+        response = self.grafana.organization.add_user_current_organization(
+            {"role": "Admin", "loginOrEmail": "new-user"}
+        )
+        self.assertEqual("User added to organization", response["message"])
+
+    def test_add_user_current_organization_already_member(self):
+        with self.assertRaises(GrafanaClientError) as context:
+            self.grafana.organization.add_user_current_organization({"role": "Admin", "loginOrEmail": "admin"})
+        self.assertEqual(409, context.exception.status_code, "Wrong status code")
+        self.assertIn("User is already member of this organization", context.exception.message)
+
+    def test_add_user_current_organization_user_unknown(self):
+        with self.assertRaises(GrafanaClientError) as context:
+            self.grafana.organization.add_user_current_organization({"role": "Admin", "loginOrEmail": "unknown"})
+        self.assertEqual(404, context.exception.status_code, "Wrong status code")
+        self.assertIn("User not found", context.exception.message)
+
+    def test_update_user_current_organization_success(self):
+        user = self.grafana.admin.create_user(
+            {
+                "login": "new-user",
+                "password": "secret",
+                "OrgId": 1,
+            }
+        )
+        response = self.grafana.organization.update_user_current_organization(
+            user_id=user["id"],
+            user={"role": "Viewer"},
+        )
+        self.assertEqual("Organization user updated", response["message"])
+
+    def test_update_user_current_organization_user_unknown(self):
+        with self.assertRaises(GrafanaServerError) as context:
+            self.grafana.organization.update_user_current_organization(
+                user_id=99,
+                user={"role": "Viewer"},
+            )
+        self.assertEqual(500, context.exception.status_code, "Wrong status code")
+        self.assertIn("Failed update org user", context.exception.message)
+
+    def test_get_current_organization_users(self):
         org = self.grafana.organization.get_current_organization_users()
-        self.assertEqual(len(org), 1)
+        self.assertEqual(2, len(org), "Wrong number of users")
 
-    @requests_mock.Mocker()
-    def test_find_organization(self, m):
-        m.get(
-            "http://localhost/api/orgs/name/Main",
-            json={
-                "id": 1,
-                "name": "Main Org.",
-                "address": {"address1": "", "address2": "", "city": "", "zipCode": "", "state": "", "country": ""},
-            },
-        )
-        org = self.grafana.organization.find_organization(org_name="Main")
-        self.assertEqual(org["id"], 1)
+    def test_find_organization_success(self):
+        org = self.grafana.organization.find_organization(org_name="Testdrive Org.")
+        self.assertEqual(org["id"], self.organization_id)
 
-    @requests_mock.Mocker()
-    def test_switch_organization(self, m):
-        m.post(
-            "http://localhost/api/user/using/2",
-            json={"message": "Active organization changed"},
-        )
-        preference = self.grafana.organizations.switch_organization(organization_id=2)
-        self.assertEqual(preference["message"], "Active organization changed")
+    def test_find_organization_unknown(self):
+        with self.assertRaises(GrafanaClientError) as context:
+            self.grafana.organization.find_organization(org_name="unknown")
+        self.assertEqual(404, context.exception.status_code, "Wrong status code")
+        self.assertIn("Organization not found", context.exception.message)
+
+    def test_switch_organization_success(self):
+        response = self.grafana.organizations.switch_organization(organization_id=self.organization_id)
+        self.assertEqual("Active organization changed", response["message"])
+
+    def test_switch_organization_unknown(self):
+        with self.assertRaises(GrafanaUnauthorizedError) as context:
+            self.grafana.organizations.switch_organization(organization_id=99)
+        self.assertEqual(401, context.exception.status_code, "Wrong status code")
+        self.assertIn("Unauthorized", context.exception.message)

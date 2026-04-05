@@ -4,28 +4,15 @@ import unittest
 import pytest
 from verlib2 import Version
 
-from grafana_client.client import GrafanaClientError
-
 pytestmark = pytest.mark.integration
 
 
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class AdminTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned):
+    def use_fixtures(self, grafana_provisioned, user_testdrive):
         self.grafana = grafana_provisioned
-        try:
-            self.user = self.grafana.admin.create_user(
-                {
-                    "login": "testdrive",
-                    "password": "secret",
-                }
-            )
-        except GrafanaClientError as err:
-            if err.status_code == 412:
-                self.user = self.grafana.users.find_user("testdrive")
-            else:
-                raise
+        self.user = user_testdrive
 
     def test_settings(self):
         settings = self.grafana.admin.settings()
