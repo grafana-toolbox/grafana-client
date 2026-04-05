@@ -1,3 +1,11 @@
+"""
+Snapshot API
+
+https://grafana.com/docs/grafana/latest/developer-resources/api-reference/http-api/snapshot/
+"""
+
+from grafana_client.util import as_bool
+
 from .base import Base
 
 
@@ -30,15 +38,15 @@ class Snapshots(Base):
 
         path = "/snapshots"
         post_json = {"dashboard": dashboard}
-        if name:
+        if name is not None:
             post_json["name"] = name
-        if expires:
+        if expires is not None:
             post_json["expires"] = expires
-        if external:
-            post_json["external"] = external
-        if key:
+        if external is not None:
+            post_json["external"] = as_bool(external)
+        if key is not None:
             post_json["key"] = key
-        if delete_key:
+        if delete_key is not None:
             post_json["deleteKey"] = delete_key
 
         return self.client.POST(path, json=post_json)

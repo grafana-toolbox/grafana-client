@@ -1,137 +1,108 @@
+import sys
+import typing as t
 import unittest
 
+import pytest
+from verlib2 import Version
+
 from grafana_client import GrafanaApi
+from grafana_client.client import GrafanaClientError, GrafanaServerError
 
-from ..compat import requests_mock
+pytestmark = pytest.mark.integration
 
 
+@unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class SnapshotTestCase(unittest.TestCase):
-    def setUp(self):
-        self.grafana = GrafanaApi(("admin", "admin"), host="localhost", url_path_prefix="", protocol="http")
+    @pytest.fixture(autouse=True)
+    def use_fixtures(self, grafana_provisioned: GrafanaApi, dashboard_uid: str):
+        self.grafana = grafana_provisioned
+        self.dashboard_uid = dashboard_uid
 
-    @requests_mock.Mocker()
-    def test_create_new_snapshot(self, m):
-        m.post(
-            "http://localhost/api/snapshots",
-            json={
-                "deleteKey": "XXXXXXX",
-                "deleteUrl": "myurl/api/snapshots.py-delete/XXXXXXX",
-                "key": "YYYYYYY",
-                "url": "myurl/dashboard/snapshot/YYYYYYY",
-            },
-        )
-        snapshot = self.grafana.snapshots.create_new_snapshot(
+        # Prune snapshots.
+        for snap in self.grafana.snapshots.get_dashboard_snapshots():
+            self.grafana.snapshots.delete_snapshot_by_key(snap["key"])
+
+        # Create single snapshot.
+        self.snapshot = self.grafana.snapshots.create_new_snapshot(
             dashboard={
-                "editable": "false",
-                "hideControls": "true",
-                "nav": [{"enable": "false", "type": "timepicker"}],
+                "uid": self.dashboard_uid,
+                "editable": False,
+                "nav": [{"enable": False, "type": "timepicker"}],
                 "rows": [{}],
                 "style": "dark",
                 "tags": [],
                 "templating": {"list": []},
                 "time": {},
                 "timezone": "browser",
-                "title": "Home",
-                "version": 5,
+                "title": "test-snapshot",
+                "version": 3,
             },
-            name="Test",
+            name="test-snapshot",
             key="YYYYYYY",
             delete_key="XXXXXXX",
-            external=True,
+            external=False,
             expires=3600,
         )
-        self.assertEqual(snapshot["key"], "YYYYYYY")
 
-    @requests_mock.Mocker()
-    def test_create_new_snapshot_without_optional(self, m):
-        m.post(
-            "http://localhost/api/snapshots",
-            json={
-                "deleteKey": "XXXXXXX",
-                "deleteUrl": "myurl/api/snapshots.py-delete/XXXXXXX",
-                "key": "YYYYYYY",
-                "url": "myurl/dashboard/snapshot/YYYYYYY",
-            },
-        )
-        snapshot = self.grafana.snapshots.create_new_snapshot(
-            dashboard={
-                "editable": "false",
-                "hideControls": "true",
-                "nav": [{"enable": "false", "type": "timepicker"}],
-                "rows": [{}],
-                "style": "dark",
-                "tags": [],
-                "templating": {"list": []},
-                "time": {},
-                "timezone": "browser",
-                "title": "Home",
-                "version": 5,
-            }
-        )
-        self.assertEqual(snapshot["key"], "YYYYYYY")
+    def test_create_new_snapshot_standard(self):
+        # Just validate that the snapshot was created.
+        self.assertEqual("YYYYYYY", self.snapshot["key"])
 
-    @requests_mock.Mocker()
-    def test_get_dashboard_snapshots(self, m):
-        m.get(
-            "http://localhost/api/dashboard/snapshots",
-            json=[
-                {
-                    "id": 8,
-                    "name": "Home",
-                    "key": "YYYYYYY",
-                    "orgId": 1,
-                    "userId": 1,
-                    "external": False,
-                    "externalUrl": "",
-                    "expires": "2200-13-32T25:23:23+02:00",
-                    "created": "2200-13-32T28:24:23+02:00",
-                    "updated": "2200-13-32T28:24:23+02:00",
-                }
-            ],
-        )
+    def test_get_all_snapshots(self):
         dashboards = self.grafana.snapshots.get_dashboard_snapshots()
-        self.assertEqual(len(dashboards), 1)
+        self.assertEqual(1, len(dashboards))
 
-    @requests_mock.Mocker()
-    def test_get_snapshot_by_key(self, m):
-        m.get(
-            "http://localhost/api/snapshots/YYYYYYY",
-            json=[
-                {
-                    "id": 8,
-                    "name": "Home",
-                    "key": "YYYYYYY",
-                    "orgId": 1,
-                    "userId": 1,
-                    "external": False,
-                    "externalUrl": "",
-                    "expires": "2200-13-32T25:23:23+02:00",
-                    "created": "2200-13-32T28:24:23+02:00",
-                    "updated": "2200-13-32T28:24:23+02:00",
-                }
-            ],
-        )
-        dashboards = self.grafana.snapshots.get_snapshot_by_key(key="YYYYYYY")
-        self.assertEqual(len(dashboards), 1)
+    def test_get_snapshot_by_key_success(self):
+        snapshot = self.grafana.snapshots.get_snapshot_by_key(key="YYYYYYY")
+        self.assertIn("dashboard", snapshot)
+        self.assertIn("meta", snapshot)
 
-    @requests_mock.Mocker()
-    def test_delete_snapshot_by_key(self, m):
-        m.delete(
-            "http://localhost/api/snapshots/YYYYYYY",
-            json={"message": "Snapshot deleted. It might take an hour before it's cleared from any CDN caches."},
-        )
-        annotation = self.grafana.snapshots.delete_snapshot_by_key(snapshot_id="YYYYYYY")
+    def test_get_snapshot_by_key_unknown(self):
+        def probe():
+            self.grafana.snapshots.get_snapshot_by_key(key="unknown")
+
+        self.wrap_notfound(probe)
+
+    def test_delete_snapshot_by_key_success(self):
+        response = self.grafana.snapshots.delete_snapshot_by_key(snapshot_id="YYYYYYY")
         self.assertEqual(
-            annotation["message"], "Snapshot deleted. It might take an hour before it's cleared from any CDN caches."
+            "Snapshot deleted. It might take an hour before it's cleared from any CDN caches.",
+            response["message"],
         )
 
-    @requests_mock.Mocker()
-    def test_delete_snapshot_by_delete_key(self, m):
-        m.get(
-            "http://localhost/api/snapshots-delete/XXXXXXX",
-            json={"message": "Snapshot deleted. It might take an hour before it's cleared from any CDN caches."},
-        )
-        annotation = self.grafana.snapshots.delete_snapshot_by_delete_key(snapshot_delete_key="XXXXXXX")
+    def test_delete_snapshot_by_key_unknown(self):
+        def probe():
+            self.grafana.snapshots.delete_snapshot_by_key(snapshot_id="unknown")
+
+        self.wrap_notfound(probe)
+
+    def test_delete_snapshot_by_delete_key_success(self):
+        response = self.grafana.snapshots.delete_snapshot_by_delete_key(snapshot_delete_key="XXXXXXX")
         self.assertEqual(
-            annotation["message"], "Snapshot deleted. It might take an hour before it's cleared from any CDN caches."
+            "Snapshot deleted. It might take an hour before it's cleared from any CDN caches.",
+            response["message"],
         )
+
+    def test_delete_snapshot_by_delete_key_unknown(self):
+        def probe():
+            self.grafana.snapshots.delete_snapshot_by_delete_key(snapshot_delete_key="unknown")
+
+        self.wrap_notfound(probe)
+
+    def wrap_notfound(self, probe: t.Callable):
+        grafana_version = Version(self.grafana.version)
+        if grafana_version >= Version("9"):
+            with self.assertRaises(GrafanaClientError) as context:
+                probe()
+            self.assertEqual(404, context.exception.status_code)
+            self.assertIn("Snapshot not found", context.exception.message)
+        elif grafana_version >= Version("8"):
+            with self.assertRaises(GrafanaClientError) as context:
+                probe()
+            self.assertEqual(404, context.exception.status_code)
+            self.assertIn("Failed to find dashboard snapshot", context.exception.message)
+        else:
+            with self.assertRaises(GrafanaServerError) as context:
+                probe()
+            self.assertEqual(500, context.exception.status_code)
+            self.assertIn("Failed to get dashboard snapshot", context.exception.message)
