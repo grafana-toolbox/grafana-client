@@ -11,6 +11,7 @@
 - Folder API: Add parameter `force_delete_rules` to remove non-empty folders
 - Datasources API: Fixed request payloads for `{enable,disable}-permissions` endpoints
 - Datasources API: Improved Elasticsearch error handling
+- Organization API: `create_organization` now also accepts the organization name as string
 - QA: Started using integration tests across the board
 - Async: Fixed generation script and corresponding method calls
   `return self.foo()` => `return await self.foo()`
