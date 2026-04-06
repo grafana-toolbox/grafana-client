@@ -1,5 +1,7 @@
+import sys
 import unittest
 
+import pytest
 from parameterized import parameterized
 
 from grafana_client import GrafanaApi
@@ -30,6 +32,9 @@ from test.elements.test_datasource_fixtures import (
 )
 
 from ..compat import requests_mock
+
+if "pytest" in sys.argv[0]:
+    pytest.skip("Skipping pytest, please use unittest", allow_module_level=True)
 
 
 class DatasourceHealthCheckTestCase(unittest.TestCase):

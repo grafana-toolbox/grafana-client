@@ -238,7 +238,7 @@ class User(Base):
         update_preference = "/user/preferences"
         return await self.client.GET(update_preference)
 
-    async def update_preferences(self, preferences: PersonalPreferences):
+    async def update_preferences(self, preferences: PersonalPreferences, filter_none=True):
         """
         Update preferences of current user as a whole.
 
@@ -247,30 +247,28 @@ class User(Base):
 
         If you want to update specific preference attributes, without touching the others,
         please use the `patch_preferences` method.
-
-        :param preferences:
-        :return:
         """
         update_preference = "/user/preferences"
-        data = preferences.asdict(filter_none=True)
+        if isinstance(preferences, dict):
+            preferences = PersonalPreferences(**preferences)
+        data = preferences.asdict(filter_none=filter_none)
 
         return await self.client.PUT(
             update_preference,
             json=data,
         )
 
-    async def patch_preferences(self, preferences: PersonalPreferences):
+    async def patch_preferences(self, preferences: PersonalPreferences, filter_none: bool = True):
         """
         Update specific preferences of current user.
 
         From the `preferences` instance, only attributes with values `not None` will be submitted
         and updated.
-
-        :param preferences:
-        :return:
         """
         update_preference = "/user/preferences"
-        data = preferences.asdict(filter_none=True)
+        if isinstance(preferences, dict):
+            preferences = PersonalPreferences(**preferences)
+        data = preferences.asdict(filter_none=filter_none)
 
         return await self.client.PATCH(
             update_preference,

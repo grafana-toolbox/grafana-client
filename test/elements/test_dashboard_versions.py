@@ -10,9 +10,10 @@ pytestmark = pytest.mark.integration
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class DashboardVersionsTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned, dashboard_basic):
-        self.grafana = grafana_provisioned
-        self.dashboard = dashboard_basic
+    def use_fixtures(self, grafana_api, dashboard_uid: str, dashboard_id: str):
+        self.grafana = grafana_api
+        self.dashboard_id = dashboard_id
+        self.dashboard_uid = dashboard_uid
 
     def test_api_path_success(self):
         api_path = self.grafana.dashboard_versions.api_path(dashboard_id=42)
@@ -26,67 +27,63 @@ class DashboardVersionsTestCase(unittest.TestCase):
     def test_get_dashboard_versions_by_id(self):
         if Version(self.grafana.version) >= Version("12"):
             pytest.skip("Grafana 12 no longer supports accessing dashboards by id, use uids instead.")
-        dashboard_id = self.dashboard["id"]
         versions = self.grafana.dashboard_versions.get_dashboard_versions_by_id(
-            dashboard_id=dashboard_id, limit=10, start=0
+            dashboard_id=self.dashboard_id, limit=10, start=0
         )
         if Version(self.grafana.version) >= Version("11"):
             versions = versions["versions"]
-        self.assertEqual(versions[0]["dashboardId"], dashboard_id)
+        self.assertEqual(versions[0]["dashboardId"], self.dashboard_id)
 
     def test_get_dashboard_versions_by_uid(self):
         if Version(self.grafana.version) < Version("9"):
             pytest.skip("Grafana 8 and earlier do not support accessing dashboard versions by uid.")
-        dashboard_uid = self.dashboard["uid"]
         versions = self.grafana.dashboard_versions.get_dashboard_versions_by_uid(
-            dashboard_uid=dashboard_uid, limit=10, start=0
+            dashboard_uid=self.dashboard_uid, limit=10, start=0
         )
         if Version(self.grafana.version) >= Version("11"):
             versions = versions["versions"]
-        self.assertEqual(versions[0]["uid"], dashboard_uid)
+        self.assertEqual(versions[0]["uid"], self.dashboard_uid)
 
     def test_get_dashboard_version_by_id(self):
         if Version(self.grafana.version) >= Version("12"):
             pytest.skip("Grafana 12 no longer supports accessing dashboards by id, use uids instead.")
-        dashboard_id = self.dashboard["id"]
-        dashboard = self.grafana.dashboard_versions.get_dashboard_version_by_id(dashboard_id=dashboard_id, version_id=1)
-        self.assertEqual(dashboard["dashboardId"], dashboard_id)
+        dashboard = self.grafana.dashboard_versions.get_dashboard_version_by_id(
+            dashboard_id=self.dashboard_id, version_id=1
+        )
+        self.assertEqual(dashboard["dashboardId"], self.dashboard_id)
 
     def test_get_dashboard_version_by_uid_success(self):
         if Version(self.grafana.version) < Version("9"):
             pytest.skip("Grafana 8 and earlier do not support accessing dashboard versions by uid.")
-        dashboard_uid = self.dashboard["uid"]
         dashboard = self.grafana.dashboard_versions.get_dashboard_version_by_uid(
-            dashboard_uid=dashboard_uid, version_id=1
+            dashboard_uid=self.dashboard_uid, version_id=1
         )
-        self.assertEqual(dashboard["uid"], dashboard_uid)
+        self.assertEqual(dashboard["uid"], self.dashboard_uid)
 
     def test_get_dashboard_version_by_uid_failure(self):
-        dashboard_uid = self.dashboard["uid"]
         with self.assertRaises(LookupError) as ctx:
-            self.grafana.dashboard_versions.get_dashboard_version_by_uid(dashboard_uid=dashboard_uid)
+            self.grafana.dashboard_versions.get_dashboard_version_by_uid(dashboard_uid=self.dashboard_uid)
         self.assertEqual(str(ctx.exception), "version_id is required")
 
     def test_restore_dashboard_by_id_success(self):
         if Version(self.grafana.version) >= Version("12"):
             pytest.skip("Grafana 12 no longer supports accessing dashboards by id, use uids instead.")
-        dashboard_id = self.dashboard["id"]
-        result = self.grafana.dashboard_versions.restore_dashboard_by_id(dashboard_id=dashboard_id, version_id=1)
+        result = self.grafana.dashboard_versions.restore_dashboard_by_id(dashboard_id=self.dashboard_id, version_id=1)
         self.assertEqual(result["status"], "success")
 
     def test_restore_dashboard_by_uid_success(self):
         if Version(self.grafana.version) < Version("9"):
             pytest.skip("Grafana 8 and earlier do not support accessing dashboards by uid for restoring dashboards.")
         self.update_dashboard()
-        dashboard_uid = self.dashboard["uid"]
-        result = self.grafana.dashboard_versions.restore_dashboard_by_uid(dashboard_uid=dashboard_uid, version_id=1)
+        result = self.grafana.dashboard_versions.restore_dashboard_by_uid(
+            dashboard_uid=self.dashboard_uid, version_id=1
+        )
         self.assertEqual(result["status"], "success")
-        self.assertEqual(result["uid"], dashboard_uid)
+        self.assertEqual(result["uid"], self.dashboard_uid)
 
     def test_restore_dashboard_by_uid_failure(self):
-        dashboard_uid = self.dashboard["uid"]
         with self.assertRaises(LookupError) as ctx:
-            self.grafana.dashboard_versions.restore_dashboard_by_uid(dashboard_uid=dashboard_uid)
+            self.grafana.dashboard_versions.restore_dashboard_by_uid(dashboard_uid=self.dashboard_uid)
         self.assertEqual(str(ctx.exception), "version_id is required")
 
     def test_calculate_diff_success(self):
@@ -95,12 +92,11 @@ class DashboardVersionsTestCase(unittest.TestCase):
                 "Grafana 8 and higher do dashboard diffing entirely in the frontend, "
                 "Grafana 9 deprecated corresponding backend support."
             )
-        dashboard_id = self.dashboard["id"]
         self.update_dashboard()
         result = self.grafana.dashboard_versions.calculate_diff(
-            base_dashboard_id=dashboard_id,
+            base_dashboard_id=self.dashboard_id,
             base_version_id=1,
-            new_dashboard_id=dashboard_id,
+            new_dashboard_id=self.dashboard_id,
             new_version_id=2,
         )
         self.assertIn("diff-json", result)
@@ -111,12 +107,11 @@ class DashboardVersionsTestCase(unittest.TestCase):
                 "Grafana 8 and higher do dashboard diffing entirely in the frontend, "
                 "Grafana 9 deprecated corresponding backend support."
             )
-        dashboard_id = self.dashboard["id"]
         with self.assertRaises(LookupError) as ctx:
             self.grafana.dashboard_versions.calculate_diff(
-                base_dashboard_id=dashboard_id,
+                base_dashboard_id=self.dashboard_id,
                 base_version_id=1,
-                new_dashboard_id=dashboard_id,
+                new_dashboard_id=self.dashboard_id,
                 new_version_id=2,
                 diff_type="foobar",
             )
@@ -126,11 +121,10 @@ class DashboardVersionsTestCase(unittest.TestCase):
         """
         Helper to update the default dashboard to receive another version.
         """
-        dashboard_uid = self.dashboard["uid"]
         self.grafana.dashboard.update_dashboard(
             {
                 "dashboard": {
-                    "uid": dashboard_uid,
+                    "uid": self.dashboard_uid,
                     "title": "Production Overview NG",
                 },
                 "overwrite": True,

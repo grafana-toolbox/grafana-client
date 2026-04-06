@@ -4,9 +4,8 @@ import unittest
 import pytest
 from verlib2 import Version
 
+from grafana_client import GrafanaApi
 from grafana_client.client import GrafanaBadInputError, GrafanaClientError
-
-from ..model import TestModel
 
 pytestmark = pytest.mark.integration
 
@@ -14,10 +13,21 @@ pytestmark = pytest.mark.integration
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class FolderTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned, folder_basic, folder_uid):
-        self.grafana = grafana_provisioned
-        self.folder_basic = folder_basic
+    def use_fixtures(
+        self,
+        grafana_api: GrafanaApi,
+        dashboard_folder_permissions,
+        folder_id: str,
+        folder_uid: str,
+        folder_title: str,
+        user_id: int,
+    ):
+        self.grafana = grafana_api
+        self.folder_id = folder_id
         self.folder_uid = folder_uid
+        self.folder_title = folder_title
+        self.user_id = user_id
+        self.permissions = dashboard_folder_permissions
 
     def test_get_all_folders(self):
         folders = self.grafana.folder.get_all_folders()
@@ -25,7 +35,7 @@ class FolderTestCase(unittest.TestCase):
         self.assertEqual(folders[0]["uid"], self.folder_uid)
 
     def test_get_folder_by_id(self):
-        folder_id = self.folder_basic["id"]
+        folder_id = self.folder_id
         folder = self.grafana.folder.get_folder_by_id(folder_id=folder_id)
         self.assertEqual(folder["id"], folder_id)
 
@@ -78,7 +88,7 @@ class FolderTestCase(unittest.TestCase):
             pytest.skip("Updating a folder uid only supported up to Grafana 10.")
 
         new_folder_uid = "oFsYEwDlaa"
-        new_title = self.folder_basic["title"]
+        new_title = self.folder_title
         folder = self.grafana.folder.update_folder(
             title=new_title, uid=self.folder_uid, new_uid=new_folder_uid, overwrite=True
         )
@@ -102,18 +112,17 @@ class FolderTestCase(unittest.TestCase):
     def test_update_folder_permissions_standard(self):
         folder = self.grafana.folder.update_folder_permissions(
             uid=self.folder_uid,
-            items=TestModel.permissions(),
+            items=self.permissions,
         )
         self.assertRegex(folder["message"], "(Folder|Dashboard) permissions updated")
 
     def test_update_folder_permissions_for_user(self):
         if Version(self.grafana.version) < Version("9"):
             pytest.skip("Updating folder permissions for users supported by Grafana 9 and higher.")
-        user = self.grafana.admin.create_user({"name": "foo", "login": "foo", "password": "secret"})
         folder = self.grafana.folder.update_folder_permissions_for_user(
             uid=self.folder_uid,
-            user_id=user["id"],
-            items=TestModel.permissions(),
+            user_id=self.user_id,
+            items=self.permissions,
         )
         self.assertEqual(folder["message"], "Permission removed")
 
@@ -124,7 +133,7 @@ class FolderTestCase(unittest.TestCase):
             self.grafana.folder.update_folder_permissions_for_user(
                 uid=self.folder_uid,
                 user_id="12345",
-                items=TestModel.permissions(),
+                items=self.permissions,
             )
         if Version(self.grafana.version) >= Version("11"):
             self.assertRegex(excinfo.exception.message, "user not found")

@@ -13,8 +13,8 @@ pytestmark = pytest.mark.integration
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class PluginTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned: GrafanaApi):
-        self.grafana = grafana_provisioned
+    def use_fixtures(self, grafana_api: GrafanaApi):
+        self.grafana = grafana_api
         self.plugin_id = "marcusolsson-hourly-heatmap-panel"
 
         if Version(self.grafana.version) < Version("8"):

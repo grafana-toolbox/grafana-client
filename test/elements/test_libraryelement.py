@@ -234,8 +234,8 @@ class LibraryElementTestCase(unittest.TestCase):
     }
 
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned: GrafanaApi, dashboard_basic, folder_uid):
-        self.grafana = grafana_provisioned
+    def use_fixtures(self, grafana_api: GrafanaApi, dashboard_uid: str, dashboard_id: str, folder_uid: str):
+        self.grafana = grafana_api
         if Version(self.grafana.version) < Version("9"):
             pytest.skip("Testing support library elements only supported on Grafana 9 and higher.")
 
@@ -246,8 +246,8 @@ class LibraryElementTestCase(unittest.TestCase):
         if Version(self.grafana.version) >= Version("12"):
             pytest.skip("FIXME: Permissions needed for Grafana 12: library.panels:delete.")
 
-        self.dashboard_id = dashboard_basic["id"]
-        self.dashboard_uid = dashboard_basic["uid"]
+        self.dashboard_id = dashboard_id
+        self.dashboard_uid = dashboard_uid
         self.folder_uid = folder_uid
 
         """

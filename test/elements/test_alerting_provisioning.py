@@ -52,8 +52,8 @@ pytestmark = pytest.mark.integration
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class AlertingProvisioningTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned):
-        self.grafana = grafana_provisioned
+    def use_fixtures(self, grafana_api, reset_folders_dashboards):  # noqa: ARG002
+        self.grafana = grafana_api
         if Version(self.grafana.version) < Version("9"):
             pytest.skip("Alerting provisioning supported by Grafana 9 and higher.")
 
