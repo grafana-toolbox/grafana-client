@@ -59,6 +59,7 @@ class AlertingTestCase(unittest.TestCase):
             pytest.skip("Legacy Alerting has been removed with Grafana 10.4.")
 
         self.folder = self.grafana.folder.create_folder("alert-folder")
+        self.grafana.alerting.create_alertrule("alert-folder", alertrule=ALERTRULE)
 
     def test_get_alertrule(self):
         response = self.grafana.alerting.get_alertrule("alert-folder", "alert-rule-test")
@@ -81,7 +82,7 @@ class AlertingTestCase(unittest.TestCase):
         self.assertEqual(response["message"], "rules deleted")
 
     def test_create_alertrule(self):
-        self.grafana.alerting.create_alertrule("alert-folder", alertrule=ALERTRULE)
+        pass
 
     def test_update_alertrule(self):
         response = self.grafana.alerting.update_alertrule("alert-folder", alertrule=ALERTRULE)

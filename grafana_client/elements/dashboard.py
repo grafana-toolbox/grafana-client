@@ -94,8 +94,8 @@ class Dashboard(Base):
     def update_permissions_by_id(self, dashboard_id, items):
         return self.update_permissions_generic(dashboard_id, items, idtype="id")
 
-    def get_permissions_by_uid(self, dashboard_id):
-        return self.get_permissions_generic(dashboard_id)
+    def get_permissions_by_uid(self, dashboard_uid):
+        return self.get_permissions_generic(dashboard_uid)
 
     def update_permissions_by_uid(self, dashboard_uid, items):
         return self.update_permissions_generic(dashboard_uid, items)

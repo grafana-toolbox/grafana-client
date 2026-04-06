@@ -26,6 +26,7 @@ class Rbac(Base):
         """
         The Rbac is only available in Grafana Enterprise.
 
+        :param role: Role definition dictionary containing role configuration
         :return:
         """
         roles_path = "/access-control/roles"

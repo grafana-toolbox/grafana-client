@@ -187,8 +187,9 @@ def user_with_organization(grafana_api: GrafanaApi, grafana_user, organization_i
 
 
 @pytest.fixture()
-def reset_organization_switch(grafana_api: GrafanaApi) -> None:
+def reset_organization_switch(grafana_api: GrafanaApi) -> t.Generator[None, None, None]:
     """Switch back to organization 1."""
+    yield
     grafana_api.organizations.switch_organization(organization_id=1)
 
 

@@ -94,8 +94,8 @@ class Dashboard(Base):
     async def update_permissions_by_id(self, dashboard_id, items):
         return await self.update_permissions_generic(dashboard_id, items, idtype="id")
 
-    async def get_permissions_by_uid(self, dashboard_id):
-        return await self.get_permissions_generic(dashboard_id)
+    async def get_permissions_by_uid(self, dashboard_uid):
+        return await self.get_permissions_generic(dashboard_uid)
 
     async def update_permissions_by_uid(self, dashboard_uid, items):
         return await self.update_permissions_generic(dashboard_uid, items)

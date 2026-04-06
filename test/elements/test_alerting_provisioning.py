@@ -81,7 +81,7 @@ class AlertingProvisioningTestCase(unittest.TestCase):
         with self.assertRaises(GrafanaClientError) as excinfo:
             self.grafana.alertingprovisioning.get_alertrule(self.alertrule_uid)
         self.assertEqual(excinfo.exception.status_code, 404)
-        self.assertRegex(excinfo.exception.message, "Client Error 404: (null)?")
+        self.assertRegex(excinfo.exception.message, "Client Error 404: (null|NotFound)?")
 
     def test_update_alertrule_standard(self):
         response = self.grafana.alertingprovisioning.update_alertrule(
