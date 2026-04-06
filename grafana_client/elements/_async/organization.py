@@ -43,6 +43,8 @@ class Organization(Base):
             organization_name = organization["name"]
         else:
             raise TypeError("Organization must be str or dict")
+        if not isinstance(organization_name, str) or not organization_name.strip():
+            raise ValueError("Organization name must be a non-empty string")
         return await self.client.POST(create_orgs_path, json={"name": organization_name})
 
     async def update_current_organization(self, organization):
@@ -205,7 +207,7 @@ class Organizations(Base):
     async def organization_user_update(self, organization_id, user_id, user_role):
         """
         Update Users in Organization
-        https://grafana.com/docs/grafana/v10.0/developers/http_api/org/#update-users-in-organization
+        https://grafana.com/docs/grafana/v12.0/developers/http_api/org/#update-users-in-organization
 
         :param organization_id:
         :param user_id:

@@ -1,4 +1,5 @@
 import sys
+import typing as t
 import unittest
 
 import pytest
@@ -51,7 +52,7 @@ class LibraryElementTestCase(unittest.TestCase):
         "uid": "856140aa-7548-43fc-9b27-721998bb4152",
         "version": 1,
     }
-    ConnectedPanelConnectionUIDs: list = (
+    ConnectedPanelConnectionUIDs: tuple = (
         "de3791ac-6079-4c18-bde0-cb390c079722",
         "a45fbfd0-b211-45fc-96ae-a56886075948",
     )
@@ -80,7 +81,7 @@ class LibraryElementTestCase(unittest.TestCase):
 
     UnconnectedPanelUID: str = "b07d36c0-b5f6-4228-b0c0-d3c21e16a5f6"
     UnconnectedPanelName: str = "Heap Memory"
-    UnconnectedPanelConnectionsJSON: dict = {"result": []}
+    UnconnectedPanelConnectionsJSON: t.ClassVar[dict] = {"result": []}
     UnconnectedPanelJSON: dict = {
         "id": 3,
         "kind": 1,

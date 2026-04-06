@@ -550,7 +550,7 @@ class Datasource(Base):
                     elif "message" in response:
                         message = response["message"]
                     else:
-                        raise ValueError("Unknown Elasticsearch error response")
+                        raise ValueError("Unknown Elasticsearch error response") from ex
 
                 elif "results" in ex.response:
                     message = response["results"]["test"]["error"]

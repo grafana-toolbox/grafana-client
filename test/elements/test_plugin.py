@@ -39,6 +39,10 @@ class PluginTestCase(unittest.TestCase):
     def test_uninstall_success(self):
         self.install_plugin(plugin_id=self.plugin_id)
         self.grafana.plugin.uninstall(plugin_id=self.plugin_id)
+        with self.assertRaises(GrafanaClientError) as context:
+            self.grafana.plugin.by_id(self.plugin_id)
+        self.assertEqual(404, context.exception.status_code, "Wrong status code")
+        self.assertIn("Plugin not found", context.exception.message)
 
     def test_uninstall_core(self):
         """Validate uninstallation of core plugin fails"""
@@ -108,7 +112,7 @@ class PluginTestCase(unittest.TestCase):
         try:
             self.grafana.plugin.by_id(plugin_id=plugin_id)
             return
-        except KeyError as ex:
+        except GrafanaClientError as ex:
             if "Plugin not found" not in str(ex):
                 raise
         self.grafana.plugin.install(plugin_id=plugin_id)

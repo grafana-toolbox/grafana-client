@@ -1,10 +1,6 @@
 import warnings
 
-from verlib2 import Version
-
 from ..base import Base
-
-VERSION_8 = Version("8")
 
 
 class Dashboard(Base):
@@ -78,6 +74,7 @@ class Dashboard(Base):
         warnings.warn(
             "get_dashboard_permissions is deprecated, use corresponding _by_id or _by_uid methods",
             DeprecationWarning,
+            stacklevel=2,
         )
         return await self.get_permissions_by_id(dashboard_id)
 
@@ -85,6 +82,7 @@ class Dashboard(Base):
         warnings.warn(
             "update_dashboard_permissions is deprecated, use corresponding _by_id or _by_uid methods",
             DeprecationWarning,
+            stacklevel=2,
         )
         return await self.update_permissions_by_id(dashboard_id, items)
 
