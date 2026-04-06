@@ -109,10 +109,11 @@ class PluginTestCase(unittest.TestCase):
             self.assertIn("Plugin not found", context.exception.message)
 
     def install_plugin(self, plugin_id: str):
+        # TODO: What about updating a plugin?
         try:
             self.grafana.plugin.by_id(plugin_id=plugin_id)
             return
         except GrafanaClientError as ex:
-            if "Plugin not found" not in str(ex):
+            if ex.status_code != 404:
                 raise
         self.grafana.plugin.install(plugin_id=plugin_id)
