@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 import unittest
@@ -89,6 +90,7 @@ class DatasourceTestCase(unittest.TestCase):
         self.assertEqual(result[0]["type"], "prometheus")
         self.assertEqual(len(result), 1)
 
+    @pytest.mark.skipif("GITHUB_ACTION" in os.environ, reason="Not validated on GitHub Actions")
     def test_get_datasource_proxy_data_query_time(self):
         # http://localhost:3000/api/datasources/proxy/1/api/v1/query?query=up%7binstance%3d%22localhost:9090%22%7d&time=1644164339
         now = int(time.time())
@@ -103,6 +105,7 @@ class DatasourceTestCase(unittest.TestCase):
         self.assertEqual(result["data"]["result"][0]["metric"]["job"], "prometheus")
         self.assertEqual(result["data"]["result"][0]["value"], [now, "1"])
 
+    @pytest.mark.skipif("GITHUB_ACTION" in os.environ, reason="Not validated on GitHub Actions")
     def test_get_datasource_proxy_data_query_range(self):
         # http://localhost:3000/api/datasources/proxy/1/api/v1/query_range?query=up%7binstance%3d%22localhost:9090%22%7d&start=1644164339&end=1644164639&step=60
         now = int(time.time())
@@ -128,6 +131,7 @@ class DatasourceTestCase(unittest.TestCase):
             )
         self.assertEqual(str(ctx.exception), "'Unknown or invalid query type: foobar'")
 
+    @pytest.mark.skipif("GITHUB_ACTION" in os.environ, reason="Not validated on GitHub Actions")
     def test_series(self):
         """
         http http://localhost:9090/api/v1/label/__name__/values

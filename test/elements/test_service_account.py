@@ -28,7 +28,7 @@ class ServiceAccountsTestCase(unittest.TestCase):
         result = self.grafana.serviceaccount.get(self.account_id)
         self.assertEqual(self.account_id, result["id"])
         self.assertEqual("service", result["name"])
-        if Version(self.grafana.version) >= Version("11"):
+        if Version(self.grafana.version) >= Version("10.4"):
             self.assertEqual("sa-1-service", result["login"])
         else:
             self.assertEqual("sa-service", result["login"])
@@ -48,7 +48,8 @@ class ServiceAccountsTestCase(unittest.TestCase):
 
     def test_create_account(self):
         user = self.grafana.serviceaccount.create({"name": "foo", "role": "Admin"})
-        self.assertStartsWith(user["login"], "sa-")
+        user_login = user["login"]
+        self.assertTrue(user_login.startswith("sa-"), f"User login should start with sa-, but is: {user_login}")
 
     def test_update_account(self):
         response = self.grafana.serviceaccount.update(self.account_id, {"name": "foo", "role": "Admin"})

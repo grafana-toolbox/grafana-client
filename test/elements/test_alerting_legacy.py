@@ -55,8 +55,8 @@ class AlertingTestCase(unittest.TestCase):
         if Version(self.grafana.version) < Version("8"):
             pytest.skip("Alert rules: Not supported on Grafana 7 and earlier.")
 
-        if Version(self.grafana.version) >= Version("11"):
-            pytest.skip("Legacy Alerting has been removed with Grafana 11.")
+        if Version(self.grafana.version) >= Version("10.4"):
+            pytest.skip("Legacy Alerting has been removed with Grafana 10.4.")
 
         self.folder = self.grafana.folder.create_folder("alert-folder")
 
