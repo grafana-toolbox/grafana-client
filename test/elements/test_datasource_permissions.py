@@ -19,7 +19,7 @@ pytestmark = pytest.mark.integration
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 @unittest.skipIf(
     not os.environ.get("GRAFANA_ENTERPRISE"),
-    "Datasource permissions only available in Grafana Enterprise and Grafana Cloud",
+    "Data source permissions only available in Grafana Enterprise and Grafana Cloud",
 )
 class DatasourceTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)

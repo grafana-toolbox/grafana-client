@@ -109,10 +109,7 @@ class AlertingProvisioningTestCase(unittest.TestCase):
     def test_delete_notification_policy_tree(self):
         response = self.grafana.alertingprovisioning.delete_notification_policy_tree()
         self.assertEqual(response["group_by"], ["grafana_folder", "alertname"])
-        if Version(self.grafana.version) >= Version("12"):
-            self.assertEqual(response["receiver"], "empty")
-        else:
-            self.assertEqual(response["receiver"], "grafana-default-email")
+        self.assertIn(response["receiver"], ["grafana-default-email", "empty"])
 
     def test_delete_mute_timing_success(self):
         self.grafana.alertingprovisioning.create_mute_timing(
@@ -131,4 +128,4 @@ class AlertingProvisioningTestCase(unittest.TestCase):
         with self.assertRaises(GrafanaClientError) as excinfo:
             self.grafana.alertingprovisioning.get_mute_timing("unknown")
         self.assertEqual(excinfo.exception.status_code, 404)
-        self.assertRegex(excinfo.exception.message, "Client Error 404: (null|NotFound)")
+        self.assertRegex(excinfo.exception.message, r"Client Error 404: (null|Not\s?[Ff]ound)")

@@ -67,14 +67,14 @@ class OrganizationTestCase(unittest.TestCase):
         self.assertEqual("Organization user updated", response["message"])
 
     def test_organization_user_update_unknown_org(self):
-        grafana10 = Version("10") <= Version(self.grafana.version) < Version("11")
+        grafana_10_123 = Version("10") <= Version(self.grafana.version) < Version("10.4")
 
         def probe():
             self.grafana.organizations.organization_user_update(
                 organization_id=9999, user_id=self.user_id, user_role="Admin"
             )
 
-        if not grafana10:
+        if not grafana_10_123:
             with self.assertRaises(GrafanaServerError) as context:
                 probe()
             self.assertEqual(500, context.exception.status_code, "Wrong status code")
@@ -147,12 +147,12 @@ class OrganizationTestCase(unittest.TestCase):
         self.assertEqual("Organization updated", response["message"])
 
     def test_update_organization_unknown(self):
-        grafana10 = Version("10") <= Version(self.grafana.version) < Version("11")
+        grafana_10_123 = Version("10") <= Version(self.grafana.version) < Version("10.4")
 
         def probe():
             self.grafana.organizations.update_organization(organization_id=9999, organization={"name": "Other Org 99."})
 
-        if not grafana10:
+        if not grafana_10_123:
             with self.assertRaises(GrafanaServerError) as context:
                 probe()
             self.assertEqual(500, context.exception.status_code, "Wrong status code")
@@ -168,10 +168,10 @@ class OrganizationTestCase(unittest.TestCase):
         self.assertEqual("Organization deleted", response["message"])
 
     def test_delete_organization_unknown(self):
-        grafana10 = Version("10") <= Version(self.grafana.version) < Version("11")
+        grafana_10_123 = Version("10") <= Version(self.grafana.version) < Version("10.4")
         with self.assertRaises(GrafanaClientError) as context:
             self.grafana.organizations.delete_organization(organization_id=9999)
-        if not grafana10:
+        if not grafana_10_123:
             self.assertEqual(404, context.exception.status_code, "Wrong status code")
             self.assertIn("Failed to delete organization. ID not found", context.exception.message)
         else:
@@ -179,10 +179,17 @@ class OrganizationTestCase(unittest.TestCase):
             self.assertIn("You'll need additional permissions to perform this action", context.exception.message)
 
     def test_delete_organization_invalid(self):
-        with self.assertRaises(GrafanaClientError) as context:
-            self.grafana.organizations.delete_organization(organization_id=-9999)
-        self.assertEqual(404, context.exception.status_code, "Wrong status code")
-        self.assertIn("Failed to delete organization. ID not found", context.exception.message)
+        grafana_12_3 = Version("12.3") <= Version(self.grafana.version) < Version("12.4")
+        if grafana_12_3:
+            with self.assertRaises(GrafanaServerError) as context:
+                self.grafana.organizations.delete_organization(organization_id=-9999)
+            self.assertEqual(500, context.exception.status_code, "Wrong status code")
+            self.assertIn("Failed to delete organization", context.exception.message)
+        else:
+            with self.assertRaises(GrafanaClientError) as context:
+                self.grafana.organizations.delete_organization(organization_id=-9999)
+            self.assertEqual(404, context.exception.status_code, "Wrong status code")
+            self.assertIn("Failed to delete organization. ID not found", context.exception.message)
 
     def test_create_organization_success(self):
         response = self.grafana.organization.create_organization(organization="New Org.")

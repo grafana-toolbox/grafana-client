@@ -6,7 +6,7 @@ import pytest
 from verlib2 import Version
 
 from grafana_client import GrafanaApi
-from grafana_client.client import GrafanaBadInputError, GrafanaClientError, GrafanaUnauthorizedError
+from grafana_client.client import GrafanaBadInputError, GrafanaClientError, GrafanaServerError, GrafanaUnauthorizedError
 from grafana_client.model import PersonalPreferences
 
 pytestmark = pytest.mark.integration
@@ -154,10 +154,22 @@ class UserTestCase(unittest.TestCase):
             self.assertIn("Unauthorized", context.exception.message)
 
     def test_change_password_too_short(self):
-        with self.assertRaises(GrafanaBadInputError) as context:
+        grafana_10_4 = Version("10.4") <= Version(self.grafana.version) < Version("11")
+
+        def probe():
             self.grafana.user.change_actual_user_password("admin", "new")
-        self.assertEqual(400, context.exception.status_code)
-        self.assertIn("New password is too short", context.exception.message)
+
+        # TODO: Should that particular anomaly with Grafana 10.4 be reported?
+        if grafana_10_4:
+            with self.assertRaises(GrafanaServerError) as context:
+                probe()
+            self.assertEqual(500, context.exception.status_code)
+            self.assertIn("Internal Server Error", context.exception.message)
+        else:
+            with self.assertRaises(GrafanaBadInputError) as context:
+                probe()
+            self.assertEqual(400, context.exception.status_code)
+            self.assertIn("New password is too short", context.exception.message)
 
     # @pytest.mark.skip("Currently fails (Unauthorized).")
     def test_switch_user_organisation_success(self):
