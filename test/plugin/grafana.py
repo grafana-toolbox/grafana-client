@@ -219,10 +219,13 @@ def reset_teams(grafana_api: GrafanaApi) -> None:
 
 
 @pytest.fixture()
-def reset_datasources(grafana_api: GrafanaApi) -> None:
+def reset_datasources(grafana_api: GrafanaApi, grafana_version: Version) -> None:
     """Reset all data sources."""
     for datasource in grafana_api.datasource.list_datasources():
-        grafana_api.datasource.delete_datasource_by_uid(datasource["uid"])
+        if grafana_version >= Version("7"):
+            grafana_api.datasource.delete_datasource_by_uid(datasource["uid"])
+        else:
+            grafana_api.datasource.delete_datasource_by_id(datasource["id"])
 
 
 @pytest.fixture()

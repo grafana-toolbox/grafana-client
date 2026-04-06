@@ -27,7 +27,6 @@ class DatasourceTestCase(unittest.TestCase):
         self.grafana = grafana_api
         self.datasource = self.grafana.datasource.create_datasource(PROMETHEUS_DATASOURCE)
         self.datasource_id = self.datasource["datasource"]["id"]
-        self.datasource_uid = self.datasource["datasource"]["uid"]
 
     def test_enable_datasource_permissions(self):
         result = self.grafana.datasource.enable_datasource_permissions(self.datasource_id)

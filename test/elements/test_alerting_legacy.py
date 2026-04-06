@@ -15,7 +15,7 @@ import unittest
 import pytest
 from verlib2 import Version
 
-from grafana_client.client import GrafanaBadInputError, GrafanaClientError
+from grafana_client.client import GrafanaBadInputError, GrafanaClientError, GrafanaServerError
 
 ALERTRULE = {
     "name": "alert-rule-test",
@@ -161,10 +161,19 @@ class NotificationsTestCase(unittest.TestCase):
         self.assertIn("Could not find addresses in settings", str(context.exception))
 
     def test_create_channel_duplicate(self):
-        with self.assertRaises(GrafanaClientError) as context:
+        def probe():
             self.grafana.notifications.create_channel(NOTIFICATION)
-        self.assertEqual(context.exception.status_code, 409)
-        self.assertIn("Failed to create alert notification", str(context.exception))
+
+        if Version(self.grafana.version) >= Version("7"):
+            with self.assertRaises(GrafanaClientError) as context:
+                probe()
+            self.assertEqual(context.exception.status_code, 409)
+            self.assertIn("Failed to create alert notification", str(context.exception))
+        else:
+            with self.assertRaises(GrafanaServerError) as context:
+                probe()
+            self.assertEqual(context.exception.status_code, 500)
+            self.assertIn("Failed to create alert notification", str(context.exception))
 
     def test_update_channel_by_uid(self):
         payload = {

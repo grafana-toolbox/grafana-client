@@ -98,9 +98,19 @@ class AnnotationsTestCase(unittest.TestCase):
             self.grafana.annotations.delete_annotations_by_id(annotations_id=None)
 
     def test_add_annotation_no_text(self):
-        with self.assertRaises(GrafanaBadInputError) as excinfo:
+        def probe():
             self.grafana.annotations.add_annotation()
-        self.assertRegex(excinfo.exception.message, "Failed to save annotation")
+
+        if Version(self.grafana.version) >= Version("7"):
+            with self.assertRaises(GrafanaBadInputError) as context:
+                probe()
+            self.assertEqual(context.exception.status_code, 409)
+            self.assertIn("Failed to save annotation", str(context.exception))
+        else:
+            with self.assertRaises(GrafanaServerError) as context:
+                probe()
+            self.assertEqual(context.exception.status_code, 500)
+            self.assertIn("Failed to save annotation", str(context.exception))
 
     def test_add_annotation_no_dashboard(self):
         response = self.grafana.annotations.add_annotation(text="Test")
