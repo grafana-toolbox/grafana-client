@@ -34,7 +34,7 @@ def grafana_version(grafana_api: GrafanaApi) -> Version:
 
 
 @pytest.fixture()
-def datasource_testdata(grafana_api: GrafanaApi) -> DataDictionary:
+def datasource_testdata(grafana_api: GrafanaApi, reset_datasources) -> DataDictionary:  # noqa: ARG001
     """Provision Grafana data source (TestData) for testing purposes."""
     from test.elements.test_datasource_fixtures import TESTDATA_DATASOURCE
 
@@ -42,7 +42,7 @@ def datasource_testdata(grafana_api: GrafanaApi) -> DataDictionary:
 
 
 @pytest.fixture()
-def datasource_prometheus(grafana_api: GrafanaApi) -> DataDictionary:
+def datasource_prometheus(grafana_api: GrafanaApi, reset_datasources) -> DataDictionary:  # noqa: ARG001
     """Provision Grafana data source (Prometheus) for testing purposes."""
     from test.elements.test_datasource_fixtures import PROMETHEUS_DATASOURCE
 
@@ -50,7 +50,7 @@ def datasource_prometheus(grafana_api: GrafanaApi) -> DataDictionary:
 
 
 @pytest.fixture()
-def dashboard_id(grafana_dashboard: DataDictionary) -> str:
+def dashboard_id(grafana_dashboard: DataDictionary) -> int:
     """Provision Grafana dashboard and provide its ID."""
     return grafana_dashboard["id"]
 
@@ -105,7 +105,8 @@ def grafana_folder(grafana_api: GrafanaApi, reset_folders_dashboards) -> DataDic
         return grafana_api.folder.create_folder(title="Testdrive", uid=folder_uid)
 
     # TODO: Currently needs to compensate for `Client Error 412: the folder
-    #       has been changed by someone else`. Why does this happen?
+    #       has been changed by someone else`, indicating some collision in Grafana,
+    #       or a timing problem within the test suite. Check why this happens.
     except GrafanaClientError as ex:
         if ex.status_code != 412:
             raise
@@ -245,6 +246,5 @@ def reset_folders_dashboards(grafana_api: GrafanaApi) -> None:
 @pytest.fixture()
 def reset_stars(grafana_api: GrafanaApi, grafana_version: Version, dashboard_uid: str) -> None:
     """Reset user dashboard stars."""
-    # TODO: It looks like starring a dashboard hasn't made it into an API wrapper yet.
     if grafana_version >= Version("11"):
-        grafana_api.client.DELETE(f"/user/stars/dashboard/uid/{dashboard_uid}")
+        grafana_api.user.unstar_dashboard(dashboard_uid)

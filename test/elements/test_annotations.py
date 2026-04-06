@@ -52,7 +52,7 @@ def annotation_provisioned(grafana_api, dashboard_uid) -> t.Dict:
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class AnnotationsTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_api: GrafanaApi, dashboard_uid: str, dashboard_id: str, annotation_id: str):
+    def use_fixtures(self, grafana_api: GrafanaApi, dashboard_uid: str, dashboard_id: int, annotation_id: int):
         self.grafana = grafana_api
         self.dashboard_id = dashboard_id
         self.dashboard_uid = dashboard_uid
@@ -104,7 +104,7 @@ class AnnotationsTestCase(unittest.TestCase):
         if Version(self.grafana.version) >= Version("7"):
             with self.assertRaises(GrafanaBadInputError) as context:
                 probe()
-            self.assertEqual(context.exception.status_code, 409)
+            self.assertEqual(context.exception.status_code, 400)
             self.assertIn("Failed to save annotation", str(context.exception))
         else:
             with self.assertRaises(GrafanaServerError) as context:
@@ -157,7 +157,7 @@ class AnnotationsTestCase(unittest.TestCase):
 
 
 @pytest.mark.parametrize("parameter", params.keys())
-def test_find_by_param(grafana_api, annotation_id: str, parameter: str):  # noqa: ARG001
+def test_find_by_param(grafana_api, annotation_id: int, parameter: str):  # noqa: ARG001
     """
     Invoke "find annotations" operation per parameter.
     """

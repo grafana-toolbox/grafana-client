@@ -79,8 +79,8 @@ class FolderTestCase(unittest.TestCase):
         self.assertEqual(folder["parentUid"], container_uid)
 
     def test_update_folder_title(self):
-        folder = self.grafana.folder.update_folder(title="Departmenet DEF", uid=self.folder_uid, overwrite=True)
-        self.assertEqual(folder["title"], "Departmenet DEF")
+        folder = self.grafana.folder.update_folder(title="Département DEF", uid=self.folder_uid, overwrite=True)
+        self.assertEqual(folder["title"], "Département DEF")
         self.assertEqual(folder["uid"], self.folder_uid)
 
     def test_update_folder_uid(self):
