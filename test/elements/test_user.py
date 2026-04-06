@@ -58,10 +58,11 @@ class UsersTestCase(unittest.TestCase):
         self.assertEqual("", user["name"])
 
     def test_get_user_unknown(self):
-        grafana7 = Version("7") <= Version(self.grafana.version) < Version("8")
+        grafana_7_lower = Version(self.grafana.version) < Version("8")
+        grafana_11_greater = Version(self.grafana.version) >= Version("11")
         with self.assertRaises(GrafanaClientError) as context:
             self.grafana.users.get_user("unknown")
-        if Version(self.grafana.version) >= Version("11") or grafana7:
+        if grafana_7_lower or grafana_11_greater:
             self.assertEqual(404, context.exception.status_code)
             self.assertRegex(context.exception.message, "[Uu]ser not found")
         else:
@@ -76,7 +77,7 @@ class UsersTestCase(unittest.TestCase):
         with self.assertRaises(GrafanaClientError) as context:
             self.grafana.users.find_user("unknown")
         self.assertEqual(404, context.exception.status_code)
-        self.assertIn("user not found", context.exception.message)
+        self.assertRegex(context.exception.message, "[Uu]ser not found")
 
     def test_search_users_success(self):
         users = self.grafana.users.search_users("testdrive")
@@ -288,16 +289,19 @@ class UserTestCase(unittest.TestCase):
             self.assertRegex(context.exception.message, "Not found")
 
     def test_patch_preferences_unknown_dashboard(self):
-        grafana7 = Version("7") <= Version(self.grafana.version) < Version("8")
+        grafana_7_lower = Version(self.grafana.version) < Version("8")
+        grafana_9_higher = Version(self.grafana.version) >= Version("9")
 
         def probe():
             return self.grafana.user.patch_preferences(PersonalPreferences(homeDashboardUID="unknown"))
 
-        if Version(self.grafana.version) >= Version("9") or grafana7:
+        if grafana_7_lower or grafana_9_higher:
             with self.assertRaises(GrafanaClientError) as context:
                 probe()
             self.assertEqual(404, context.exception.status_code)
             self.assertRegex(context.exception.message, "(Dashboard )?[Nn]ot found")
+
+        # Grafana 8 accepts the patch, even when referenced dashboard does not exist.
         else:
             response = probe()
             self.assertEqual("Preferences updated", response["message"])

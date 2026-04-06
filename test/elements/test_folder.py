@@ -62,7 +62,7 @@ class FolderTestCase(unittest.TestCase):
         with self.assertRaises(GrafanaBadInputError) as excinfo:
             self.grafana.folder.create_folder(title=None)
         self.assertEqual(excinfo.exception.status_code, 400)
-        self.assertRegex(excinfo.exception.message, "folder title cannot be empty")
+        self.assertRegex(excinfo.exception.message, "[Ff]older title cannot be empty")
 
     def test_move_folder(self):
         """

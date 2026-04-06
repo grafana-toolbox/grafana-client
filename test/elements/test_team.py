@@ -162,5 +162,5 @@ class TeamsTestCase(unittest.TestCase):
         self.assertEqual("Team group removed", response["message"])
 
     def check_external_groups(self):
-        if Version(self.grafana.version) >= Version("7"):
-            pytest.skip("External groups not supported by Grafana 7 and higher.")
+        if Version(self.grafana.version) >= Version("6"):
+            pytest.skip("External groups not supported by Grafana 6 and higher.")
