@@ -38,6 +38,8 @@ class Organization(Base):
         if isinstance(organization, str):
             organization_name = organization
         elif isinstance(organization, dict):
+            if "name" not in organization:
+                raise ValueError("Organization dict must contain 'name' key")
             organization_name = organization["name"]
         else:
             raise TypeError("Organization must be str or dict")

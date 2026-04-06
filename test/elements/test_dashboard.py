@@ -33,7 +33,7 @@ class DashboardTestCase(unittest.TestCase):
         dashboard = self.grafana.dashboard.get_dashboard(self.dashboard_uid)
         self.assertEqual(dashboard["dashboard"]["uid"], self.dashboard_uid)
 
-    def te2st_get_dashboard_by_name_grafana7(self):
+    def test_get_dashboard_by_name_grafana7(self):
         if Version(self.grafana.version) < Version("8"):
             dashboard = self.grafana.dashboard.get_dashboard_by_name("productionoverview")
             self.assertEqual(dashboard["dashboard"]["title"], "ProductionOverview")

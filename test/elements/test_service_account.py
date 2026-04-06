@@ -49,7 +49,7 @@ class ServiceAccountsTestCase(unittest.TestCase):
     def test_create_account(self):
         user = self.grafana.serviceaccount.create({"name": "foo", "role": "Admin"})
         user_login = user["login"]
-        self.assertTrue(user_login.startswith("sa-"), f"User login should start with sa-, but is: {user_login}")
+        self.assertTrue(user_login.startswith("sa-"), f"Expected login to start with 'sa-', got {user_login}")
 
     def test_update_account(self):
         response = self.grafana.serviceaccount.update(self.account_id, {"name": "foo", "role": "Admin"})

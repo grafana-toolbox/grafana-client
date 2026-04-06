@@ -46,5 +46,12 @@ class DatasourceTestCase(unittest.TestCase):
         self.assertEqual(result, {"message": "Datasource permission added"})
 
     def test_remove_datasource_permissions(self):
-        result = self.grafana.datasource.remove_datasource_permissions(self.datasource_id, 1)
+
+        # First add a permission to ensure one exists to remove.
+        self.grafana.datasource.add_datasource_permissions(self.datasource_id, {"userId": 1, "permission": 1})
+        permissions = self.grafana.datasource.get_datasource_permissions(self.datasource_id)
+
+        # Retrieve permission and validate.
+        permission_id = permissions["permissions"][0]["id"]
+        result = self.grafana.datasource.remove_datasource_permissions(self.datasource_id, permission_id)
         self.assertEqual(result, {"message": "Datasource permission removed"})
