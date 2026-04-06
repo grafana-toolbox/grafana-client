@@ -46,7 +46,7 @@ class SearchTestCase(unittest.TestCase):
         self.assertEqual(self.dashboard_uid, result[0]["uid"])
 
     def test_search_dashboards_by_query_tags(self):
-        if Version(self.grafana.version) < Version("12.4"):
+        if self.grafana.get_version() < Version("12.4"):
             pytest.skip("Dashboard tags are only indexed with Grafana 12.4 and higher.")
         result = self.grafana.search.search_dashboards(
             query="foobar",
@@ -65,7 +65,7 @@ class SearchTestCase(unittest.TestCase):
         result = self.grafana.search.search_dashboards(
             dashboard_uids=self.dashboard_uid,
         )
-        if Version(self.grafana.version) >= Version("9"):
+        if self.grafana.get_version() >= Version("9"):
             self.assertEqual(1, len(result), "Wrong number of dashboards")
             self.assertEqual(self.dashboard_uid, result[0]["uid"])
         else:
@@ -83,7 +83,7 @@ class SearchTestCase(unittest.TestCase):
             folder_ids=self.folder_id,
             type_="dash-folder",
         )
-        if Version(self.grafana.version) >= Version("12"):
+        if self.grafana.get_version() >= Version("12"):
             self.assertEqual(1, len(result), "Wrong number of folders")
             self.assertEqual(self.folder_uid, result[0]["uid"])
         else:
@@ -117,7 +117,7 @@ class SearchTestCase(unittest.TestCase):
                 type_="unknown",
             )
 
-        if Version(self.grafana.version) >= Version("12"):
+        if self.grafana.get_version() >= Version("12"):
             with self.assertRaises(GrafanaServerError) as context:
                 probe()
             self.assertEqual(500, context.exception.status_code, "Wrong status code")
@@ -133,7 +133,7 @@ class SearchTestCase(unittest.TestCase):
         self.assertEqual(2, len(result), "Wrong number of dashboards")
 
     def test_search_dashboards_by_starred_true(self):
-        if Version(self.grafana.version) < Version("9"):
+        if self.grafana.get_version() < Version("9"):
             pytest.skip("Unable to star dashboard by uid with Grafana 8 and earlier.")
         self.grafana.user.star_dashboard(self.dashboard_uid)
         result = self.grafana.search.search_dashboards(

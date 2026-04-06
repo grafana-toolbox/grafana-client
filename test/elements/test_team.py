@@ -69,7 +69,7 @@ class TeamsTestCase(unittest.TestCase):
         def probe():
             self.grafana.teams.update_team(9999, {})
 
-        if Version(self.grafana.version) >= Version("12"):
+        if self.grafana.get_version() >= Version("12"):
             with self.assertRaises(GrafanaClientError) as context:
                 probe()
             self.assertEqual(404, context.exception.status_code)
@@ -92,7 +92,7 @@ class TeamsTestCase(unittest.TestCase):
 
     def test_get_team_members(self):
         members = self.grafana.teams.get_team_members(self.first_team_id)
-        if Version(self.grafana.version) >= Version("9"):
+        if self.grafana.get_version() >= Version("9"):
             self.assertEqual("admin", members[0]["login"])
         else:
             self.assertEqual([], members)
@@ -128,9 +128,9 @@ class TeamsTestCase(unittest.TestCase):
         Modern method.
         """
         prefs = self.grafana.teams.get_preferences(self.second_team_id)
-        if Version(self.grafana.version) >= Version("9"):
+        if self.grafana.get_version() >= Version("9"):
             self.assertEqual({}, prefs)
-        elif Version(self.grafana.version) >= Version("8"):
+        elif self.grafana.get_version() >= Version("8"):
             self.assertEqual(["homeDashboardId", "navbar", "theme", "timezone", "weekStart"], sorted(prefs.keys()))
         else:
             self.assertEqual(["homeDashboardId", "theme", "timezone"], sorted(prefs.keys()))
@@ -161,5 +161,5 @@ class TeamsTestCase(unittest.TestCase):
         self.assertEqual("Team group removed", response["message"])
 
     def check_external_groups(self):
-        if Version(self.grafana.version) >= Version("6"):
+        if self.grafana.get_version() >= Version("6"):
             pytest.skip("External Group Synchronization is only available in Grafana Enterprise.")

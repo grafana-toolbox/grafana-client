@@ -209,6 +209,8 @@ def service_account_login(grafana_service_account) -> str:
 @pytest.fixture(scope="function")
 def grafana_service_account(grafana_api: GrafanaApi, reset_user_model) -> DataDictionary:  # noqa: ARG001
     """Provision Grafana service account for testing purposes."""
+    if grafana_api.get_version() < Version("9"):
+        pytest.skip("Service accounts only supported by Grafana 9 and higher.")
     return grafana_api.serviceaccount.create({"name": "service", "role": "Admin"})
 
 
@@ -221,6 +223,8 @@ def service_account_token_id(grafana_service_account_token) -> int:
 @pytest.fixture(scope="function")
 def grafana_service_account_token(grafana_api: GrafanaApi, reset_user_model, service_account_id) -> DataDictionary:  # noqa: ARG001
     """Provision Grafana service account token for testing purposes."""
+    if grafana_api.get_version() < Version("9"):
+        pytest.skip("Service accounts only supported by Grafana 9 and higher.")
     return grafana_api.serviceaccount.create_token(service_account_id, {"name": "Hotzenplotz"})
 
 

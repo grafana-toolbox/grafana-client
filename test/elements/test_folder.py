@@ -51,7 +51,7 @@ class FolderTestCase(unittest.TestCase):
         )
         self.assertEqual(folder["uid"], subfolder_uid)
         # 'parentUid' only returned for folders by Grafana 11 and higher.
-        if Version(self.grafana.version) >= Version("11"):
+        if self.grafana.get_version() >= Version("11"):
             self.assertEqual(folder["parentUid"], self.folder_uid)
 
         # Grafana 11 and higher only returns top-level folders, or is the outcome just flaky?
@@ -70,7 +70,7 @@ class FolderTestCase(unittest.TestCase):
 
         Grafana 10: Client Error 404: To use this service, you need to activate nested folder feature.
         """
-        if Version(self.grafana.version) < Version("11"):
+        if self.grafana.get_version() < Version("11"):
             pytest.skip("Moving folders supported by Grafana 11 and higher.")
         container = self.grafana.folder.create_folder("container")
         container_uid = container["uid"]
@@ -84,7 +84,7 @@ class FolderTestCase(unittest.TestCase):
         self.assertEqual(folder["uid"], self.folder_uid)
 
     def test_update_folder_uid(self):
-        if Version(self.grafana.version) >= Version("10"):
+        if self.grafana.get_version() >= Version("10"):
             pytest.skip("Updating a folder uid only supported up to Grafana 10.")
 
         new_folder_uid = "oFsYEwDlaa"
@@ -104,7 +104,7 @@ class FolderTestCase(unittest.TestCase):
 
     def test_get_folder_permissions(self):
         folder_permissions = self.grafana.folder.get_folder_permissions(uid=self.folder_uid)
-        if Version(self.grafana.version) >= Version("9"):
+        if self.grafana.get_version() >= Version("9"):
             self.assertEqual(folder_permissions[0]["permissionName"], "Admin")
         else:
             self.assertEqual(folder_permissions[0]["permissionName"], "View")
@@ -117,7 +117,7 @@ class FolderTestCase(unittest.TestCase):
         self.assertRegex(folder["message"], "(Folder|Dashboard) permissions updated")
 
     def test_update_folder_permissions_for_user(self):
-        if Version(self.grafana.version) < Version("9"):
+        if self.grafana.get_version() < Version("9"):
             pytest.skip("Updating folder permissions for users supported by Grafana 9 and higher.")
         folder = self.grafana.folder.update_folder_permissions_for_user(
             uid=self.folder_uid,
@@ -127,7 +127,7 @@ class FolderTestCase(unittest.TestCase):
         self.assertEqual(folder["message"], "Permission removed")
 
     def test_update_folder_permissions_unknown_user(self):
-        if Version(self.grafana.version) < Version("9"):
+        if self.grafana.get_version() < Version("9"):
             pytest.skip("Updating folder permissions for users supported by Grafana 9 and higher.")
         with self.assertRaises(GrafanaBadInputError) as excinfo:
             self.grafana.folder.update_folder_permissions_for_user(
@@ -135,13 +135,13 @@ class FolderTestCase(unittest.TestCase):
                 user_id="12345",
                 items=self.permissions,
             )
-        if Version(self.grafana.version) >= Version("11"):
+        if self.grafana.get_version() >= Version("11"):
             self.assertRegex(excinfo.exception.message, "user not found")
         else:
             self.assertRegex(excinfo.exception.message, "failed to set user permission")
 
     def test_delete_folder(self):
         folder = self.grafana.folder.delete_folder(uid=self.folder_uid)
-        version9 = Version("9") <= Version(self.grafana.version) < Version("10")
+        version9 = Version("9") <= self.grafana.get_version() < Version("10")
         if not version9:
             self.assertRegex(folder["message"], "Folder.+deleted")

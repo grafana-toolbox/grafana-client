@@ -63,7 +63,7 @@ class AnnotationsTestCase(unittest.TestCase):
         self.assertEqual(len(annotations), 1, "Wrong number of annotations")
         self.assertEqual(annotations[0]["text"], "Annotation Description")
         self.assertEqual(annotations[0]["tags"], ["tags-test"])
-        if Version(self.grafana.version) >= Version("9"):
+        if self.grafana.get_version() >= Version("9"):
             self.assertEqual(annotations[0]["dashboardUID"], self.dashboard_uid)
 
     def test_find_by_dashboard_uid(self):
@@ -79,7 +79,7 @@ class AnnotationsTestCase(unittest.TestCase):
     def test_delete_annotation_by_id_not_exists(self):
         # FIXME: Grafana 11 & 12 do not care about the outcome of an annotation delete request,
         #        i.e. don't raise an exception when deleting invalid annotations?
-        if Version(self.grafana.version) >= Version("11"):
+        if self.grafana.get_version() >= Version("11"):
             response = self.grafana.annotations.delete_annotations_by_id(annotations_id=9999)
             self.assertEqual(response["message"], "Annotation deleted")
         else:
@@ -88,7 +88,7 @@ class AnnotationsTestCase(unittest.TestCase):
             self.assertRegex(excinfo.exception.message, "(Annotation not found|Could not find annotation to update)")
 
     def test_delete_annotation_by_id_null(self):
-        if Version(self.grafana.version) >= Version("8"):
+        if self.grafana.get_version() >= Version("8"):
             with self.assertRaises(GrafanaBadInputError) as excinfo:
                 self.grafana.annotations.delete_annotations_by_id(annotations_id=None)
             self.assertRegex(excinfo.exception.message, "annotationId is invalid")
@@ -101,7 +101,7 @@ class AnnotationsTestCase(unittest.TestCase):
         def probe():
             self.grafana.annotations.add_annotation()
 
-        if Version(self.grafana.version) >= Version("7"):
+        if self.grafana.get_version() >= Version("7"):
             with self.assertRaises(GrafanaBadInputError) as context:
                 probe()
             self.assertEqual(context.exception.status_code, 400)
@@ -147,7 +147,7 @@ class AnnotationsTestCase(unittest.TestCase):
         self.assertEqual(response["message"], "Annotation updated")
 
     def test_update_annotation_partial(self):
-        grafana9 = Version("9") <= Version(self.grafana.version) < Version("10")
+        grafana9 = Version("9") <= self.grafana.get_version() < Version("10")
         if grafana9:
             pytest.skip("Updating annotation partially hangs indefinitely on Grafana 9?")
         response = self.grafana.annotations.partial_update_annotation(

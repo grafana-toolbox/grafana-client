@@ -33,7 +33,7 @@ class UsersTestCase(unittest.TestCase):
         with self.assertRaises(GrafanaBadInputError) as context:
             self.grafana.users.update_user(self.user_id, {})
         self.assertEqual(400, context.exception.status_code)
-        if Version(self.grafana.version) >= Version("10"):
+        if self.grafana.get_version() >= Version("10"):
             self.assertIn("Need to specify either username or email", context.exception.message)
         else:
             self.assertIn("Validation error, need to specify either username or email", context.exception.message)
@@ -41,12 +41,12 @@ class UsersTestCase(unittest.TestCase):
     def test_update_user_unknown(self):
         with self.assertRaises(GrafanaClientError) as context:
             self.grafana.users.update_user("unknown", {})
-        if Version(self.grafana.version) >= Version("11"):
+        if self.grafana.get_version() >= Version("11"):
             self.assertEqual(404, context.exception.status_code)
             self.assertIn("User not found", context.exception.message)
         else:
             self.assertEqual(400, context.exception.status_code)
-            if Version(self.grafana.version) >= Version("8"):
+            if self.grafana.get_version() >= Version("8"):
                 self.assertIn("id is invalid", context.exception.message)
             else:
                 self.assertIn("Validation error, need to specify either username or email", context.exception.message)
@@ -58,8 +58,8 @@ class UsersTestCase(unittest.TestCase):
         self.assertEqual("", user["name"])
 
     def test_get_user_unknown(self):
-        grafana_7_lower = Version(self.grafana.version) < Version("8")
-        grafana_11_greater = Version(self.grafana.version) >= Version("11")
+        grafana_7_lower = self.grafana.get_version() < Version("8")
+        grafana_11_greater = self.grafana.get_version() >= Version("11")
         with self.assertRaises(GrafanaClientError) as context:
             self.grafana.users.get_user("unknown")
         if grafana_7_lower or grafana_11_greater:
@@ -143,7 +143,7 @@ class UserTestCase(unittest.TestCase):
         def probe():
             self.grafana.user.change_actual_user_password("invalid", "new")
 
-        if Version(self.grafana.version) >= Version("11"):
+        if self.grafana.get_version() >= Version("11"):
             with self.assertRaises(GrafanaBadInputError) as context:
                 probe()
             self.assertEqual(400, context.exception.status_code)
@@ -155,7 +155,7 @@ class UserTestCase(unittest.TestCase):
             self.assertIn("Unauthorized", context.exception.message)
 
     def test_change_password_too_short(self):
-        grafana_10_4 = Version("10.4") <= Version(self.grafana.version) < Version("11")
+        grafana_10_4 = Version("10.4") <= self.grafana.get_version() < Version("11")
 
         def probe():
             self.grafana.user.change_actual_user_password("admin", "new")
@@ -187,7 +187,7 @@ class UserTestCase(unittest.TestCase):
         def probe():
             return self.grafana.user.switch_user_organisation(self.user_id, "acme")
 
-        if Version(self.grafana.version) >= Version("8"):
+        if self.grafana.get_version() >= Version("8"):
             with self.assertRaises(GrafanaBadInputError) as context:
                 probe()
             self.assertEqual(400, context.exception.status_code)
@@ -205,7 +205,7 @@ class UserTestCase(unittest.TestCase):
     def test_switch_actual_user_organisation_unknown(self):
         with self.assertRaises(GrafanaClientError) as context:
             self.grafana.user.switch_actual_user_organisation("unknown")
-        if Version(self.grafana.version) >= Version("8"):
+        if self.grafana.get_version() >= Version("8"):
             self.assertEqual(400, context.exception.status_code)
             self.assertIn("id is invalid", context.exception.message)
         else:
@@ -223,25 +223,25 @@ class UserTestCase(unittest.TestCase):
         )
 
     def test_star_dashboard_by_uid(self):
-        if Version(self.grafana.version) < Version("9"):
+        if self.grafana.get_version() < Version("9"):
             pytest.skip("Starring dashboards by uid only supported by Grafana 9 and higher.")
         response = self.grafana.user.star_dashboard(self.dashboard_uid)
         self.assertEqual("Dashboard starred!", response["message"])
 
     def test_unstar_dashboard_by_uid(self):
-        if Version(self.grafana.version) < Version("9"):
+        if self.grafana.get_version() < Version("9"):
             pytest.skip("Starring dashboards by uid only supported by Grafana 9 and higher.")
         response = self.grafana.user.unstar_dashboard(self.dashboard_uid)
         self.assertEqual("Dashboard unstarred", response["message"])
 
     def test_star_dashboard_by_id(self):
-        if Version(self.grafana.version) >= Version("12"):
+        if self.grafana.get_version() >= Version("12"):
             pytest.skip("Starring dashboards by id only supported until Grafana 11.")
         response = self.grafana.user.star_dashboard(self.dashboard_id)
         self.assertEqual("Dashboard starred!", response["message"])
 
     def test_unstar_dashboard_by_id(self):
-        if Version(self.grafana.version) >= Version("12"):
+        if self.grafana.get_version() >= Version("12"):
             pytest.skip("Starring dashboards by id only supported until Grafana 11.")
         response = self.grafana.user.unstar_dashboard(self.dashboard_id)
         self.assertEqual("Dashboard unstarred", response["message"])
@@ -250,9 +250,9 @@ class UserTestCase(unittest.TestCase):
         self.grafana.user.update_preferences({}, filter_none=False)
         prefs = self.grafana.user.get_preferences()
         prefs_keys = sorted(prefs.keys())
-        if Version(self.grafana.version) >= Version("9"):
+        if self.grafana.get_version() >= Version("9"):
             self.assertIn(prefs_keys, [[], ["homeDashboardUID"]])
-        elif Version(self.grafana.version) >= Version("8"):
+        elif self.grafana.get_version() >= Version("8"):
             self.assertEqual(["homeDashboardId", "navbar", "theme", "timezone", "weekStart"], prefs_keys)
         else:
             self.assertEqual(["homeDashboardId", "theme", "timezone"], prefs_keys)
@@ -265,7 +265,7 @@ class UserTestCase(unittest.TestCase):
         def probe():
             return self.grafana.user.update_preferences(PersonalPreferences(homeDashboardId=9999))
 
-        if Version(self.grafana.version) >= Version("12"):
+        if self.grafana.get_version() >= Version("12"):
             with self.assertRaises(GrafanaClientError) as context:
                 probe()
             self.assertEqual(404, context.exception.status_code)
@@ -279,7 +279,7 @@ class UserTestCase(unittest.TestCase):
         def probe():
             return self.grafana.user.patch_preferences(PersonalPreferences(homeDashboardUID=self.dashboard_uid))
 
-        if Version(self.grafana.version) >= Version("8"):
+        if self.grafana.get_version() >= Version("8"):
             response = probe()
             self.assertEqual("Preferences updated", response["message"])
         else:
@@ -289,8 +289,8 @@ class UserTestCase(unittest.TestCase):
             self.assertRegex(context.exception.message, "Not found")
 
     def test_patch_preferences_unknown_dashboard(self):
-        grafana_7_lower = Version(self.grafana.version) < Version("8")
-        grafana_9_higher = Version(self.grafana.version) >= Version("9")
+        grafana_7_lower = self.grafana.get_version() < Version("8")
+        grafana_9_higher = self.grafana.get_version() >= Version("9")
 
         def probe():
             return self.grafana.user.patch_preferences(PersonalPreferences(homeDashboardUID="unknown"))

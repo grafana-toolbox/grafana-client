@@ -34,7 +34,7 @@ class DashboardTestCase(unittest.TestCase):
         self.assertEqual(dashboard["dashboard"]["uid"], self.dashboard_uid)
 
     def test_get_dashboard_by_name_grafana7(self):
-        if Version(self.grafana.version) < Version("8"):
+        if self.grafana.get_version() < Version("8"):
             dashboard = self.grafana.dashboard.get_dashboard_by_name("productionoverview")
             self.assertEqual(dashboard["dashboard"]["title"], "ProductionOverview")
         else:
@@ -44,7 +44,7 @@ class DashboardTestCase(unittest.TestCase):
         def probe():
             return self.grafana.dashboard.get_dashboard_by_name("productionoverview")
 
-        if Version(self.grafana.version) >= Version("8"):
+        if self.grafana.get_version() >= Version("8"):
             with self.assertRaises(GrafanaClientError) as context:
                 probe()
             self.assertEqual(404, context.exception.status_code)
@@ -83,7 +83,7 @@ class DashboardTestCase(unittest.TestCase):
             }
         )
         # folderUid only exists with Grafana 11 and higher.
-        if Version(self.grafana.version) >= Version("11"):
+        if self.grafana.get_version() >= Version("11"):
             self.assertEqual(db["folderUid"], self.folder_uid)
 
     def test_update_dashboard_roundtrip_folder_2(self):
@@ -118,9 +118,9 @@ class DashboardTestCase(unittest.TestCase):
         """
         self.assertEqual(dashboard["dashboard"]["title"], "Home")
         self.assertEqual(dashboard["meta"]["url"], "")
-        if Version(self.grafana.version) < Version("9"):
+        if self.grafana.get_version() < Version("9"):
             self.assertEqual(dashboard["meta"]["isHome"], True)
-        if Version(self.grafana.version) >= Version("8"):
+        if self.grafana.get_version() >= Version("8"):
             self.assertEqual(dashboard["meta"]["canDelete"], False)
         """
 
@@ -134,8 +134,8 @@ class DashboardTestCase(unittest.TestCase):
         self.assertEqual(tags[0]["term"], "bazqux")
 
     def test_dashboard_permissions_by_id(self):
-        grafana8 = Version("8") <= Version(self.grafana.version) < Version("9")
-        if Version(self.grafana.version) >= Version("12"):
+        grafana8 = Version("8") <= self.grafana.get_version() < Version("9")
+        if self.grafana.get_version() >= Version("12"):
             pytest.skip("Grafana 12 no longer supports accessing dashboards by id, use uids instead.")
 
         if grafana8:
@@ -152,7 +152,7 @@ class DashboardTestCase(unittest.TestCase):
         self.assertEqual(len(permissions), 4)
 
     def test_dashboard_permissions_by_uid(self):
-        if Version(self.grafana.version) < Version("9"):
+        if self.grafana.get_version() < Version("9"):
             pytest.skip("Grafana 8 and earlier do not support accessing dashboards by uid for permission updates.")
 
         response = self.grafana.dashboard.update_permissions_by_uid(self.dashboard_uid, self.permissions)
