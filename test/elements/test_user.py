@@ -184,6 +184,12 @@ class UserTestCase(unittest.TestCase):
         self.assertIn("Unauthorized", context.exception.message)
 
     def test_switch_user_organisation_unknown_org(self):
+        if self.grafana.version == "nightly":
+            pytest.skip(
+                "Grafana Nightly: Skipping switching to unknown organisation. "
+                "Reason: Read timed out. (read timeout=5.0)"
+            )
+
         def probe():
             return self.grafana.user.switch_user_organisation(self.user_id, "acme")
 
