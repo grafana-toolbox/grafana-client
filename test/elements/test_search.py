@@ -14,16 +14,18 @@ pytestmark = pytest.mark.integration
 class SearchTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
     def use_fixtures(
-        self, grafana_provisioned: GrafanaApi, dashboard_basic, folder_basic, dashboard_uid: str, folder_uid: str
+        self,
+        grafana_api: GrafanaApi,
+        dashboard_id: str,
+        dashboard_uid: str,
+        folder_id: str,
+        folder_uid: str,
     ):
-        self.grafana = grafana_provisioned
-        self.dashboard_basic = dashboard_basic
-        self.folder_basic = folder_basic
+        self.grafana = grafana_api
+        self.dashboard_id = dashboard_id
         self.dashboard_uid = dashboard_uid
+        self.folder_id = folder_id
         self.folder_uid = folder_uid
-
-        self.dashboard_id = self.dashboard_basic["id"]
-        self.folder_id = self.folder_basic["id"]
 
     def test_search_dashboards_no_input(self):
         result = self.grafana.search.search_dashboards()

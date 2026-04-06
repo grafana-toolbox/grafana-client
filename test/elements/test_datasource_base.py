@@ -15,7 +15,6 @@ from test.elements.test_datasource_fixtures import (
     ELASTICSEARCH_DATASOURCE,
     INFLUXDB1_DATASOURCE,
     PROMETHEUS_DATASOURCE,
-    TESTDATA_DATASOURCE,
 )
 
 pytestmark = pytest.mark.integration
@@ -24,13 +23,10 @@ pytestmark = pytest.mark.integration
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class DatasourceTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned, dashboard_basic, folder_basic, docker_prometheus):  # noqa: ARG002
-        self.grafana = grafana_provisioned
-        self.dashboard = dashboard_basic
-        self.folder = folder_basic
-        self.datasource = self.grafana.datasource.create_datasource(PROMETHEUS_DATASOURCE)
-        self.datasource_id = self.datasource["datasource"]["id"]
-        self.datasource_uid = self.datasource["datasource"]["uid"]
+    def use_fixtures(self, grafana_api, reset_datasources, docker_prometheus, datasource_prometheus):  # noqa: ARG002
+        self.grafana = grafana_api
+        self.datasource_id = datasource_prometheus["id"]
+        self.datasource_uid = datasource_prometheus["uid"]
 
     def test_get_datasource_by_id(self):
         if Version(self.grafana.version) >= Version("12"):
@@ -91,7 +87,7 @@ class DatasourceTestCase(unittest.TestCase):
     def test_list_datasources(self):
         result = self.grafana.datasource.list_datasources()
         self.assertEqual(result[0]["type"], "prometheus")
-        self.assertEqual(len(result), 2)
+        self.assertEqual(len(result), 1)
 
     def test_get_datasource_proxy_data_query_time(self):
         # http://localhost:3000/api/datasources/proxy/1/api/v1/query?query=up%7binstance%3d%22localhost:9090%22%7d&time=1644164339
@@ -150,20 +146,29 @@ class DatasourceTestCase(unittest.TestCase):
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class DatasourceInquiryTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned, docker_prometheus, docker_influxdb1, docker_elasticsearch):  # noqa: ARG002
-        self.grafana = grafana_provisioned
+    def use_fixtures(
+        self,
+        grafana_api,
+        reset_datasources,  # noqa: ARG002
+        docker_prometheus,  # noqa: ARG002
+        docker_influxdb1,  # noqa: ARG002
+        docker_elasticsearch,  # noqa: ARG002
+        datasource_prometheus,
+        datasource_testdata,
+    ):
+        self.grafana = grafana_api
         self.datasource_influxdb1 = self.grafana.datasource.create_datasource(INFLUXDB1_DATASOURCE)["datasource"]
         self.datasource_elasticsearch = self.grafana.datasource.create_datasource(ELASTICSEARCH_DATASOURCE)[
             "datasource"
         ]
-        self.datasource_prometheus = self.grafana.datasource.create_datasource(PROMETHEUS_DATASOURCE)["datasource"]
-        self.datasource_testdata = self.grafana.datasource.get_datasource_by_uid(TESTDATA_DATASOURCE["uid"])
+        self.datasource_prometheus = datasource_prometheus
+        self.datasource_testdata = datasource_testdata
+        self.datasource_testdata_uid = datasource_testdata["uid"]
 
     def test_health(self):
         if Version(self.grafana.version) < Version("10"):
             pytest.skip("Data source health check endpoint is available in Grafana 10 and higher.")
-        datasource_uid = self.datasource_testdata["uid"]
-        result = self.grafana.datasource.health(datasource_uid)
+        result = self.grafana.datasource.health(self.datasource_testdata_uid)
         self.assertEqual(result["status"], "OK")
 
     def test_prometheus(self):
@@ -183,10 +188,11 @@ class DatasourceInquiryTestCase(unittest.TestCase):
         result = response["results"][0]
         self.assertEqual(result["series"][0]["values"][0][0], "monitor")
 
-    @pytest.mark.skip("Defunct: Currently fails with »bad request data«")
+    # FIXME: Elasticsearch data source currently fails with »bad request data«.
+    @pytest.mark.skip("FIXME: Elasticsearch data source currently fails with »bad request data«")
     def test_elasticsearch(self):
         datasource_id = self.datasource_elasticsearch["id"]
-        _ = self.grafana.datasource.smartquery(
+        self.grafana.datasource.smartquery(
             self.datasource_elasticsearch, f"url:///datasources/proxy/{datasource_id}/bazqux/_mapping"
         )
         # TODO: Response payload not reflected and validated yet.

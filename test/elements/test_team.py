@@ -14,10 +14,9 @@ pytestmark = pytest.mark.integration
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class TeamsTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned: GrafanaApi, user_testdrive, dashboard_uid: str):
-        self.grafana = grafana_provisioned
-        self.user = user_testdrive
-        self.user_id = self.user["id"]
+    def use_fixtures(self, grafana_api: GrafanaApi, user_id: int, dashboard_uid: str):
+        self.grafana = grafana_api
+        self.user_id = user_id
         self.dashboard_uid = dashboard_uid
         self.first_team = self.grafana.teams.add_team("my team")
         self.second_team = self.grafana.teams.add_team("SecondTeam")
@@ -49,12 +48,12 @@ class TeamsTestCase(unittest.TestCase):
         self.assertEqual(1, len(teams))
 
     def test_get_team_by_id_success(self):
-        team = self.grafana.teams.get_team(1)
-        self.assertEqual("Foo Fighters", team["name"])
+        team = self.grafana.teams.get_team(self.second_team_id)
+        self.assertEqual("SecondTeam", team["name"])
 
     def test_get_team_by_id_unknown(self):
         with self.assertRaises(GrafanaClientError) as context:
-            self.grafana.teams.get_team(99)
+            self.grafana.teams.get_team(9999)
         self.assertEqual(404, context.exception.status_code)
         self.assertIn("Team not found", context.exception.message)
 
@@ -70,7 +69,7 @@ class TeamsTestCase(unittest.TestCase):
 
     def test_update_team_unknown(self):
         def probe():
-            self.grafana.teams.update_team(99, {})
+            self.grafana.teams.update_team(9999, {})
 
         if Version(self.grafana.version) >= Version("12"):
             with self.assertRaises(GrafanaClientError) as context:
@@ -89,7 +88,7 @@ class TeamsTestCase(unittest.TestCase):
 
     def test_delete_team_unknown(self):
         with self.assertRaises(GrafanaClientError) as context:
-            self.grafana.teams.delete_team(99)
+            self.grafana.teams.delete_team(9999)
         self.assertEqual(404, context.exception.status_code)
         self.assertRegex(context.exception.message, "(Team not found|Failed to delete Team. ID not found)")
 

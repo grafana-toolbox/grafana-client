@@ -13,20 +13,20 @@ pytestmark = pytest.mark.integration
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class ServiceAccountsTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned: GrafanaApi):
-        self.grafana = grafana_provisioned
+    def use_fixtures(self, grafana_api: GrafanaApi, reset_user_model):  # noqa: ARG002
+        self.grafana = grafana_api
         if Version(self.grafana.version) < Version("9"):
             pytest.skip("Service accounts only supported by Grafana 9 and higher.")
-        self.user = self.grafana.serviceaccount.create({"name": "service", "role": "Admin"})
-        self.user_id = self.user["id"]
-        self.token = self.grafana.serviceaccount.create_token(self.user_id, {"name": "some-uuid"})
+        self.account = self.grafana.serviceaccount.create({"name": "service", "role": "Admin"})
+        self.account_id = self.account["id"]
+        self.token = self.grafana.serviceaccount.create_token(self.account_id, {"name": "some-uuid"})
         self.token_id = self.token["id"]
         if Version(self.grafana.version) >= Version("11"):
-            self.user_uid = self.user["uid"]
+            self.account_uid = self.account["uid"]
 
     def test_get_account(self):
-        result = self.grafana.serviceaccount.get(self.user_id)
-        self.assertEqual(self.user_id, result["id"])
+        result = self.grafana.serviceaccount.get(self.account_id)
+        self.assertEqual(self.account_id, result["id"])
         self.assertEqual("service", result["name"])
         if Version(self.grafana.version) >= Version("11"):
             self.assertEqual("sa-1-service", result["login"])
@@ -51,35 +51,35 @@ class ServiceAccountsTestCase(unittest.TestCase):
         self.assertStartsWith(user["login"], "sa-")
 
     def test_update_account(self):
-        response = self.grafana.serviceaccount.update(self.user_id, {"name": "foo", "role": "Admin"})
+        response = self.grafana.serviceaccount.update(self.account_id, {"name": "foo", "role": "Admin"})
         self.assertEqual(response["message"], "Service account updated")
 
     def test_delete_account(self):
-        response = self.grafana.serviceaccount.delete(self.user_id)
+        response = self.grafana.serviceaccount.delete(self.account_id)
         self.assertEqual(response["message"], "Service account deleted")
 
     def test_create_token_success(self):
-        token = self.grafana.serviceaccount.create_token(self.user_id, {"name": "random-token"})
+        token = self.grafana.serviceaccount.create_token(self.account_id, {"name": "random-token"})
         self.assertEqual(token["name"], "random-token")
 
     def test_create_token_duplicate(self):
         with self.assertRaises(GrafanaBadInputError) as context:
-            self.grafana.serviceaccount.create_token(self.user_id, {"name": "some-uuid"})
+            self.grafana.serviceaccount.create_token(self.account_id, {"name": "some-uuid"})
         self.assertEqual(400, context.exception.status_code)
         self.assertIn(
             "service account token with given name already exists in the organization", context.exception.message
         )
 
     def test_delete_token(self):
-        response = self.grafana.serviceaccount.delete_token(self.user_id, self.token_id)
+        response = self.grafana.serviceaccount.delete_token(self.account_id, self.token_id)
         self.assertEqual(response["message"], "Service account token deleted")
 
     def test_get_tokens_success(self):
-        results = self.grafana.serviceaccount.get_tokens(self.user_id)
+        results = self.grafana.serviceaccount.get_tokens(self.account_id)
         self.assertEqual(1, len(results))
 
     def test_get_tokens_no_results(self):
-        results = self.grafana.serviceaccount.get_tokens(99)
+        results = self.grafana.serviceaccount.get_tokens(9999)
         self.assertEqual(0, len(results))
 
     def test_search_success(self):
@@ -88,8 +88,16 @@ class ServiceAccountsTestCase(unittest.TestCase):
         self.assertEqual("service", results[0]["name"])
 
     def test_search_paged_too_far(self):
-        results = self.grafana.serviceaccount.search_all("serv", page=99)
+        results = self.grafana.serviceaccount.search_all("serv", page=9999)
         self.assertEqual(0, len(results))
+
+    def test_search_paged_too_short(self):
+        results = self.grafana.serviceaccount.search_all("serv", page=0)
+        self.assertEqual(1, len(results))
+
+    def test_search_paged_invalid(self):
+        results = self.grafana.serviceaccount.search_all("serv", page=-9999)
+        self.assertEqual(1, len(results))
 
     def test_search_one_success(self):
         result = self.grafana.serviceaccount.search_one("serv")

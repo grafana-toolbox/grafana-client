@@ -162,7 +162,7 @@ class TestGrafanaClient(unittest.TestCase):
         self.assertRaises(niquests.exceptions.ConnectionError, lambda: grafana.connect())
 
     @patch("grafana_client.client.GrafanaClient.__getattr__")
-    def test_grafana_client_version_basic(self, mock_get):
+    def test_grafana_client_version_standard(self, mock_get):
         mock_get.return_value = Mock()
         mock_get.return_value.return_value = frontend_settings_buildinfo_payload
         grafana = GrafanaApi(auth=None, host="localhost", url_path_prefix="", protocol="http", port="3000")

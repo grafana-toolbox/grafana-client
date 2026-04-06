@@ -1,3 +1,7 @@
+"""
+Grafana software test backbone, aka. `pytest-grafana`.
+"""
+
 import typing as t
 
 import pytest
@@ -5,14 +9,13 @@ from verlib2 import Version
 
 from grafana_client import GrafanaApi
 from grafana_client.client import GrafanaClientError
-from grafana_client.model import PersonalPreferences
+
+DataDictionary = t.Dict[str, t.Any]
 
 
 @pytest.fixture(scope="session")
 def docker_grafana(docker_services) -> str:
-    """
-    Provide Grafana service.
-    """
+    """Provide Grafana service and return its URL."""
     docker_services.start("grafana")
     public_port = docker_services.wait_for_service("grafana", 3000)
     return f"http://admin:admin@{docker_services.docker_ip}:{public_port}"
@@ -20,36 +23,48 @@ def docker_grafana(docker_services) -> str:
 
 @pytest.fixture(scope="session")
 def grafana_api(docker_grafana) -> GrafanaApi:
-    """
-    Provide Grafana API instance.
-    """
+    """Provide Grafana API instance connected to the service."""
     return GrafanaApi.from_url(docker_grafana)
 
 
-@pytest.fixture(scope="function")
-def datasource_testdata(grafana_api):
-    from test.elements.test_datasource_fixtures import TESTDATA_DATASOURCE
-
-    try:
-        grafana_api.datasource.create_datasource(TESTDATA_DATASOURCE)
-    except GrafanaClientError as ex:
-        if ex.status_code != 409:
-            raise
+@pytest.fixture()
+def grafana_version(grafana_api: GrafanaApi) -> Version:
+    """Inquire and provide current Grafana version."""
+    return Version(grafana_api.version)
 
 
 @pytest.fixture()
-def dashboard_uid() -> str:
-    return "cIBgcSjkk"
+def datasource_testdata(grafana_api: GrafanaApi) -> DataDictionary:
+    """Provision Grafana data source (TestData) for testing purposes."""
+    from test.elements.test_datasource_fixtures import TESTDATA_DATASOURCE
+
+    return grafana_api.datasource.create_datasource(TESTDATA_DATASOURCE)["datasource"]
+
+
+@pytest.fixture()
+def datasource_prometheus(grafana_api: GrafanaApi) -> DataDictionary:
+    """Provision Grafana data source (Prometheus) for testing purposes."""
+    from test.elements.test_datasource_fixtures import PROMETHEUS_DATASOURCE
+
+    return grafana_api.datasource.create_datasource(PROMETHEUS_DATASOURCE)["datasource"]
+
+
+@pytest.fixture()
+def dashboard_id(grafana_dashboard: DataDictionary) -> str:
+    """Provision Grafana dashboard and provide its ID."""
+    return grafana_dashboard["id"]
+
+
+@pytest.fixture()
+def dashboard_uid(grafana_dashboard: DataDictionary) -> str:
+    """Provision Grafana dashboard and provide its UID."""
+    return grafana_dashboard["uid"]
 
 
 @pytest.fixture(scope="function")
-def dashboard_basic(grafana_api, dashboard_uid, folder_basic):
-    folder_uid = folder_basic["uid"]
-    try:
-        grafana_api.dashboard.delete_dashboard(dashboard_uid)
-    except GrafanaClientError as ex:
-        if ex.status_code != 404:
-            raise
+def grafana_dashboard(grafana_api: GrafanaApi, folder_uid: str) -> DataDictionary:  # noqa: ARG001
+    """Provision Grafana dashboard for testing purposes."""
+    dashboard_uid = "cIBgcSjkk"
     return grafana_api.dashboard.update_dashboard(
         {
             "dashboard": {
@@ -65,84 +80,121 @@ def dashboard_basic(grafana_api, dashboard_uid, folder_basic):
 
 
 @pytest.fixture()
-def folder_uid() -> str:
-    return "cfi05mqnc3k00a"
-
-
-@pytest.fixture(scope="function")
-def folder_basic(grafana_api, folder_uid) -> t.Dict[str, str]:
-    try:
-        grafana_api.folder.delete_folder(folder_uid)
-    except GrafanaClientError as ex:
-        if ex.status_code != 404:
-            raise
-    return grafana_api.folder.create_folder(title="Testdrive", uid=folder_uid)
-
-
-@pytest.fixture(scope="function")
-def team_basic(grafana_api):
-    try:
-        return grafana_api.teams.add_team({"name": "Foo Fighters"})
-    except GrafanaClientError as ex:
-        if ex.status_code != 409:
-            raise
-
-
-@pytest.fixture(scope="function")
-def user_testdrive(grafana_api, organization_testdrive):
-    try:
-        return grafana_api.admin.create_user(
-            {
-                "login": "testdrive",
-                "password": "secret",
-                "OrgId": organization_testdrive["orgId"],
-            }
-        )
-    except GrafanaClientError as err:
-        if err.status_code == 412:
-            return grafana_api.users.find_user("testdrive")
-        else:
-            raise
+def folder_id(grafana_folder: DataDictionary) -> str:
+    """Provision Grafana folder and provide its ID."""
+    return grafana_folder["id"]
 
 
 @pytest.fixture()
-def organization_name() -> str:
-    return "Testdrive Org."
+def folder_uid(grafana_folder: DataDictionary) -> str:
+    """Provision Grafana folder and provide its UID."""
+    return grafana_folder["uid"]
+
+
+@pytest.fixture()
+def folder_title(grafana_folder: DataDictionary) -> str:
+    """Provision Grafana folder and provide its title."""
+    return grafana_folder["title"]
 
 
 @pytest.fixture(scope="function")
-def organization_testdrive(grafana_api, organization_name: str):
+def grafana_folder(grafana_api: GrafanaApi, reset_folders_dashboards) -> DataDictionary:  # noqa: ARG001
+    """Provision Grafana folder for testing purposes."""
+    folder_uid = "cfi05mqnc3k00a"
     try:
-        return grafana_api.organization.create_organization(organization=organization_name)
-    except GrafanaClientError as err:
-        if err.status_code == 412:
-            return grafana_api.organization.find_organization(organization_name)
-        else:
+        return grafana_api.folder.create_folder(title="Testdrive", uid=folder_uid)
+
+    # TODO: Currently needs to compensate for `Client Error 412: the folder
+    #       has been changed by someone else`. Why does this happen?
+    except GrafanaClientError as ex:
+        if ex.status_code != 412:
             raise
+    return grafana_api.folder.get_folder(uid=folder_uid)
 
 
 @pytest.fixture(scope="function")
-def reset_grafana(grafana_api, dashboard_uid):
+def grafana_team(grafana_api: GrafanaApi, reset_teams) -> DataDictionary:  # noqa: ARG001
+    """Provision Grafana team for testing purposes."""
+    return grafana_api.teams.add_team({"name": "Foo Fighters"})
 
-    # Reset context.
+
+@pytest.fixture(scope="function")
+def dashboard_folder_permissions(grafana_team) -> t.List[DataDictionary]:  # noqa: ARG001
+    """Provide a set of dashboard or folder permissions."""
+    team_id = grafana_team["teamId"]
+    """
+    items=[
+        {"permission": "View"},
+        {"permission": "Edit"},
+    ],
+    """
+    return [
+        {"role": "Viewer", "permission": 1},
+        {"role": "Editor", "permission": 2},
+        {"teamId": team_id, "permission": 1},
+        {"userId": 1, "permission": 4},
+    ]
+
+
+@pytest.fixture(scope="function")
+def user_id(grafana_user) -> int:
+    """Provision Grafana user and provide its user ID."""
+    return grafana_user["id"]
+
+
+@pytest.fixture(scope="function")
+def grafana_user(grafana_api: GrafanaApi, reset_user_model) -> DataDictionary:  # noqa: ARG001
+    """Provision Grafana user for testing purposes."""
+    try:
+        grafana_api.admin.create_user(
+            {
+                "login": "testdrive",
+                "password": "secret",
+                "OrgId": 1,
+            }
+        )
+    except GrafanaClientError as err:
+        if err.status_code != 412:
+            raise
+    return grafana_api.users.find_user("testdrive")
+
+
+@pytest.fixture()
+def organization_id(grafana_organization) -> str:
+    """Provision Grafana organization and provide its ID."""
+    return grafana_organization["orgId"]
+
+
+@pytest.fixture()
+def organization_name(grafana_organization) -> str:
+    """Provision Grafana organization and provide its name."""
+    return grafana_organization["name"]
+
+
+@pytest.fixture(scope="function")
+def grafana_organization(grafana_api: GrafanaApi, reset_user_model) -> DataDictionary:  # noqa: ARG001
+    """Provision Grafana organization for testing purposes."""
+    return grafana_api.organization.create_organization(organization="Testdrive Org.")
+
+
+@pytest.fixture(scope="function")
+def user_with_organization(grafana_api: GrafanaApi, grafana_user, organization_id) -> None:
+    """Associate user with organization."""
+    grafana_api.organizations.organization_user_add(
+        organization_id=organization_id,
+        user={"loginOrEmail": grafana_user["login"], "role": "Viewer"},
+    )
+
+
+@pytest.fixture()
+def reset_organization_switch(grafana_api: GrafanaApi) -> None:
+    """Switch back to organization 1."""
     grafana_api.organizations.switch_organization(organization_id=1)
-    grafana_api.user.update_preferences(PersonalPreferences(homeDashboardUID=""))
 
-    grafana_version = Version(grafana_api.version)
 
-    # Reset folders and dashboards.
-    for folder in grafana_api.folder.get_all_folders():
-        try:
-            grafana_api.folder.delete_folder(folder["uid"], force_delete_rules=True)
-        except GrafanaClientError as ex:
-            if ex.status_code != 404:
-                raise
-
-    # Reset data sources.
-    for datasource in grafana_api.datasource.list_datasources():
-        grafana_api.datasource.delete_datasource_by_uid(datasource["uid"])
-
-    # Reset tokens, service accounts, users, teams, and organizations.
+@pytest.fixture()
+def reset_user_model(grafana_api: GrafanaApi, grafana_version: Version, reset_organization_switch, reset_teams) -> None:  # noqa: ARG001
+    """Reset tokens, service accounts, users, teams, and organizations."""
     if grafana_version >= Version("9"):
         for account in grafana_api.serviceaccount.search_streaming():
             account_id = account["id"]
@@ -152,34 +204,43 @@ def reset_grafana(grafana_api, dashboard_uid):
     for user in grafana_api.users.search_users():
         if user["id"] != 1:
             grafana_api.admin.delete_user(user["id"])
-    for team in grafana_api.teams.search_teams():
-        if team["id"] != 1:
-            grafana_api.teams.delete_team(team["id"])
     for org in grafana_api.organizations.list_organization():
         if org["id"] != 1:
             grafana_api.organizations.delete_organization(org["id"])
     grafana_api.organizations.update_organization(organization_id=1, organization={"name": "Main Org."})
 
-    # Reset user dashboard stars.
+
+@pytest.fixture()
+def reset_teams(grafana_api: GrafanaApi) -> None:
+    """Reset all teams."""
+    for team in grafana_api.teams.search_teams():
+        grafana_api.teams.delete_team(team["id"])
+
+
+@pytest.fixture()
+def reset_datasources(grafana_api: GrafanaApi) -> None:
+    """Reset all data sources."""
+    for datasource in grafana_api.datasource.list_datasources():
+        grafana_api.datasource.delete_datasource_by_uid(datasource["uid"])
+
+
+@pytest.fixture()
+def reset_folders_dashboards(grafana_api: GrafanaApi) -> None:
+    """Reset all dashboards."""
+    for item in grafana_api.search.search_dashboards():
+        try:
+            if item["type"] == "dash-db":
+                grafana_api.dashboard.delete_dashboard(item["uid"])
+            elif item["type"] == "dash-folder":
+                grafana_api.folder.delete_folder(item["uid"], force_delete_rules=True)
+        except GrafanaClientError as ex:
+            if ex.status_code != 404:
+                raise
+
+
+@pytest.fixture()
+def reset_stars(grafana_api: GrafanaApi, grafana_version: Version, dashboard_uid: str) -> None:
+    """Reset user dashboard stars."""
     # TODO: It looks like starring a dashboard hasn't made it into an API wrapper yet.
     if grafana_version >= Version("11"):
         grafana_api.client.DELETE(f"/user/stars/dashboard/uid/{dashboard_uid}")
-
-
-# ruff: disable[ARG001]
-@pytest.fixture(scope="function")
-def grafana_provisioned(
-    grafana_api,
-    reset_grafana,
-    datasource_testdata,
-    dashboard_basic,
-    folder_basic,
-    team_basic,
-) -> GrafanaApi:
-    """
-    Provide Grafana API instance.
-    """
-    return grafana_api
-
-
-# ruff: enable[ARG001]

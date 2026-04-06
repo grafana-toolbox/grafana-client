@@ -10,9 +10,9 @@ pytestmark = pytest.mark.integration
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class AdminTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned, user_testdrive):
-        self.grafana = grafana_provisioned
-        self.user = user_testdrive
+    def use_fixtures(self, grafana_api, user_id: int):
+        self.grafana = grafana_api
+        self.user_id = user_id
 
     def test_settings(self):
         settings = self.grafana.admin.settings()
@@ -32,15 +32,15 @@ class AdminTestCase(unittest.TestCase):
         self.assertEqual(response["message"], "User created")
 
     def test_change_user_password(self):
-        response = self.grafana.admin.change_user_password(user_id=self.user["id"], password="password")  # noqa: S106
+        response = self.grafana.admin.change_user_password(user_id=self.user_id, password="password")  # noqa: S106
         self.assertEqual(response["message"], "User password updated")
 
     def test_change_user_permissions(self):
-        response = self.grafana.admin.change_user_permissions(user_id=self.user["id"], is_grafana_admin=True)
+        response = self.grafana.admin.change_user_permissions(user_id=self.user_id, is_grafana_admin=True)
         self.assertEqual(response["message"], "User permissions updated")
 
     def test_delete_user(self):
-        response = self.grafana.admin.delete_user(user_id=self.user["id"])
+        response = self.grafana.admin.delete_user(user_id=self.user_id)
         self.assertEqual(response["message"], "User deleted")
 
     def test_pause_all_alerts(self):
@@ -50,9 +50,9 @@ class AdminTestCase(unittest.TestCase):
         self.assertEqual(response["message"], "alerts paused")
 
     def test_enable_user(self):
-        response = self.grafana.admin.set_user_enabled(user_id=self.user["id"], enabled=True)
+        response = self.grafana.admin.set_user_enabled(user_id=self.user_id, enabled=True)
         self.assertEqual(response["message"], "User enabled")
 
     def test_disable_user(self):
-        response = self.grafana.admin.set_user_enabled(user_id=self.user["id"], enabled=False)
+        response = self.grafana.admin.set_user_enabled(user_id=self.user_id, enabled=False)
         self.assertEqual(response["message"], "User disabled")

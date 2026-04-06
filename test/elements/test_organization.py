@@ -14,17 +14,23 @@ pytestmark = pytest.mark.integration
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class OrganizationTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned: GrafanaApi, organization_testdrive, user_testdrive, dashboard_uid):
-        self.grafana = grafana_provisioned
+    def use_fixtures(
+        self,
+        grafana_api: GrafanaApi,
+        user_with_organization,  # noqa: ARG002
+        organization_id: int,
+        user_id: int,
+        dashboard_uid: str,
+    ):
+
+        self.grafana = grafana_api
 
         if Version(self.grafana.version) < Version("8"):
             pytest.skip("Unauthorized with vanilla Grafana 7")
 
         self.dashboard_uid = dashboard_uid
-        self.user = user_testdrive
-        self.user_id = self.user["id"]
-        self.organization = organization_testdrive
-        self.organization_id = self.organization["orgId"]
+        self.organization_id = organization_id
+        self.user_id = user_id
         self.angel_user = self.grafana.admin.create_user(
             {
                 "login": "angel",
@@ -65,7 +71,7 @@ class OrganizationTestCase(unittest.TestCase):
 
         def probe():
             self.grafana.organizations.organization_user_update(
-                organization_id=99, user_id=self.user_id, user_role="Admin"
+                organization_id=9999, user_id=self.user_id, user_role="Admin"
             )
 
         if not grafana10:
@@ -79,10 +85,26 @@ class OrganizationTestCase(unittest.TestCase):
             self.assertEqual(403, context.exception.status_code, "Wrong status code")
             self.assertIn("Permissions needed: org.users:write", context.exception.message)
 
+    def test_organization_user_update_invalid_org(self):
+        with self.assertRaises(GrafanaServerError) as context:
+            self.grafana.organizations.organization_user_update(
+                organization_id=-9999, user_id=self.user_id, user_role="Admin"
+            )
+        self.assertEqual(500, context.exception.status_code, "Wrong status code")
+        self.assertIn("Failed update org user", context.exception.message)
+
     def test_organization_user_update_unknown_user(self):
         with self.assertRaises(GrafanaServerError) as context:
             self.grafana.organizations.organization_user_update(
-                organization_id=self.organization_id, user_id=99, user_role="Admin"
+                organization_id=self.organization_id, user_id=9999, user_role="Admin"
+            )
+        self.assertEqual(500, context.exception.status_code, "Wrong status code")
+        self.assertIn("Failed update org user", context.exception.message)
+
+    def test_organization_user_update_invalid_user(self):
+        with self.assertRaises(GrafanaServerError) as context:
+            self.grafana.organizations.organization_user_update(
+                organization_id=self.organization_id, user_id=-9999, user_role="Admin"
             )
         self.assertEqual(500, context.exception.status_code, "Wrong status code")
         self.assertIn("Failed update org user", context.exception.message)
@@ -95,7 +117,7 @@ class OrganizationTestCase(unittest.TestCase):
 
     def test_organization_user_list(self):
         users = self.grafana.organizations.organization_user_list(organization_id=1)
-        self.assertEqual(2, len(users))
+        self.assertEqual(3, len(users))
 
     def test_list_organization(self):
         users = self.grafana.organizations.list_organization()
@@ -128,7 +150,7 @@ class OrganizationTestCase(unittest.TestCase):
         grafana10 = Version("10") <= Version(self.grafana.version) < Version("11")
 
         def probe():
-            self.grafana.organizations.update_organization(organization_id=99, organization={"name": "Other Org 99."})
+            self.grafana.organizations.update_organization(organization_id=9999, organization={"name": "Other Org 99."})
 
         if not grafana10:
             with self.assertRaises(GrafanaServerError) as context:
@@ -148,13 +170,19 @@ class OrganizationTestCase(unittest.TestCase):
     def test_delete_organization_unknown(self):
         grafana10 = Version("10") <= Version(self.grafana.version) < Version("11")
         with self.assertRaises(GrafanaClientError) as context:
-            self.grafana.organizations.delete_organization(organization_id=99)
+            self.grafana.organizations.delete_organization(organization_id=9999)
         if not grafana10:
             self.assertEqual(404, context.exception.status_code, "Wrong status code")
             self.assertIn("Failed to delete organization. ID not found", context.exception.message)
         else:
             self.assertEqual(403, context.exception.status_code, "Wrong status code")
-            self.assertIn("Permissions needed: orgs:delete", context.exception.message)
+            self.assertIn("You'll need additional permissions to perform this action", context.exception.message)
+
+    def test_delete_organization_invalid(self):
+        with self.assertRaises(GrafanaClientError) as context:
+            self.grafana.organizations.delete_organization(organization_id=-9999)
+        self.assertEqual(404, context.exception.status_code, "Wrong status code")
+        self.assertIn("Failed to delete organization. ID not found", context.exception.message)
 
     def test_create_organization_success(self):
         response = self.grafana.organization.create_organization(organization="New Org.")
@@ -224,7 +252,7 @@ class OrganizationTestCase(unittest.TestCase):
     def test_update_user_current_organization_user_unknown(self):
         with self.assertRaises(GrafanaServerError) as context:
             self.grafana.organization.update_user_current_organization(
-                user_id=99,
+                user_id=9999,
                 user={"role": "Viewer"},
             )
         self.assertEqual(500, context.exception.status_code, "Wrong status code")
@@ -232,7 +260,7 @@ class OrganizationTestCase(unittest.TestCase):
 
     def test_get_current_organization_users(self):
         org = self.grafana.organization.get_current_organization_users()
-        self.assertEqual(2, len(org), "Wrong number of users")
+        self.assertEqual(3, len(org), "Wrong number of users")
 
     def test_find_organization_success(self):
         org = self.grafana.organization.find_organization(org_name="Testdrive Org.")
@@ -244,12 +272,16 @@ class OrganizationTestCase(unittest.TestCase):
         self.assertEqual(404, context.exception.status_code, "Wrong status code")
         self.assertIn("Organization not found", context.exception.message)
 
-    def test_switch_organization_success(self):
-        response = self.grafana.organizations.switch_organization(organization_id=self.organization_id)
-        self.assertEqual("Active organization changed", response["message"])
 
-    def test_switch_organization_unknown(self):
-        with self.assertRaises(GrafanaUnauthorizedError) as context:
-            self.grafana.organizations.switch_organization(organization_id=99)
-        self.assertEqual(401, context.exception.status_code, "Wrong status code")
-        self.assertIn("Unauthorized", context.exception.message)
+def test_switch_organization_success(grafana_api: GrafanaApi, reset_organization_switch, organization_id: str):  # noqa: ARG001
+    response = grafana_api.organizations.switch_organization(organization_id=organization_id)
+    assert response["message"] == "Active organization changed"
+    org = grafana_api.organization.get_current_organization()
+    assert org["name"] == "Testdrive Org."
+
+
+def test_switch_organization_unknown(grafana_api: GrafanaApi):
+    with pytest.raises(GrafanaUnauthorizedError) as context:
+        grafana_api.organizations.switch_organization(organization_id=9999)
+    assert context.value.status_code == 401, "Wrong status code"
+    assert context.value.message == "Unauthorized"

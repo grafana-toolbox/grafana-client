@@ -23,10 +23,8 @@ pytestmark = pytest.mark.integration
 )
 class DatasourceTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned, dashboard_basic, folder_basic):
-        self.grafana = grafana_provisioned
-        self.dashboard = dashboard_basic
-        self.folder = folder_basic
+    def use_fixtures(self, grafana_api, reset_datasources):  # noqa: ARG002
+        self.grafana = grafana_api
         self.datasource = self.grafana.datasource.create_datasource(PROMETHEUS_DATASOURCE)
         self.datasource_id = self.datasource["datasource"]["id"]
         self.datasource_uid = self.datasource["datasource"]["uid"]

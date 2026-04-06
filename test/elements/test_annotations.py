@@ -1,4 +1,5 @@
 import sys
+import typing as t
 import unittest
 
 import pytest
@@ -23,16 +24,23 @@ params = dict(
     limit=1,
 )
 
+pytestmark = pytest.mark.integration
+
 
 @pytest.fixture()
-def annotation_provisioned(grafana_provisioned, dashboard_uid) -> str:
+def annotation_id(annotation_provisioned) -> str:
+    return annotation_provisioned["id"]
+
+
+@pytest.fixture()
+def annotation_provisioned(grafana_api, dashboard_uid) -> t.Dict:
 
     # Prune all annotations.
-    for annotation in grafana_provisioned.annotations.find_annotations():
-        grafana_provisioned.annotations.delete_annotations_by_id(annotation["id"])
+    for annotation in grafana_api.annotations.find_annotations():
+        grafana_api.annotations.delete_annotations_by_id(annotation["id"])
 
     # Provision annotation.
-    annotation = grafana_provisioned.annotations.add_annotation(
+    return grafana_api.annotations.add_annotation(
         dashboard_uid=dashboard_uid,
         tags=["tags-test"],
         text="Annotation Description",
@@ -40,20 +48,15 @@ def annotation_provisioned(grafana_provisioned, dashboard_uid) -> str:
         time_to=1563185212275,
     )
 
-    return annotation["id"]
-
-
-pytestmark = pytest.mark.integration
-
 
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class AnnotationsTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned: GrafanaApi, dashboard_basic, annotation_provisioned: str):
-        self.grafana = grafana_provisioned
-        self.dashboard_id = dashboard_basic["id"]
-        self.dashboard_uid = dashboard_basic["uid"]
-        self.annotation_id = annotation_provisioned
+    def use_fixtures(self, grafana_api: GrafanaApi, dashboard_uid: str, dashboard_id: str, annotation_id: str):
+        self.grafana = grafana_api
+        self.dashboard_id = dashboard_id
+        self.dashboard_uid = dashboard_uid
+        self.annotation_id = annotation_id
 
     def test_find_all(self):
         annotations = self.grafana.annotations.find_annotations()
@@ -77,11 +80,11 @@ class AnnotationsTestCase(unittest.TestCase):
         # FIXME: Grafana 11 & 12 do not care about the outcome of an annotation delete request,
         #        i.e. don't raise an exception when deleting invalid annotations?
         if Version(self.grafana.version) >= Version("11"):
-            response = self.grafana.annotations.delete_annotations_by_id(annotations_id=999)
+            response = self.grafana.annotations.delete_annotations_by_id(annotations_id=9999)
             self.assertEqual(response["message"], "Annotation deleted")
         else:
             with self.assertRaises((GrafanaClientError, GrafanaServerError)) as excinfo:
-                self.grafana.annotations.delete_annotations_by_id(annotations_id=999)
+                self.grafana.annotations.delete_annotations_by_id(annotations_id=9999)
             self.assertRegex(excinfo.exception.message, "(Annotation not found|Could not find annotation to update)")
 
     def test_delete_annotation_by_id_null(self):
@@ -144,10 +147,10 @@ class AnnotationsTestCase(unittest.TestCase):
 
 
 @pytest.mark.parametrize("parameter", params.keys())
-def test_find_by_param(grafana_provisioned, annotation_provisioned, parameter: str):  # noqa: ARG001
+def test_find_by_param(grafana_api, annotation_id: str, parameter: str):  # noqa: ARG001
     """
     Invoke "find annotations" operation per parameter.
     """
     kwargs = {parameter: params[parameter]}
-    annotations = grafana_provisioned.annotations.find_annotations(**kwargs)
+    annotations = grafana_api.annotations.find_annotations(**kwargs)
     assert len(annotations) == 1, "Wrong number of annotations"

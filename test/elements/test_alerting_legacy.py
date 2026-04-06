@@ -50,14 +50,13 @@ pytestmark = pytest.mark.integration
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class AlertingTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned):
-        self.grafana = grafana_provisioned
+    def use_fixtures(self, grafana_api, reset_folders_dashboards):  # noqa: ARG002
+        self.grafana = grafana_api
         if Version(self.grafana.version) < Version("8"):
             pytest.skip("Alert rules: Not supported on Grafana 7 and earlier.")
 
-        # FIXME: Why doesn't this work on Grafana 11 and higher?
         if Version(self.grafana.version) >= Version("11"):
-            pytest.skip("Alert rules: Access denied starting with Grafana 11.")
+            pytest.skip("Legacy Alerting has been removed with Grafana 11.")
 
         self.folder = self.grafana.folder.create_folder("alert-folder")
 
@@ -92,11 +91,11 @@ class AlertingTestCase(unittest.TestCase):
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class NotificationsTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned):
-        self.grafana = grafana_provisioned
+    def use_fixtures(self, grafana_api):
+        self.grafana = grafana_api
 
         if Version(self.grafana.version) >= Version("11"):
-            pytest.skip("Alerting notification channels have been removed with Grafana 11.")
+            pytest.skip("Legacy Alerting Notification Channels have been removed with Grafana 11.")
 
         # Prune all channels.
         for channel in self.grafana.notifications.get_channels():

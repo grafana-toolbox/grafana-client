@@ -14,8 +14,8 @@ pytestmark = pytest.mark.integration
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class SnapshotTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned: GrafanaApi, dashboard_uid: str):
-        self.grafana = grafana_provisioned
+    def use_fixtures(self, grafana_api: GrafanaApi, dashboard_uid: str):
+        self.grafana = grafana_api
         self.dashboard_uid = dashboard_uid
 
         # Prune snapshots.

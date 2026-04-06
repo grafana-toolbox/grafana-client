@@ -9,7 +9,7 @@ pytestmark = pytest.mark.integration
 
 
 @pytest.mark.asyncio
-async def test_basic_async_client(docker_grafana, dashboard_basic):
+async def test_async_client_success(docker_grafana, dashboard_uid):
 
     # Connect to Grafana.
     grafana = AsyncGrafanaApi.from_url(docker_grafana)
@@ -18,7 +18,6 @@ async def test_basic_async_client(docker_grafana, dashboard_basic):
     assert version != "" and "." in version
 
     # Provision dashboard and verify.
-    dashboard_uid = dashboard_basic["uid"]
     dashboard = await grafana.dashboard.update_dashboard(
         {
             "dashboard": {
@@ -46,7 +45,7 @@ async def test_basic_async_client(docker_grafana, dashboard_basic):
 
 
 @pytest.mark.asyncio
-async def test_exception_async_client(docker_grafana):
+async def test_async_client_exception(docker_grafana):
     grafana = AsyncGrafanaApi.from_url(docker_grafana)
     await grafana.version
 

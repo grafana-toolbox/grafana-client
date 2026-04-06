@@ -15,10 +15,15 @@ pytestmark = pytest.mark.integration
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class UsersTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned: GrafanaApi, user_testdrive):
-        self.grafana = grafana_provisioned
-        self.user = user_testdrive
-        self.user_id = self.user["id"]
+    def use_fixtures(
+        self,
+        grafana_api: GrafanaApi,
+        reset_stars,  # noqa: ARG002
+        user_with_organization,  # noqa: ARG002
+        user_id: int,
+    ):
+        self.grafana = grafana_api
+        self.user_id = user_id
 
     def test_update_user_success(self):
         response = self.grafana.users.update_user(self.user_id, {"login": "foo"})
@@ -95,21 +100,34 @@ class UsersTestCase(unittest.TestCase):
 
     def test_get_user_organisations(self):
         users = self.grafana.users.get_user_organisations(self.user_id)
-        self.assertEqual(1, len(users), "Wrong number of organisations")
-        self.assertEqual([{"name": "Testdrive Org.", "orgId": mock.ANY, "role": "Viewer"}], users)
+        self.assertEqual(2, len(users), "Wrong number of organisations")
+        self.assertEqual(
+            [
+                {"name": "Main Org.", "orgId": mock.ANY, "role": "Viewer"},
+                {"name": "Testdrive Org.", "orgId": mock.ANY, "role": "Viewer"},
+            ],
+            users,
+        )
 
 
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class UserTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_provisioned: GrafanaApi, user_testdrive, organization_testdrive, dashboard_basic):
-        self.grafana = grafana_provisioned
-        self.user = user_testdrive
-        self.organization = organization_testdrive
-        self.user_id = self.user["id"]
-        self.organization_id = self.organization["orgId"]
-        self.dashboard_id = dashboard_basic["id"]
-        self.dashboard_uid = dashboard_basic["uid"]
+    def use_fixtures(
+        self,
+        grafana_api: GrafanaApi,
+        reset_stars,  # noqa: ARG002
+        user_with_organization,  # noqa: ARG002
+        user_id,
+        organization_id,
+        dashboard_id,
+        dashboard_uid,
+    ):
+        self.grafana = grafana_api
+        self.user_id = user_id
+        self.organization_id = organization_id
+        self.dashboard_id = dashboard_id
+        self.dashboard_uid = dashboard_uid
 
     def test_get_actual_user_success(self):
         user = self.grafana.user.get_actual_user()
@@ -148,7 +166,7 @@ class UserTestCase(unittest.TestCase):
 
     def test_switch_user_organisation_unknown_user(self):
         with self.assertRaises(GrafanaUnauthorizedError) as context:
-            self.grafana.user.switch_user_organisation(99, self.organization_id)
+            self.grafana.user.switch_user_organisation(9999, self.organization_id)
         self.assertEqual(401, context.exception.status_code)
         self.assertIn("Unauthorized", context.exception.message)
 
@@ -216,13 +234,15 @@ class UserTestCase(unittest.TestCase):
         self.assertEqual("Dashboard unstarred", response["message"])
 
     def test_get_preferences(self):
+        self.grafana.user.update_preferences({}, filter_none=False)
         prefs = self.grafana.user.get_preferences()
+        prefs_keys = sorted(prefs.keys())
         if Version(self.grafana.version) >= Version("9"):
-            self.assertEqual({}, prefs)
+            self.assertIn(prefs_keys, [[], ["homeDashboardUID"]])
         elif Version(self.grafana.version) >= Version("8"):
-            self.assertEqual(["homeDashboardId", "navbar", "theme", "timezone", "weekStart"], sorted(prefs.keys()))
+            self.assertEqual(["homeDashboardId", "navbar", "theme", "timezone", "weekStart"], prefs_keys)
         else:
-            self.assertEqual({"homeDashboardId": 0, "theme": "", "timezone": ""}, prefs)
+            self.assertEqual(["homeDashboardId", "theme", "timezone"], prefs_keys)
 
     def test_update_preferences_success(self):
         response = self.grafana.user.update_preferences(PersonalPreferences(theme="", timezone="utc"))
@@ -230,7 +250,7 @@ class UserTestCase(unittest.TestCase):
 
     def test_update_preferences_unknown_dashboard(self):
         def probe():
-            return self.grafana.user.update_preferences(PersonalPreferences(homeDashboardId=999))
+            return self.grafana.user.update_preferences(PersonalPreferences(homeDashboardId=9999))
 
         if Version(self.grafana.version) >= Version("12"):
             with self.assertRaises(GrafanaClientError) as context:
