@@ -16,7 +16,8 @@ class SearchTestCase(unittest.TestCase):
     def use_fixtures(
         self,
         grafana_api: GrafanaApi,
-        dashboard_id: str,
+        reset_stars,  # noqa: ARG002
+        dashboard_id: int,
         dashboard_uid: str,
         folder_id: str,
         folder_uid: str,
@@ -134,8 +135,7 @@ class SearchTestCase(unittest.TestCase):
     def test_search_dashboards_by_starred_true(self):
         if Version(self.grafana.version) < Version("9"):
             pytest.skip("Unable to star dashboard by uid with Grafana 8 and earlier.")
-        # TODO: It looks like starring a dashboard hasn't made it into an API wrapper yet.
-        self.grafana.client.POST(f"/user/stars/dashboard/uid/{self.dashboard_uid}")
+        self.grafana.user.star_dashboard(self.dashboard_uid)
         result = self.grafana.search.search_dashboards(
             starred=True,
         )

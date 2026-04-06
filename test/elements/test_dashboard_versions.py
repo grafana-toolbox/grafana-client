@@ -10,7 +10,7 @@ pytestmark = pytest.mark.integration
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class DashboardVersionsTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_api, dashboard_uid: str, dashboard_id: str):
+    def use_fixtures(self, grafana_api, dashboard_uid: str, dashboard_id: int):
         self.grafana = grafana_api
         self.dashboard_id = dashboard_id
         self.dashboard_uid = dashboard_uid

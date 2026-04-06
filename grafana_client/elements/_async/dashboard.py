@@ -106,6 +106,13 @@ class Dashboard(Base):
 
     async def update_permissions_generic(self, identifier, items, idtype="uid"):
         permissions_path = f"/dashboards/{idtype}/{identifier}/permissions"
-        if "items" not in items:
-            items = {"items": items}
-        return await self.client.POST(permissions_path, json=items)
+        if isinstance(items, dict):
+            if "items" in items:
+                payload = items
+            else:
+                payload = {"items": [items]}
+        elif isinstance(items, list):
+            payload = {"items": items}
+        else:
+            raise TypeError("items must be a dict or a list")
+        return await self.client.POST(permissions_path, json=payload)

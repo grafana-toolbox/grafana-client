@@ -29,7 +29,6 @@ class DatasourceTestCase(unittest.TestCase):
         self,
         grafana_api: GrafanaApi,
         grafana_version: Version,
-        reset_datasources,  # noqa: ARG002
         docker_prometheus,  # noqa: ARG002
         datasource_prometheus,
     ):
@@ -174,10 +173,8 @@ class DatasourceInquiryTestCase(unittest.TestCase):
     def use_fixtures(
         self,
         grafana_api,
-        reset_datasources,  # noqa: ARG002
         docker_prometheus,  # noqa: ARG002
         docker_influxdb1,  # noqa: ARG002
-        docker_elasticsearch,  # noqa: ARG002
         datasource_prometheus,
         datasource_testdata,
     ):
@@ -185,9 +182,6 @@ class DatasourceInquiryTestCase(unittest.TestCase):
         if Version(self.grafana.version) < Version("7"):
             pytest.skip("Inquiring data sources only supported with Grafana 7 and higher.")
         self.datasource_influxdb1 = self.grafana.datasource.create_datasource(INFLUXDB1_DATASOURCE)["datasource"]
-        self.datasource_elasticsearch = self.grafana.datasource.create_datasource(ELASTICSEARCH_DATASOURCE)[
-            "datasource"
-        ]
         self.datasource_prometheus = datasource_prometheus
         self.datasource_testdata = datasource_testdata
         self.datasource_testdata_uid = datasource_testdata.get("uid")
@@ -223,9 +217,10 @@ class DatasourceInquiryTestCase(unittest.TestCase):
     # FIXME: Elasticsearch data source currently fails with »bad request data«.
     @pytest.mark.skip("FIXME: Elasticsearch data source currently fails with »bad request data«")
     def test_elasticsearch(self):
-        datasource_id = self.datasource_elasticsearch["id"]
+        datasource_elasticsearch = self.grafana.datasource.create_datasource(ELASTICSEARCH_DATASOURCE)["datasource"]
+        datasource_id = datasource_elasticsearch["id"]
         self.grafana.datasource.smartquery(
-            self.datasource_elasticsearch, f"url:///datasources/proxy/{datasource_id}/bazqux/_mapping"
+            datasource_elasticsearch, f"url:///datasources/proxy/{datasource_id}/bazqux/_mapping"
         )
         # TODO: Response payload not reflected and validated yet.
 

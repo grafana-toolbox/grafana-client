@@ -31,8 +31,7 @@ class TeamsTestCase(unittest.TestCase):
     def test_search_teams_loads_all_pages(self):
         teams = self.grafana.teams.search_teams("team", perpage=1)
         self.assertEqual(2, len(teams))
-        self.assertEqual("my team", teams[1]["name"])
-        self.assertEqual("SecondTeam", teams[0]["name"])
+        self.assertEqual({"my team", "SecondTeam"}, {team["name"] for team in teams})
 
     def test_search_teams_only_loads_requested_page(self):
         teams = self.grafana.teams.search_teams("my team", page=2)

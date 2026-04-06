@@ -211,6 +211,7 @@ class User(Base):
         warnings.warn(
             "`star_actual_user_dashboard` is deprecated, use `star_dashboard` instead",
             DeprecationWarning,
+            stacklevel=2,
         )
         star_dashboard = "/user/stars/dashboard/%s" % dashboard_id
         return await self.client.POST(star_dashboard)
@@ -225,6 +226,7 @@ class User(Base):
         warnings.warn(
             "`unstar_actual_user_dashboard` is deprecated, use `unstar_dashboard` instead",
             DeprecationWarning,
+            stacklevel=2,
         )
         unstar_dashboard = "/user/stars/dashboard/%s" % dashboard_id
         return await self.client.DELETE(unstar_dashboard)
@@ -238,7 +240,9 @@ class User(Base):
         update_preference = "/user/preferences"
         return await self.client.GET(update_preference)
 
-    async def update_preferences(self, preferences: PersonalPreferences, filter_none=True):
+    async def update_preferences(
+        self, preferences: t.Union[PersonalPreferences, t.Mapping[str, t.Any]], filter_none=True
+    ):
         """
         Update preferences of current user as a whole.
 
@@ -258,7 +262,9 @@ class User(Base):
             json=data,
         )
 
-    async def patch_preferences(self, preferences: PersonalPreferences, filter_none: bool = True):
+    async def patch_preferences(
+        self, preferences: t.Union[PersonalPreferences, t.Mapping[str, t.Any]], filter_none: bool = True
+    ):
         """
         Update specific preferences of current user.
 

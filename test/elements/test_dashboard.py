@@ -17,7 +17,7 @@ class DashboardTestCase(unittest.TestCase):
         self,
         grafana_api,
         dashboard_folder_permissions,
-        dashboard_id: str,
+        dashboard_id: int,
         dashboard_uid: str,
         folder_id: str,
         folder_uid: str,

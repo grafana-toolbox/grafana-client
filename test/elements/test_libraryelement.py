@@ -234,7 +234,7 @@ class LibraryElementTestCase(unittest.TestCase):
     }
 
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_api: GrafanaApi, dashboard_uid: str, dashboard_id: str, folder_uid: str):
+    def use_fixtures(self, grafana_api: GrafanaApi, dashboard_uid: str, dashboard_id: int, folder_uid: str):
         self.grafana = grafana_api
         if Version(self.grafana.version) < Version("9"):
             pytest.skip("Testing support library elements only supported on Grafana 9 and higher.")

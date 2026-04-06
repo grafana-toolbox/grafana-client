@@ -26,6 +26,8 @@ class PluginTestCase(unittest.TestCase):
 
     def test_install_success(self):
         self.install_plugin(plugin_id=self.plugin_id)
+        plugin = self.grafana.plugin.by_id(self.plugin_id)
+        self.assertEqual("Hourly heatmap", plugin["name"])
 
     def test_install_collision_core(self):
         """Validate installation collision with core plugin"""
