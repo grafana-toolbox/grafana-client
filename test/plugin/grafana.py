@@ -195,6 +195,36 @@ def reset_organization_switch(grafana_api: GrafanaApi) -> t.Generator[None, None
 
 
 @pytest.fixture()
+def service_account_id(grafana_service_account) -> int:
+    """Provision Grafana service account and provide its ID."""
+    return grafana_service_account["id"]
+
+
+@pytest.fixture()
+def service_account_login(grafana_service_account) -> str:
+    """Provision Grafana service account and provide its login (username)."""
+    return grafana_service_account["login"]
+
+
+@pytest.fixture(scope="function")
+def grafana_service_account(grafana_api: GrafanaApi, reset_user_model) -> DataDictionary:  # noqa: ARG001
+    """Provision Grafana service account for testing purposes."""
+    return grafana_api.serviceaccount.create({"name": "service", "role": "Admin"})
+
+
+@pytest.fixture()
+def service_account_token_id(grafana_service_account_token) -> int:
+    """Provision Grafana service account token and provide its ID."""
+    return grafana_service_account_token["id"]
+
+
+@pytest.fixture(scope="function")
+def grafana_service_account_token(grafana_api: GrafanaApi, reset_user_model, service_account_id) -> DataDictionary:  # noqa: ARG001
+    """Provision Grafana service account token for testing purposes."""
+    return grafana_api.serviceaccount.create_token(service_account_id, {"name": "Hotzenplotz"})
+
+
+@pytest.fixture()
 def reset_user_model(grafana_api: GrafanaApi, grafana_version: Version, reset_organization_switch, reset_teams) -> None:  # noqa: ARG001
     """Reset tokens, service accounts, users, teams, and organizations."""
     if grafana_version >= Version("9"):

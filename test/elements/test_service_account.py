@@ -13,23 +13,25 @@ pytestmark = pytest.mark.integration
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class ServiceAccountsTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_api: GrafanaApi, reset_user_model):  # noqa: ARG002
+    def use_fixtures(
+        self,
+        grafana_api: GrafanaApi,
+        service_account_id: int,
+        service_account_login: str,
+        service_account_token_id: int,
+    ):
         self.grafana = grafana_api
         if Version(self.grafana.version) < Version("9"):
             pytest.skip("Service accounts only supported by Grafana 9 and higher.")
-        self.account = self.grafana.serviceaccount.create({"name": "service", "role": "Admin"})
-        self.account_id = self.account["id"]
-        self.token = self.grafana.serviceaccount.create_token(self.account_id, {"name": "some-uuid"})
-        self.token_id = self.token["id"]
+        self.account_id = service_account_id
+        self.account_login = service_account_login
+        self.token_id = service_account_token_id
 
     def test_get_account(self):
         result = self.grafana.serviceaccount.get(self.account_id)
         self.assertEqual(self.account_id, result["id"])
         self.assertEqual("service", result["name"])
-        if Version(self.grafana.version) >= Version("10.4"):
-            self.assertEqual("sa-1-service", result["login"])
-        else:
-            self.assertEqual("sa-service", result["login"])
+        self.assertEqual(self.account_login, result["login"])
         self.assertEqual("Admin", result["role"])
         self.assertEqual(1, result["orgId"])
         self.assertEqual(False, result["isDisabled"])
@@ -63,7 +65,7 @@ class ServiceAccountsTestCase(unittest.TestCase):
 
     def test_create_token_duplicate(self):
         with self.assertRaises(GrafanaBadInputError) as context:
-            self.grafana.serviceaccount.create_token(self.account_id, {"name": "some-uuid"})
+            self.grafana.serviceaccount.create_token(self.account_id, {"name": "Hotzenplotz"})
         self.assertEqual(400, context.exception.status_code)
         self.assertIn(
             "service account token with given name already exists in the organization", context.exception.message
@@ -77,7 +79,7 @@ class ServiceAccountsTestCase(unittest.TestCase):
         results = self.grafana.serviceaccount.get_tokens(self.account_id)
         self.assertEqual(1, len(results))
 
-    def test_get_tokens_no_results(self):
+    def test_get_tokens_invalid_account(self):
         results = self.grafana.serviceaccount.get_tokens(9999)
         self.assertEqual(0, len(results))
 

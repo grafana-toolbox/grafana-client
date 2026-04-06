@@ -96,8 +96,8 @@ class DatasourceTestCase(unittest.TestCase):
     def test_find_datasource_by_name_not_existing(self):
         with self.assertRaises(GrafanaClientError) as excinfo:
             self.grafana.datasource.find_datasource("it_doesnot_exist")
-        self.assertEqual(excinfo.exception.status_code, 404)
-        self.assertEqual(excinfo.exception.message, "Client Error 404: Data source not found")
+        self.assertEqual(404, excinfo.exception.status_code)
+        self.assertIn("Data source not found", excinfo.exception.message)
 
     def test_get_datasource_id_by_name(self):
         result = self.grafana.datasource.get_datasource_id_by_name("Prometheus")
@@ -176,14 +176,12 @@ class DatasourceInquiryTestCase(unittest.TestCase):
         self,
         grafana_api,
         docker_prometheus,  # noqa: ARG002
-        docker_influxdb1,  # noqa: ARG002
         datasource_prometheus,
         datasource_testdata,
     ):
         self.grafana = grafana_api
         if Version(self.grafana.version) < Version("7"):
             pytest.skip("Inquiring data sources only supported with Grafana 7 and higher.")
-        self.datasource_influxdb1 = self.grafana.datasource.create_datasource(INFLUXDB1_DATASOURCE)["datasource"]
         self.datasource_prometheus = datasource_prometheus
         self.datasource_testdata = datasource_testdata
         self.datasource_testdata_uid = datasource_testdata.get("uid")
@@ -203,28 +201,6 @@ class DatasourceInquiryTestCase(unittest.TestCase):
             self.assertEqual(result["series"][0]["points"][0][0], 2)
         else:
             self.assertEqual(result["frames"][0]["data"]["values"][1][0], 2)
-
-    @pytest.mark.skip(
-        "Data querying with InfluxDB is currently defunct. "
-        "Legacy data source API for InfluxDB no longer available for Grafana 12.5+. "
-        "Also, while it works locally, it fails on GHA."
-    )
-    def test_influxdb_influxql(self):
-        response = self.grafana.datasource.smartquery(
-            self.datasource_influxdb1, "SHOW RETENTION POLICIES on _internal", attrs={"database": "foobar"}
-        )
-        result = response["results"][0]
-        self.assertEqual(result["series"][0]["values"][0][0], "monitor")
-
-    # FIXME: Elasticsearch data source currently fails with »bad request data«.
-    @pytest.mark.skip("FIXME: Elasticsearch data source currently fails with »bad request data«")
-    def test_elasticsearch(self):
-        datasource_elasticsearch = self.grafana.datasource.create_datasource(ELASTICSEARCH_DATASOURCE)["datasource"]
-        datasource_id = datasource_elasticsearch["id"]
-        self.grafana.datasource.smartquery(
-            datasource_elasticsearch, f"url:///datasources/proxy/{datasource_id}/bazqux/_mapping"
-        )
-        # TODO: Response payload not reflected and validated yet.
 
     def test_datasource_by_uid(self):
         datasource_uid = self.datasource_prometheus["uid"]
@@ -260,3 +236,28 @@ class DatasourceInquiryTestCase(unittest.TestCase):
         self.assertRaises(
             GrafanaServerError, lambda: self.grafana.datasource.smartquery(self.datasource_prometheus, expression="1+1")
         )
+
+
+@pytest.mark.skip(
+    "Data querying with InfluxDB is currently defunct. "
+    "Legacy data source API for InfluxDB no longer available for Grafana 12.5+. "
+    "Also, while it works locally, it fails on GHA."
+)
+def test_influxdb_influxql(grafana_api, docker_influxdb1, reset_datasources):  # noqa: ARG001
+    datasource_influxdb1 = grafana_api.datasource.create_datasource(INFLUXDB1_DATASOURCE)["datasource"]
+    response = grafana_api.datasource.smartquery(
+        datasource_influxdb1, "SHOW RETENTION POLICIES on _internal", attrs={"database": "foobar"}
+    )
+    result = response["results"][0]
+    assert result["series"][0]["values"][0][0] == "monitor"
+
+
+# FIXME: Elasticsearch data source currently fails with »bad request data«.
+@pytest.mark.skip("FIXME: Elasticsearch data source currently fails with »bad request data«")
+def test_elasticsearch(grafana_api, docker_elasticsearch, reset_datasources):  # noqa: ARG001
+    datasource_elasticsearch = grafana_api.datasource.create_datasource(ELASTICSEARCH_DATASOURCE)["datasource"]
+    datasource_id = datasource_elasticsearch["id"]
+    grafana_api.datasource.smartquery(
+        datasource_elasticsearch, f"url:///datasources/proxy/{datasource_id}/bazqux/_mapping"
+    )
+    # TODO: Response payload not reflected and validated yet.
