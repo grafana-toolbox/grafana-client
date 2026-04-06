@@ -9,6 +9,8 @@ https://grafana.com/docs/grafana/v10.0/developers/http_api/alerting/
 https://grafana.com/docs/grafana/v10.0/developers/http_api/alerting_notification_channels/
 """
 
+# pragma: exclude file
+
 import warnings
 
 from .base import Base

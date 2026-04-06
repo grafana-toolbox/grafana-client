@@ -27,7 +27,7 @@ def datasource_factory(datasource: DatasourceModel) -> DatasourceModel:
 
     TODO: Complete the list for all popular databases.
     """
-    if datasource.type == "__NEVER__":  # pragma:nocover
+    if datasource.type == "__NEVER__":  # pragma: no cover
         raise NotImplementedError("__NEVER__")
 
     elif datasource.type == "cratedb":
@@ -142,7 +142,7 @@ def query_factory(datasource, model: Optional[dict] = None, expression: Optional
     expression = model.get("query")
     if expression is None:
         raise KeyError("query not set")
-    if datasource_type == "__NEVER__":  # pragma:nocover
+    if datasource_type == "__NEVER__":  # pragma: no cover
         raise NotImplementedError("__NEVER__")
     elif datasource_type == "elasticsearch":
         query = expression
