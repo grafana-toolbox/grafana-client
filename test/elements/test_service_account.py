@@ -2,7 +2,6 @@ import sys
 import unittest
 
 import pytest
-from verlib2 import Version
 
 from grafana_client import GrafanaApi
 from grafana_client.client import GrafanaBadInputError
@@ -21,8 +20,6 @@ class ServiceAccountsTestCase(unittest.TestCase):
         service_account_token_id: int,
     ):
         self.grafana = grafana_api
-        if Version(self.grafana.version) < Version("9"):
-            pytest.skip("Service accounts only supported by Grafana 9 and higher.")
         self.account_id = service_account_id
         self.account_login = service_account_login
         self.token_id = service_account_token_id

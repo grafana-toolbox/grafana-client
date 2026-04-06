@@ -52,10 +52,10 @@ class AlertingTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
     def use_fixtures(self, grafana_api, reset_folders_dashboards):  # noqa: ARG002
         self.grafana = grafana_api
-        if Version(self.grafana.version) < Version("8"):
+        if self.grafana.get_version() < Version("8"):
             pytest.skip("Alert rules: Not supported on Grafana 7 and earlier.")
 
-        if Version(self.grafana.version) >= Version("10.4"):
+        if self.grafana.get_version() >= Version("10.4"):
             pytest.skip("Legacy Alerting has been removed with Grafana 10.4.")
 
         self.folder = self.grafana.folder.create_folder("alert-folder")
@@ -95,7 +95,7 @@ class NotificationsTestCase(unittest.TestCase):
     def use_fixtures(self, grafana_api):
         self.grafana = grafana_api
 
-        if Version(self.grafana.version) >= Version("11"):
+        if self.grafana.get_version() >= Version("11"):
             pytest.skip("Legacy Alerting Notification Channels have been removed with Grafana 11.")
 
         # Prune all channels.
@@ -153,7 +153,7 @@ class NotificationsTestCase(unittest.TestCase):
         self.assertRegex(str(context.exception), "(bad request data|RequiredError)")
 
     def test_create_channel_no_addresses_in_settings(self):
-        if Version(self.grafana.version) < Version("8"):
+        if self.grafana.get_version() < Version("8"):
             pytest.skip("Grafana 7 allows empty addresses in settings.")
         with self.assertRaises(GrafanaBadInputError) as context:
             self.grafana.notifications.create_channel({"name": "42", "type": "email", "settings": {}})
@@ -164,7 +164,7 @@ class NotificationsTestCase(unittest.TestCase):
         def probe():
             self.grafana.notifications.create_channel(NOTIFICATION)
 
-        if Version(self.grafana.version) >= Version("7"):
+        if self.grafana.get_version() >= Version("7"):
             with self.assertRaises(GrafanaClientError) as context:
                 probe()
             self.assertEqual(context.exception.status_code, 409)

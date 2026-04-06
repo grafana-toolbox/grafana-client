@@ -44,7 +44,7 @@ class AdminTestCase(unittest.TestCase):
         self.assertEqual(response["message"], "User deleted")
 
     def test_pause_all_alerts(self):
-        if Version(self.grafana.version) >= Version("9"):
+        if self.grafana.get_version() >= Version("9"):
             pytest.skip("Legacy alerting was disabled with Grafana 9")
         response = self.grafana.admin.pause_all_alerts(pause=True)
         self.assertEqual(response["message"], "alerts paused")

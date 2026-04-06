@@ -17,7 +17,7 @@ class PluginTestCase(unittest.TestCase):
         self.grafana = grafana_api
         self.plugin_id = "marcusolsson-hourly-heatmap-panel"
 
-        if Version(self.grafana.version) < Version("8"):
+        if self.grafana.get_version() < Version("8"):
             pytest.skip("Testing plugins only supported on Grafana 8 and higher.")
 
     def test_list(self):
@@ -60,7 +60,7 @@ class PluginTestCase(unittest.TestCase):
 
     def test_health_success(self):
         """Validate health check after installing plugin"""
-        if Version(self.grafana.version) < Version("10"):
+        if self.grafana.get_version() < Version("10"):
             pytest.skip("grafana-testdata-datasource not available on Grafana 9 and before")
         response = self.grafana.plugin.health(plugin_id="grafana-testdata-datasource")
         self.assertEqual("Data source is working", response["message"])
@@ -69,7 +69,7 @@ class PluginTestCase(unittest.TestCase):
         """Standard core plugins can't do health checks by default"""
         with self.assertRaises(GrafanaServerError) as context:
             self.grafana.plugin.health(plugin_id="text")
-        if Version(self.grafana.version) >= Version("10"):
+        if self.grafana.get_version() >= Version("10"):
             self.assertEqual(500, context.exception.status_code, "Wrong status code")
             self.assertIn("Plugin unavailable", context.exception.message)
         else:
@@ -92,7 +92,7 @@ class PluginTestCase(unittest.TestCase):
     def test_metrics_not_implemented(self):
         with self.assertRaises(GrafanaServerError) as context:
             self.grafana.plugin.metrics(plugin_id="text")
-        if Version(self.grafana.version) >= Version("10"):
+        if self.grafana.get_version() >= Version("10"):
             self.assertEqual(500, context.exception.status_code, "Wrong status code")
             self.assertIn("An error occurred within the plugin", context.exception.message)
         else:
@@ -103,7 +103,7 @@ class PluginTestCase(unittest.TestCase):
         with self.assertRaises(GrafanaClientError) as context:
             self.grafana.plugin.metrics(plugin_id="unknown")
         self.assertEqual(404, context.exception.status_code, "Wrong status code")
-        if Version(self.grafana.version) >= Version("10"):
+        if self.grafana.get_version() >= Version("10"):
             self.assertIn("Plugin not registered", context.exception.message)
         else:
             self.assertIn("Plugin not found", context.exception.message)

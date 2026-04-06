@@ -7,6 +7,7 @@ from urllib.parse import parse_qs, urlparse
 import niquests
 import niquests.auth
 from urllib3.exceptions import InsecureRequestWarning
+from verlib2 import Version
 
 from .client import DEFAULT_SESSION_POOL_SIZE, DEFAULT_TIMEOUT, AsyncGrafanaClient, GrafanaClient
 from .elements import (
@@ -120,7 +121,7 @@ class GrafanaApi:
         return self._grafana_info
 
     @property
-    def version(self):
+    def version(self) -> str:
         if not self._grafana_info:
             self._grafana_info = self.health.check()
         version = self._grafana_info.get("version", None)
@@ -128,6 +129,9 @@ class GrafanaApi:
             version = str(version).rsplit("-")[0]
         logger.info(f"Inquired Grafana version: {version}")
         return version
+
+    def get_version(self) -> Version:
+        return Version(self.version)
 
     @classmethod
     def from_url(

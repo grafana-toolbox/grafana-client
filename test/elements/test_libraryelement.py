@@ -237,14 +237,14 @@ class LibraryElementTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
     def use_fixtures(self, grafana_api: GrafanaApi, dashboard_uid: str, dashboard_id: int, folder_uid: str):
         self.grafana = grafana_api
-        if Version(self.grafana.version) < Version("9"):
+        if self.grafana.get_version() < Version("9"):
             pytest.skip("Testing support library elements only supported on Grafana 9 and higher.")
 
         # FIXME: How to enable library use with Grafana 12 when `create_rbac_role` does not work on Grafana OSS?
         #        Is there an environment variable that unlocks it, possibly similar like `GF_USERS_ALLOW_ORG_CREATE`?
         #        ERROR: grafana_client.client.GrafanaClientError: Client Error 403: You'll need additional
         #               permissions to perform this action. Permissions needed: library.panels:delete
-        if Version(self.grafana.version) >= Version("12"):
+        if self.grafana.get_version() >= Version("12"):
             pytest.skip("FIXME: Permissions needed for Grafana 12: library.panels:delete.")
 
         self.dashboard_id = dashboard_id
@@ -327,7 +327,7 @@ class LibraryElementTestCase(unittest.TestCase):
     def test_get_library_element_connections_notfound(self):
         with self.assertRaises(GrafanaClientError) as ex:
             self.grafana.libraryelement.get_library_element_connections(LibraryElementTestCase.MissingPanelUID)
-        if Version(self.grafana.version) >= Version("12"):
+        if self.grafana.get_version() >= Version("12"):
             self.assertEqual(403, ex.exception.status_code)
             self.assertRegex(ex.exception.message, "Client Error 403:.*Permissions needed: library.panels:read")
         else:

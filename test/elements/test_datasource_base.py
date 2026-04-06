@@ -38,7 +38,7 @@ class DatasourceTestCase(unittest.TestCase):
         self.datasource_uid = datasource_prometheus.get("uid")
 
     def test_get_datasource_by_id(self):
-        if Version(self.grafana.version) >= Version("12"):
+        if self.grafana.get_version() >= Version("12"):
             pytest.skip("Grafana 12 no longer supports accessing data sources by id, use uids instead.")
 
         result = self.grafana.datasource.get(DatasourceIdentifier(id=self.datasource_id))
@@ -58,7 +58,7 @@ class DatasourceTestCase(unittest.TestCase):
         self.assertRaises(KeyError, lambda: self.grafana.datasource.get(DatasourceIdentifier()))
 
     def test_update_datasource_by_id(self):
-        if self.grafana.version == "nightly" or Version(self.grafana.version) >= Version("12.5"):
+        if self.grafana.version == "nightly" or self.grafana.get_version() >= Version("12.5"):
             pytest.skip("Grafana 12.5 stopped to support addressing data sources by ID.")
         result = self.grafana.datasource.update_datasource(self.datasource_id, PROMETHEUS_DATASOURCE)
         self.assertEqual(result["datasource"]["type"], "prometheus")
@@ -66,13 +66,13 @@ class DatasourceTestCase(unittest.TestCase):
     def test_update_datasource_by_uid(self):
         if self.grafana_version < Version("7"):
             pytest.skip("Addressing data sources by UID only supported with Grafana 7 and higher.")
-        if Version(self.grafana.version) < Version("10"):
+        if self.grafana.get_version() < Version("10"):
             pytest.skip("Grafana 9 and earlier do not support addressing data sources for update by UID.")
         result = self.grafana.datasource.update_datasource_by_uid(self.datasource_uid, PROMETHEUS_DATASOURCE)
         self.assertEqual(result["datasource"]["type"], "prometheus")
 
     def test_delete_datasource_by_id(self):
-        if self.grafana.version == "nightly" or Version(self.grafana.version) >= Version("12.5"):
+        if self.grafana.version == "nightly" or self.grafana.get_version() >= Version("12.5"):
             pytest.skip("Grafana 12.5 stopped to support addressing data sources by ID.")
         result = self.grafana.datasource.delete_datasource_by_id(self.datasource_id)
         self.assertEqual(result, {"message": "Data source deleted"})
@@ -156,7 +156,7 @@ class DatasourceTestCase(unittest.TestCase):
         """
         http http://localhost:9090/api/v1/label/__name__/values
         """
-        if Version(self.grafana.version) < Version("7"):
+        if self.grafana.get_version() < Version("7"):
             pytest.skip("Inquiring data sources only supported with Grafana 7 and higher.")
         now = int(time.time())
         result = self.grafana.datasource.series(
@@ -180,14 +180,14 @@ class DatasourceInquiryTestCase(unittest.TestCase):
         datasource_testdata,
     ):
         self.grafana = grafana_api
-        if Version(self.grafana.version) < Version("7"):
+        if self.grafana.get_version() < Version("7"):
             pytest.skip("Inquiring data sources only supported with Grafana 7 and higher.")
         self.datasource_prometheus = datasource_prometheus
         self.datasource_testdata = datasource_testdata
         self.datasource_testdata_uid = datasource_testdata.get("uid")
 
     def test_health(self):
-        if Version(self.grafana.version) < Version("10"):
+        if self.grafana.get_version() < Version("10"):
             pytest.skip("Data source health check endpoint is available in Grafana 10 and higher.")
         result = self.grafana.datasource.health(self.datasource_testdata_uid)
         self.assertEqual(result["status"], "OK")
@@ -195,9 +195,9 @@ class DatasourceInquiryTestCase(unittest.TestCase):
     def test_prometheus(self):
         response = self.grafana.datasource.smartquery(self.datasource_prometheus, "1+1")
         result = response["results"]["test"]
-        if Version(self.grafana.version) >= Version("9"):
+        if self.grafana.get_version() >= Version("9"):
             self.assertEqual(result["status"], 200)
-        if Version(self.grafana.version) < Version("8"):
+        if self.grafana.get_version() < Version("8"):
             self.assertEqual(result["series"][0]["points"][0][0], 2)
         else:
             self.assertEqual(result["frames"][0]["data"]["values"][1][0], 2)
@@ -206,7 +206,7 @@ class DatasourceInquiryTestCase(unittest.TestCase):
         datasource_uid = self.datasource_prometheus["uid"]
         response = self.grafana.datasource.smartquery(DatasourceIdentifier(uid=datasource_uid), "1+1")
         result = response["results"]["test"]
-        if Version(self.grafana.version) >= Version("9"):
+        if self.grafana.get_version() >= Version("9"):
             self.assertEqual(result["status"], 200)
 
     def test_unknown_access_type_failure(self):

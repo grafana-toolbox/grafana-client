@@ -25,7 +25,7 @@ class OrganizationTestCase(unittest.TestCase):
 
         self.grafana = grafana_api
 
-        if Version(self.grafana.version) < Version("8"):
+        if self.grafana.get_version() < Version("8"):
             pytest.skip("Unauthorized with vanilla Grafana 7")
 
         self.dashboard_uid = dashboard_uid
@@ -51,9 +51,9 @@ class OrganizationTestCase(unittest.TestCase):
 
         result = self.grafana.organization.get_preferences()
         self.assertEqual("utc", result["timezone"])
-        if Version(self.grafana.version) < Version("9"):
+        if self.grafana.get_version() < Version("9"):
             self.assertEqual(0, result["homeDashboardId"])
-        if Version(self.grafana.version) >= Version("9"):
+        if self.grafana.get_version() >= Version("9"):
             self.assertEqual(self.dashboard_uid, result["homeDashboardUID"])
 
     def test_preferences_patch(self):
@@ -67,7 +67,7 @@ class OrganizationTestCase(unittest.TestCase):
         self.assertEqual("Organization user updated", response["message"])
 
     def test_organization_user_update_unknown_org(self):
-        grafana_10_123 = Version("10") <= Version(self.grafana.version) < Version("10.4")
+        grafana_10_123 = Version("10") <= self.grafana.get_version() < Version("10.4")
 
         def probe():
             self.grafana.organizations.organization_user_update(
@@ -135,7 +135,7 @@ class OrganizationTestCase(unittest.TestCase):
         with self.assertRaises(GrafanaBadInputError) as context:
             self.grafana.organizations.delete_organization(organization_id=1)
         self.assertEqual(400, context.exception.status_code, "Wrong status code")
-        if Version(self.grafana.version) >= Version("12"):
+        if self.grafana.get_version() >= Version("12"):
             self.assertIn("Cannot delete your active organization", context.exception.message)
         else:
             self.assertIn("Can not delete org for current user", context.exception.message)
@@ -147,7 +147,7 @@ class OrganizationTestCase(unittest.TestCase):
         self.assertEqual("Organization updated", response["message"])
 
     def test_update_organization_unknown(self):
-        grafana_10_123 = Version("10") <= Version(self.grafana.version) < Version("10.4")
+        grafana_10_123 = Version("10") <= self.grafana.get_version() < Version("10.4")
 
         def probe():
             self.grafana.organizations.update_organization(organization_id=9999, organization={"name": "Other Org 99."})
@@ -168,7 +168,7 @@ class OrganizationTestCase(unittest.TestCase):
         self.assertEqual("Organization deleted", response["message"])
 
     def test_delete_organization_unknown(self):
-        grafana_10_123 = Version("10") <= Version(self.grafana.version) < Version("10.4")
+        grafana_10_123 = Version("10") <= self.grafana.get_version() < Version("10.4")
         with self.assertRaises(GrafanaClientError) as context:
             self.grafana.organizations.delete_organization(organization_id=9999)
         if not grafana_10_123:
@@ -179,7 +179,7 @@ class OrganizationTestCase(unittest.TestCase):
             self.assertIn("You'll need additional permissions to perform this action", context.exception.message)
 
     def test_delete_organization_invalid(self):
-        grafana_12_3 = Version("12.3") <= Version(self.grafana.version) < Version("12.4")
+        grafana_12_3 = Version("12.3") <= self.grafana.get_version() < Version("12.4")
         if grafana_12_3:
             with self.assertRaises(GrafanaServerError) as context:
                 self.grafana.organizations.delete_organization(organization_id=-9999)
