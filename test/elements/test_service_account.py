@@ -21,8 +21,6 @@ class ServiceAccountsTestCase(unittest.TestCase):
         self.account_id = self.account["id"]
         self.token = self.grafana.serviceaccount.create_token(self.account_id, {"name": "some-uuid"})
         self.token_id = self.token["id"]
-        if Version(self.grafana.version) >= Version("11"):
-            self.account_uid = self.account["uid"]
 
     def test_get_account(self):
         result = self.grafana.serviceaccount.get(self.account_id)

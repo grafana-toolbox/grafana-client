@@ -232,7 +232,11 @@ def reset_datasources(grafana_api: GrafanaApi, grafana_version: Version) -> None
 @pytest.fixture()
 def reset_folders_dashboards(grafana_api: GrafanaApi) -> None:
     """Reset all dashboards."""
-    for item in grafana_api.search.search_dashboards():
+    items = grafana_api.search.search_dashboards()
+    dashboards = [item for item in items if item["type"] == "dash-db"]
+    folders = [item for item in items if item["type"] == "dash-folder"]
+
+    for item in dashboards + folders:
         try:
             if item["type"] == "dash-db":
                 grafana_api.dashboard.delete_dashboard(item["uid"])

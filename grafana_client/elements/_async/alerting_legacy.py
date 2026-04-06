@@ -20,6 +20,7 @@ def emit_deprecation_warning():
     warnings.warn(
         "The Legacy Alerting (Notification Channels) APIs were deprecated with Grafana 9 and removed with Grafana 11.",
         DeprecationWarning,
+        stacklevel=2,
     )
 
 

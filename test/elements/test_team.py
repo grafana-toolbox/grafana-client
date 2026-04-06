@@ -14,10 +14,9 @@ pytestmark = pytest.mark.integration
 @unittest.skipIf("unittest" in sys.argv[0], "Skipping unittest, please use pytest")
 class TeamsTestCase(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def use_fixtures(self, grafana_api: GrafanaApi, user_id: int, dashboard_uid: str):
+    def use_fixtures(self, grafana_api: GrafanaApi, user_id: int):
         self.grafana = grafana_api
         self.user_id = user_id
-        self.dashboard_uid = dashboard_uid
         self.first_team = self.grafana.teams.add_team("my team")
         self.second_team = self.grafana.teams.add_team("SecondTeam")
         self.first_team_id = self.first_team["teamId"]
@@ -157,9 +156,10 @@ class TeamsTestCase(unittest.TestCase):
 
     def test_remove_team_external_group(self):
         self.check_external_groups()
+        self.grafana.teams.add_team_external_group(self.first_team_id, "a_external_group")
         response = self.grafana.teams.remove_team_external_group(self.first_team_id, "a_external_group")
         self.assertEqual("Team group removed", response["message"])
 
     def check_external_groups(self):
         if Version(self.grafana.version) >= Version("6"):
-            pytest.skip("External groups not supported by Grafana 6 and higher.")
+            pytest.skip("External Group Synchronization is only available in Grafana Enterprise.")

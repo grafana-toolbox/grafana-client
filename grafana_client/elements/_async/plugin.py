@@ -87,4 +87,4 @@ def get_plugin_by_id(plugin_list, plugin_id):
     try:
         return next(item for item in plugin_list if item["id"] == plugin_id)
     except StopIteration:
-        raise KeyError(f"Plugin not found: {plugin_id}")
+        raise GrafanaClientError(404, None, "Plugin not found.") from None
