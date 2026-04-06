@@ -91,6 +91,9 @@ omit = [
 [tool.coverage.report]
 show_missing = true
 fail_under = 0
+exclude_also = [
+    "\\A(?s:.*# pragma: exclude file.*)\\Z",
+]
 
 # ===================
 # Tasks configuration

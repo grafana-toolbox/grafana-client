@@ -1,6 +1,6 @@
 try:
     from importlib.metadata import PackageNotFoundError, version
-except ModuleNotFoundError:  # pragma:nocover
+except ModuleNotFoundError:  # pragma: no cover
     from importlib_metadata import PackageNotFoundError, version
 
 from .api import AsyncGrafanaApi, GrafanaApi  # noqa:E402,F401

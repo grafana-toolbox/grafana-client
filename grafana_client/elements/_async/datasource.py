@@ -448,7 +448,7 @@ class Datasource(Base):
         try:
             response = await self.smartquery(datasource, expression)
             response_display = response
-            if VERBOSE:  # pragma:nocover
+            if VERBOSE:  # pragma: no cover
                 response_display = json.dumps(response, indent=2)
             logger.debug(f"Health check query response is: {response_display}")
             success = False
@@ -559,7 +559,7 @@ class Datasource(Base):
             else:
                 message = str(ex)
 
-        except ReadTimeout as ex:  # pragma:nocover
+        except ReadTimeout as ex:  # pragma: no cover
             message = str(ex)
             success = False
             response = None
