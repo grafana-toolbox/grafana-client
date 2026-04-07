@@ -47,9 +47,9 @@ jobs:
             python-version: 'pypy-3.11'
             grafana-version: '12.4'
 
-          # Verify Python 3.7.
+          # Verify Python 3.8.
           - os: 'ubuntu-22.04'
-            python-version: '3.7'
+            python-version: '3.8'
             grafana-version: '12.4'
 
     env:
@@ -85,10 +85,9 @@ jobs:
           uv pip install pip
           uv pip install --editable='.[develop,test]'
 
-      - name: Check code style
-        if: matrix.python-version != '3.7' && matrix.python-version != 'pypy-3.7'
+      - name: Run linters and software tests
         run: |
-          poe lint
+          poe check
 
       - name: Run tests
         run: |
