@@ -1,5 +1,6 @@
 import logging
 import sys
+import typing as t
 
 
 def setup_logging(level=logging.INFO):
@@ -7,7 +8,7 @@ def setup_logging(level=logging.INFO):
     logging.basicConfig(format=log_format, stream=sys.stderr, level=level)
 
 
-def as_bool(value: str) -> bool:
+def as_bool(value: t.Any) -> bool:
     """
     Given a string value that represents True or False, returns the Boolean equivalent.
     Heavily inspired from distutils strtobool.
