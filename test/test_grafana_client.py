@@ -64,7 +64,11 @@ class TestGrafanaClient(unittest.TestCase):
 
     def test_grafana_client_no_org(self):
         grafana = GrafanaApi(
-            ("admin", "admin"), host="localhost", url_path_prefix="", protocol="https", organization_id=None
+            ("admin", "admin"),
+            host="localhost",
+            url_path_prefix="",
+            protocol="https",
+            organization_id=None,
         )
         self.assertNotIn("X-Grafana-Org-Id", grafana.client.s.headers)
 
@@ -141,13 +145,13 @@ class TestGrafanaClient(unittest.TestCase):
         tokenauth = TokenAuth("VerySecretToken")
         request = niquests.Request()
         tokenauth(request)
-        self.assertEqual(request.headers["Authorization"], "Bearer VerySecretToken")
+        self.assertEqual(request.headers["Authorization"], "Bearer VerySecretToken")  # ty: ignore[invalid-argument-type]
 
     def test_headerauth(self):
         headerauth = HeaderAuth(name="X-WEBAUTH-USER", value="foobar")
         request = niquests.Request()
         headerauth(request)
-        self.assertEqual(request.headers["X-WEBAUTH-USER"], "foobar")
+        self.assertEqual(request.headers["X-WEBAUTH-USER"], "foobar")  # ty: ignore[invalid-argument-type]
 
     @patch("grafana_client.client.GrafanaClient.__getattr__")
     def test_grafana_client_connect_success(self, mock_get):

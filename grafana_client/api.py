@@ -1,11 +1,12 @@
 import logging
 import os
 import warnings
-from typing import Tuple, Union
+from typing import Optional, Tuple, Union
 from urllib.parse import parse_qs, urlparse
 
 import niquests
 import niquests.auth
+import niquests.exceptions
 from urllib3.exceptions import InsecureRequestWarning
 from verlib2 import Version
 
@@ -71,8 +72,8 @@ class GrafanaApi:
         protocol="http",
         verify=True,
         timeout=DEFAULT_TIMEOUT,
-        user_agent: str = None,
-        organization_id: int = None,
+        user_agent: Optional[str] = None,
+        organization_id: Optional[int] = None,
         session_pool_size=DEFAULT_SESSION_POOL_SIZE,
     ):
         self.client = GrafanaClient(
@@ -136,8 +137,8 @@ class GrafanaApi:
     @classmethod
     def from_url(
         cls,
-        url: str = None,
-        credential: Union[str, Tuple[str, str], niquests.auth.AuthBase] = None,
+        url: Optional[str] = None,
+        credential: Union[str, Tuple[str, str], niquests.auth.AuthBase, None] = None,
         timeout: Union[float, Tuple[float, float]] = DEFAULT_TIMEOUT,
     ):
         """
@@ -155,23 +156,23 @@ class GrafanaApi:
             raise TypeError(f"Argument 'credential' has wrong type: {type(credential)}")
 
         original_url = url
-        url = urlparse(url)
+        url_parsed = urlparse(url)
 
         # Use username and password from URL.
-        if credential is None and url.username:
-            credential = (url.username, url.password)
+        if credential is None and url_parsed.username and url_parsed.password:
+            credential = (url_parsed.username, url_parsed.password)
 
         # Optionally turn off SSL verification.
-        verify = as_bool(parse_qs(url.query).get("verify", [True])[0])
-        if verify is False:
+        verify = as_bool(parse_qs(url_parsed.query).get("verify", [True])[0])
+        if not verify:
             warnings.filterwarnings("ignore", category=InsecureRequestWarning)
 
         grafana = cls(
             credential,
-            protocol=url.scheme,
-            host=url.hostname,
-            port=url.port,
-            url_path_prefix=url.path.lstrip("/"),
+            protocol=url_parsed.scheme,
+            host=url_parsed.hostname,
+            port=url_parsed.port,
+            url_path_prefix=url_parsed.path.lstrip("/"),
             verify=verify,
             timeout=timeout,
         )
@@ -180,7 +181,7 @@ class GrafanaApi:
         return grafana
 
     @classmethod
-    def from_env(cls, timeout: Union[float, Tuple[float, float]] = None):
+    def from_env(cls, timeout: Union[float, Tuple[float, float], None] = None):
         """
         Factory method to create a `GrafanaApi` instance from environment variables.
         """
@@ -209,8 +210,8 @@ class AsyncGrafanaApi(GrafanaApi):
         protocol="http",
         verify=True,
         timeout=DEFAULT_TIMEOUT,
-        user_agent: str = None,
-        organization_id: int = None,
+        user_agent: Optional[str] = None,
+        organization_id: Optional[int] = None,
     ):
         self.client = AsyncGrafanaClient(
             auth,

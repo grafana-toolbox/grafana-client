@@ -18,13 +18,14 @@ What does this program does:
 - Generate the async top level code based on `elements/__init__.py`.
 """
 
-import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import cast
 
 BASE_PATH = Path(".." if Path("../grafana_client").exists() else ".")
 
@@ -63,7 +64,7 @@ def run(action: str):
             process(source, target)
 
             command = f"diff -x __pycache__ -x .ruff_cache -u {TARGET} {target}"
-            exitcode = os.system(command)
+            exitcode = subprocess.call(shlex.split(command))
 
         if exitcode == 0:
             print(msg("INFO: Async code up-to-date. Excellent."))
@@ -194,5 +195,5 @@ def msg(text: str):
 
 
 if __name__ == "__main__":
-    subcommand = sys.argv[1:] and sys.argv[1] or None
+    subcommand = cast("str", sys.argv[1:] and sys.argv[1] or "")
     run(subcommand)

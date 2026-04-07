@@ -245,7 +245,7 @@ class User(Base):
         please use the `patch_preferences` method.
         """
         update_preference = "/user/preferences"
-        if isinstance(preferences, dict):
+        if not isinstance(preferences, PersonalPreferences):
             preferences = PersonalPreferences(**preferences)
         data = preferences.asdict(filter_none=filter_none)
 
@@ -264,7 +264,7 @@ class User(Base):
         and updated.
         """
         update_preference = "/user/preferences"
-        if isinstance(preferences, dict):
+        if not isinstance(preferences, PersonalPreferences):
             preferences = PersonalPreferences(**preferences)
         data = preferences.asdict(filter_none=filter_none)
 

@@ -80,7 +80,7 @@ def prometheus_demo(grafana: GrafanaApi):
     return health_probe(grafana, datasource)
 
 
-def run(grafana: GrafanaApi, grafana_version: Version = None):
+def run(grafana: GrafanaApi, grafana_version: Version):
     # When called without options, invoke the Prometheus demo.
     if len(sys.argv) == 1:
         if grafana_version < VERSION_8:
