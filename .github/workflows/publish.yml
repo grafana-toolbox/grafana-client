@@ -16,13 +16,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
     - name: Acquire sources
       uses: actions/checkout@v6
-
-      # Fixup for `setuptools_scm`
-      # https://github.com/pypa/setuptools_scm/issues/480
       with:
         fetch-depth: 0
+        fetch-tags: true
+        persist-credentials: false
 
     - name: Set up Python
       uses: actions/setup-python@v6
