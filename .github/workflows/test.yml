@@ -61,7 +61,13 @@ jobs:
       Grafana ${{ matrix.grafana-version }},
       Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v6
+
+      - name: Acquire sources
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
 
       - name: Setup Python
         uses: actions/setup-python@v6
