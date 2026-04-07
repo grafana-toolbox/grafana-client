@@ -53,8 +53,6 @@ jobs:
             grafana-version: '12.4'
 
     env:
-      OS_TYPE: ${{ matrix.os }}
-      PYTHON_VERSION: ${{ matrix.python-version }}
       GRAFANA_VERSION: ${{ matrix.grafana-version }}
 
     name: >-
@@ -69,23 +67,23 @@ jobs:
           fetch-tags: true
           persist-credentials: false
 
-      - name: Setup Python
-        uses: actions/setup-python@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
+          activate-environment: true
+          cache-suffix: ${{ matrix.python-version }}
+          enable-cache: true
           python-version: ${{ matrix.python-version }}
-          architecture: x64
-          cache: 'pip'
-          cache-dependency-path: 'setup.cfg'
 
       - name: Install dependencies for PyPy
         if: startsWith(matrix.python-version, 'pypy')
         run: |
           sudo apt-get install libxml2-dev libxslt-dev
 
-      - name: Install dependencies
+      - name: Set up project
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install --editable='.[test,develop]'
+          uv pip install pip
+          uv pip install --editable='.[develop,test]'
 
       - name: Check code style
         if: matrix.python-version != '3.7' && matrix.python-version != 'pypy-3.7'
@@ -96,12 +94,9 @@ jobs:
         run: |
           poe test-coverage
 
-      - name: Upload coverage results to Codecov
-        uses: codecov/codecov-action@v6
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          env_vars: OS_TYPE,PYTHON_VERSION
           fail_ci_if_error: true
-          flags: unittests
-          name: codecov-umbrella
