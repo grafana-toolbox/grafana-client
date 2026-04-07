@@ -62,6 +62,12 @@ unfixable = ["ERA", "F401", "F841", "T20", "ERA001"]
 "test/*" = ["S101"]
 "grafana_client/knowledge.py" = ["ERA001"]
 
+[tool.ty]
+src.exclude = [
+  # FIXME: Improve `generate_async.py`.
+  "grafana_client/elements/_async/service_account.py",
+]
+
 [tool.pytest.ini_options]
 addopts = """
   -ra -q --verbosity=3 --doctest-modules --keepalive
@@ -108,6 +114,7 @@ format = [
 lint = [
   {cmd="script/generate_async.py check"},
   {cmd="ruff check"},
+  {cmd="ty check"},
 ]
 test = [
   {cmd="python -m unittest -vvv"},

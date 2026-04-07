@@ -1,3 +1,5 @@
+from typing import Any, Optional
+
 from verlib2 import Version
 
 from ..base import Base
@@ -14,7 +16,7 @@ class LibraryElement(Base):
         self.client = client
         self.api = api
 
-    async def get_library_element(self, element_uid: str) -> any:
+    async def get_library_element(self, element_uid: str) -> Any:
         """
 
         :param element_uid:
@@ -23,7 +25,7 @@ class LibraryElement(Base):
         get_element_path = f"/library-elements/{element_uid}"
         return await self.client.GET(get_element_path)
 
-    async def get_library_element_by_name(self, element_name: str) -> any:
+    async def get_library_element_by_name(self, element_name: str) -> Any:
         """
 
         :param element_name:
@@ -32,7 +34,7 @@ class LibraryElement(Base):
         get_element_path = f"/library-elements/name/{element_name}"
         return await self.client.GET(get_element_path)
 
-    async def get_library_element_connections(self, element_uid: str) -> any:
+    async def get_library_element_connections(self, element_uid: str) -> Any:
         """
 
         :param element_uid:
@@ -42,7 +44,12 @@ class LibraryElement(Base):
         return await self.client.GET(get_element_connections_path)
 
     async def create_library_element(
-        self, model: dict, name: str = None, kind: int = Panel, uid: str = None, folder_uid: str = None
+        self,
+        model: dict,
+        name: Optional[str] = None,
+        kind: Optional[int] = Panel,
+        uid: Optional[str] = None,
+        folder_uid: Optional[str] = None,
     ):
         """
 
@@ -82,7 +89,13 @@ class LibraryElement(Base):
         return await self.client.POST(create_element_path, json=json)
 
     async def update_library_element(
-        self, uid: str, model: dict, name: str = None, kind: int = Panel, folder_uid: str = None, version: int = None
+        self,
+        uid: str,
+        model: dict,
+        name: Optional[str] = None,
+        kind: Optional[int] = Panel,
+        folder_uid: Optional[str] = None,
+        version: Optional[int] = None,
     ):
         """
 
@@ -91,6 +104,7 @@ class LibraryElement(Base):
         :param name:
         :param kind:
         :param folder_uid:
+        :param version:
         :return:
         """
         json: dict = dict()
@@ -126,7 +140,7 @@ class LibraryElement(Base):
         update_element_path = f"/library-elements/{uid}"
         return await self.client.PATCH(update_element_path, json=json)
 
-    async def delete_library_element(self, element_uid: str) -> any:
+    async def delete_library_element(self, element_uid: str) -> Any:
         """
 
         :param element_uid:
@@ -137,15 +151,15 @@ class LibraryElement(Base):
 
     async def list_library_elements(
         self,
-        search_string: str = None,
-        kind: int = None,
-        sort_direction: str = None,
-        type_filter: str = None,
-        exclude_uid: str = None,
-        folder_filter: str = None,
-        per_page: int = None,
-        page: int = None,
-    ) -> any:
+        search_string: Optional[str] = None,
+        kind: Optional[int] = None,
+        sort_direction: Optional[str] = None,
+        type_filter: Optional[str] = None,
+        exclude_uid: Optional[str] = None,
+        folder_filter: Optional[str] = None,
+        per_page: Optional[int] = None,
+        page: Optional[int] = None,
+    ) -> Any:
         """
 
         :param search_string:

@@ -6,7 +6,7 @@ more efficiently.
 """
 
 from datetime import datetime
-from typing import Dict, Optional, Union
+from typing import Any, Dict, Optional, cast
 
 from grafana_client.model import DatasourceModel
 
@@ -117,7 +117,7 @@ def datasource_factory(datasource: DatasourceModel) -> DatasourceModel:
     return datasource
 
 
-def query_factory(datasource, model: Optional[dict] = None, expression: Optional[str] = None) -> Union[Dict, str]:
+def query_factory(datasource, model: Optional[dict] = None, expression: Optional[str] = None) -> Dict:
     """
     Create payload suitable for running a query against a Grafana data source.
 
@@ -126,6 +126,8 @@ def query_factory(datasource, model: Optional[dict] = None, expression: Optional
 
     TODO: Complete the list for all popular databases.
     """
+
+    query: Dict[str, Any]
 
     model = model or {}
     if "query" not in model and expression:
@@ -429,16 +431,17 @@ def query_factory(datasource, model: Optional[dict] = None, expression: Optional
 
     if attrs is not None and query is not None and isinstance(query, dict):
         for attr in attrs:
+            name = cast("str", attr["name"])
             value = attr["default"]
-            if attr["name"] in model:
-                tmp_value = model[attr["name"]]
+            if name in model:
+                tmp_value = model[name]
                 if "choices" in attr:
-                    if tmp_value in attr["choices"]:
+                    if tmp_value in attr["choices"]:  # ty: ignore[unsupported-operator]
                         value = tmp_value
                 else:
                     value = tmp_value
             if value is not None:
-                query[attr["name"]] = value
+                query[name] = value
 
         if "time_from" not in model or "time_to" not in model:
             now = datetime.now()
@@ -486,7 +489,7 @@ HEALTHCHECK_EXPRESSION_MAP = {
 }
 
 
-def get_healthcheck_expression(datasource_type: str, datasource_dialect: str = None) -> str:
+def get_healthcheck_expression(datasource_type: str, datasource_dialect: Optional[str] = None) -> str:
     """
     Produce data source health check query for corresponding database type.
     """

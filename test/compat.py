@@ -1,6 +1,7 @@
 from sys import modules
 
 import niquests
+import niquests.adapters
 import urllib3
 
 modules["requests"] = niquests

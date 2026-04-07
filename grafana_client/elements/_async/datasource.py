@@ -693,7 +693,7 @@ class Datasource(Base):
                             type=datasource_type,
                             success=success,
                             status=status,
-                            message=message,
+                            message=message,  # ty: ignore[invalid-argument-type]
                             duration=duration,
                             response=response,
                         )

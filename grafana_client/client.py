@@ -1,7 +1,11 @@
+from typing import Optional
+
 import niquests
 import niquests.auth
 from niquests import HTTPError, Timeout
 from niquests.exceptions import JSONDecodeError
+
+from grafana_client import __appname__, __version__
 
 DEFAULT_TIMEOUT: float = 5.0
 DEFAULT_SESSION_POOL_SIZE: int = 10
@@ -60,9 +64,9 @@ class TokenAuth(niquests.auth.AuthBase):
     def __init__(self, token):
         self.token = token
 
-    def __call__(self, request):
-        request.headers.update({"Authorization": f"Bearer {self.token}"})
-        return request
+    def __call__(self, r):
+        r.headers.update({"Authorization": f"Bearer {self.token}"})
+        return r
 
 
 class HeaderAuth(niquests.auth.AuthBase):
@@ -70,9 +74,9 @@ class HeaderAuth(niquests.auth.AuthBase):
         self.name = name
         self.value = value
 
-    def __call__(self, request):
-        request.headers.update({self.name: self.value})
-        return request
+    def __call__(self, r):
+        r.headers.update({self.name: self.value})
+        return r
 
 
 class GrafanaClient:
@@ -85,8 +89,8 @@ class GrafanaClient:
         protocol="http",
         verify=True,
         timeout=DEFAULT_TIMEOUT,
-        user_agent: str = None,
-        organization_id: int = None,
+        user_agent: Optional[str] = None,
+        organization_id: Optional[int] = None,
         session_pool_size=DEFAULT_SESSION_POOL_SIZE,
     ):
         self.auth = auth
@@ -97,6 +101,9 @@ class GrafanaClient:
         self.url_path_prefix = url_path_prefix
         self.url_protocol = protocol
         self.session_pool_size = session_pool_size
+        self.user_agent = user_agent or f"{__appname__}/{__version__}"
+        self.s = niquests.Session(pool_maxsize=session_pool_size)
+        self.s.headers["User-Agent"] = self.user_agent
 
         def construct_api_url():
             params = {
@@ -114,13 +121,6 @@ class GrafanaClient:
             return url_pattern.format(**params)
 
         self.url = construct_api_url()
-
-        from grafana_client import __appname__, __version__
-
-        self.user_agent = user_agent or f"{__appname__}/{__version__}"
-
-        self.s = niquests.Session(pool_maxsize=session_pool_size)
-        self.s.headers["User-Agent"] = self.user_agent
 
         self.organization_id = organization_id
         if self.organization_id:
@@ -229,8 +229,8 @@ class AsyncGrafanaClient(GrafanaClient):
         protocol="http",
         verify=True,
         timeout=DEFAULT_TIMEOUT,
-        user_agent: str = None,
-        organization_id: int = None,
+        user_agent: Optional[str] = None,
+        organization_id: Optional[int] = None,
         session_pool_size=DEFAULT_SESSION_POOL_SIZE,
     ):
         super().__init__(
@@ -255,7 +255,7 @@ class AsyncGrafanaClient(GrafanaClient):
             self._ensure_valid_json_arg(json)
 
             try:
-                r = await self.s.request(
+                r = await self.s.request(  # ty: ignore[invalid-await]
                     item.lower(),
                     __url,
                     json=json,

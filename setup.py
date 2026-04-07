@@ -1,6 +1,6 @@
 # Required for editable installs
 # https://discuss.python.org/t/specification-of-editable-installation/1564/
-from setuptools import setup
+from setuptools import setup  # ty: ignore[unresolved-import]
 
 setup(
     name="grafana-client",

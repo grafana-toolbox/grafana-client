@@ -1,3 +1,4 @@
+# ty: ignore[unresolved-import]
 """
 About
 =====
@@ -32,7 +33,7 @@ Synopsis
 
 import json
 import logging
-from typing import Dict
+from typing import Dict, Optional
 
 from grafanalib._gen import DashboardEncoder
 from grafanalib.core import Dashboard
@@ -43,7 +44,7 @@ from grafana_client.util import setup_logging
 logger = logging.getLogger(__name__)
 
 
-def mkdashboard(uid: str, title: str = None, message: str = None, overwrite: bool = False) -> Dict:
+def mkdashboard(uid: str, title: Optional[str] = None, message: Optional[str] = None, overwrite: bool = False) -> Dict:
     """
     Create a dashboard create/update payload using grafanalib, suitable for
     submitting to the Grafana HTTP API.

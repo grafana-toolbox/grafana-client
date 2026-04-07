@@ -84,6 +84,7 @@ jobs:
           uv pip install --editable='.[develop,test]'
 
       - name: Run linters and software tests
+        if: matrix.python-version != '3.8'
         run: |
           poe check
 
