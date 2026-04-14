@@ -81,6 +81,6 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
 
   prometheus:
-    image: docker.io/prom/prometheus:v3.11.1
+    image: docker.io/prom/prometheus:v3.11.2
     ports:
       - "9090:9090"
