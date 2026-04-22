@@ -38,6 +38,7 @@ jobs:
           - "11.6"
           - "12.3"
           - "12.4"
+          - "13.0"
           - "nightly"
 
         include:
@@ -45,12 +46,12 @@ jobs:
           # Verify PyPy.
           - os: 'ubuntu-latest'
             python-version: 'pypy-3.11'
-            grafana-version: '12.4'
+            grafana-version: '13.0'
 
           # Verify Python 3.8.
           - os: 'ubuntu-22.04'
             python-version: '3.8'
-            grafana-version: '12.4'
+            grafana-version: '13.0'
 
     env:
       GRAFANA_VERSION: ${{ matrix.grafana-version }}
