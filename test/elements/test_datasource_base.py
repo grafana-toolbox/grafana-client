@@ -37,6 +37,13 @@ class DatasourceTestCase(unittest.TestCase):
         self.datasource_id = datasource_prometheus["id"]
         self.datasource_uid = datasource_prometheus.get("uid")
 
+    def get_identifier(self):
+        """Return data source identifier. Grafana 13 only understands UIDs."""
+        if self.grafana.get_version() >= Version("13"):
+            return {"datasource_uid": self.datasource_uid}
+        else:
+            return {"datasource_id": self.datasource_id}
+
     def test_get_datasource_by_id(self):
         if self.grafana.get_version() >= Version("12"):
             pytest.skip("Grafana 12 no longer supports accessing data sources by id, use uids instead.")
@@ -113,7 +120,7 @@ class DatasourceTestCase(unittest.TestCase):
         # http://localhost:3000/api/datasources/proxy/1/api/v1/query?query=up%7binstance%3d%22localhost:9090%22%7d&time=1644164339
         now = int(time.time())
         result = self.grafana.datasource.get_datasource_proxy_data(
-            self.datasource_id,
+            **self.get_identifier(),
             query_type="query",
             expr='up{instance="localhost:9090"}',
             time=now,
@@ -130,7 +137,7 @@ class DatasourceTestCase(unittest.TestCase):
         # http://localhost:3000/api/datasources/proxy/1/api/v1/query_range?query=up%7binstance%3d%22localhost:9090%22%7d&start=1644164339&end=1644164639&step=60
         now = int(time.time())
         result = self.grafana.datasource.get_datasource_proxy_data(
-            self.datasource_id,
+            **self.get_identifier(),
             query_type="query_range",
             expr='up{instance="localhost:9090"}',
             start=now - 300,
@@ -160,7 +167,7 @@ class DatasourceTestCase(unittest.TestCase):
             pytest.skip("Inquiring data sources only supported with Grafana 7 and higher.")
         now = int(time.time())
         result = self.grafana.datasource.series(
-            datasource_id=self.datasource_id,
+            **self.get_identifier(),
             match="go_info",
             start=now - 300,
             end=now,

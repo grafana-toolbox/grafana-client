@@ -236,7 +236,8 @@ class Datasource(Base):
 
     def get_datasource_proxy_data(
         self,
-        datasource_id,
+        datasource_id=None,
+        datasource_uid=None,
         query_type="query",
         version="v1",  # noqa: ARG002
         expr=None,
@@ -248,6 +249,7 @@ class Datasource(Base):
         """
 
         :param datasource_id:
+        :param datasource_uid:
         :param version: api_version currently v1
         :param query_type: query_range |query
         :param expr: expr to query
@@ -261,13 +263,15 @@ class Datasource(Base):
             )
         )
         if query_type == "query":
-            return self.query(datasource_id=datasource_id, query=expr, timestamp=time)
+            return self.query(datasource_id=datasource_id, datasource_uid=datasource_uid, query=expr, timestamp=time)
         elif query_type == "query_range":
-            return self.query_range(datasource_id=datasource_id, query=expr, start=start, end=end, step=step)
+            return self.query_range(
+                datasource_id=datasource_id, datasource_uid=datasource_uid, query=expr, start=start, end=end, step=step
+            )
         else:
             raise KeyError(f"Unknown or invalid query type: {query_type}")
 
-    def query(self, datasource_id, query, timestamp, access="proxy"):
+    def query(self, datasource_id=None, datasource_uid=None, query=None, timestamp=None, access="proxy"):
         """
 
         :param datasource_id:
@@ -276,7 +280,12 @@ class Datasource(Base):
         :param access:
         :return:
         """
-        post_query_path = "/datasources/%s/%s/api/v1/query" % (access, datasource_id)
+        if datasource_id:
+            post_query_path = "/datasources/%s/%s/api/v1/query" % (access, datasource_id)
+        elif datasource_uid:
+            post_query_path = "/datasources/%s/uid/%s/api/v1/query" % (access, datasource_uid)
+        else:
+            raise ValueError("Either datasource_id or datasource_uid must be provided")
         return self.client.POST(
             post_query_path,
             data={
@@ -285,7 +294,9 @@ class Datasource(Base):
             },
         )
 
-    def query_range(self, datasource_id, query, start, end, step, access="proxy"):
+    def query_range(
+        self, datasource_id=None, datasource_uid=None, query=None, start=None, end=None, step=None, access="proxy"
+    ):
         """
 
         :param datasource_id:
@@ -296,10 +307,15 @@ class Datasource(Base):
         :param access:
         :return:
         """
-        post_query_range_path = "/datasources/%s/%s/api/v1/query_range" % (access, datasource_id)
+        if datasource_id:
+            post_query_range_path = "/datasources/%s/%s/api/v1/query_range" % (access, datasource_id)
+        elif datasource_uid:
+            post_query_range_path = "/datasources/%s/uid/%s/api/v1/query_range" % (access, datasource_uid)
+        else:
+            raise ValueError("Either datasource_id or datasource_uid must be provided")
         return self.client.POST(post_query_range_path, data={"query": query, "start": start, "end": end, "step": step})
 
-    def series(self, datasource_id, match, start, end, access="proxy"):
+    def series(self, datasource_id=None, datasource_uid=None, match=None, start=None, end=None, access="proxy"):
         """
 
         :param datasource_id:
@@ -309,7 +325,12 @@ class Datasource(Base):
         :param access:
         :return:
         """
-        post_series_path = "/datasources/%s/%s/api/v1/series" % (access, datasource_id)
+        if datasource_id:
+            post_series_path = "/datasources/%s/%s/api/v1/series" % (access, datasource_id)
+        elif datasource_uid:
+            post_series_path = "/datasources/%s/uid/%s/api/v1/series" % (access, datasource_uid)
+        else:
+            raise ValueError("Either datasource_id or datasource_uid must be provided")
         return self.client.POST(post_series_path, data={"match[]": match, "start": start, "end": end})
 
     def smartquery(
