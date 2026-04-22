@@ -1,0 +1,95 @@
+name: Stable
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+  # Allow job to be triggered manually.
+  workflow_dispatch:
+
+# Cancel in-progress jobs when pushing to the same branch.
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - 'ubuntu-latest'
+        python-version:
+          - '3.14'
+        grafana-version:
+          - "6.7.6"
+          - "7.5.17"
+          - "8.5.27"
+          - "9.5.21"
+          - "10.4.19"
+          - "11.6"
+          - "12.3"
+          - "12.4"
+          - "13.0"
+
+        include:
+
+          # Verify PyPy.
+          - os: 'ubuntu-latest'
+            python-version: 'pypy-3.11'
+            grafana-version: '13.0'
+
+          # Verify Python 3.8.
+          - os: 'ubuntu-22.04'
+            python-version: '3.8'
+            grafana-version: '13.0'
+
+    env:
+      GRAFANA_VERSION: ${{ matrix.grafana-version }}
+
+    name: >-
+      Grafana ${{ matrix.grafana-version }},
+      Python ${{ matrix.python-version }}
+    steps:
+
+      - name: Acquire sources
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          activate-environment: true
+          cache-suffix: ${{ matrix.python-version }}
+          enable-cache: true
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies for PyPy
+        if: startsWith(matrix.python-version, 'pypy')
+        run: |
+          sudo apt-get install libxml2-dev libxslt-dev
+
+      - name: Set up project
+        run: |
+          uv pip install pip
+          uv pip install --editable='.[develop,test]'
+
+      - name: Run linters and software tests
+        run: |
+          poe check
+
+      - name: Run tests
+        run: |
+          poe test-coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          fail_ci_if_error: true

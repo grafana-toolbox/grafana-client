@@ -1,6 +1,7 @@
 # grafana-client
 
-[![Tests](https://github.com/grafana-toolbox/grafana-client/actions/workflows/test.yml/badge.svg)](https://github.com/grafana-toolbox/grafana-client/actions/workflows/test.yml)
+[![Tests with Grafana stable](https://img.shields.io/github/actions/workflow/status/grafana-toolbox/grafana-client/stable.yml?branch=main&label=Grafana stable)](https://github.com/grafana-toolbox/grafana-client/actions/workflows/stable.yml)
+[![Tests with Grafana nightly](https://img.shields.io/github/actions/workflow/status/grafana-toolbox/grafana-client/nightly.yml?branch=main&label=Grafana nightly)](https://github.com/grafana-toolbox/grafana-client/actions/workflows/nightly.yml)
 [![Test coverage](https://img.shields.io/codecov/c/gh/grafana-toolbox/grafana-client.svg?style=flat-square)](https://codecov.io/gh/grafana-toolbox/grafana-client/)
 [![License](https://img.shields.io/github/license/grafana-toolbox/grafana-client.svg?style=flat-square)](https://github.com/grafana-toolbox/grafana-client/blob/main/LICENSE)
 
