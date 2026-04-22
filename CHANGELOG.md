@@ -22,6 +22,7 @@
 - Deprecations: Emit warnings when using the Legacy Alerting APIs. Stop receiving
   exceptions when using the Library Elements API.
 - Smart query: Grafana 13 only supports addressing data sources by UID
+- Health probe: Grafana 13 rendered Elasticsearch health check defunct
 
 ## 5.0.2 (2026-02-15)
 - Fix: In the alert provisioning subsystem, added `disable_provenance` parameter
