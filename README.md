@@ -231,7 +231,7 @@ are supported, and to which degree. See also [Grafana HTTP API reference].
 
 ### Compatibility
 
-`grafana-client` is largely compatible with Grafana 5.x-10.x. However, earlier
+`grafana-client` is largely compatible with Grafana 5.x-13.x. However, earlier
 versions of Grafana might not support certain features or subsystems.
 
 ### Overview
