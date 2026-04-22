@@ -237,7 +237,6 @@ class Datasource(Base):
     async def get_datasource_proxy_data(
         self,
         datasource_id=None,
-        datasource_uid=None,
         query_type="query",
         version="v1",  # noqa: ARG002
         expr=None,
@@ -245,6 +244,8 @@ class Datasource(Base):
         start=None,
         end=None,
         step=None,
+        *,
+        datasource_uid=None,
     ):
         """
 
@@ -273,7 +274,7 @@ class Datasource(Base):
         else:
             raise KeyError(f"Unknown or invalid query type: {query_type}")
 
-    async def query(self, datasource_id=None, datasource_uid=None, query=None, timestamp=None, access="proxy"):
+    async def query(self, datasource_id=None, query=None, timestamp=None, access="proxy", *, datasource_uid=None):
         """
 
         :param datasource_id:
@@ -297,7 +298,7 @@ class Datasource(Base):
         )
 
     async def query_range(
-        self, datasource_id=None, datasource_uid=None, query=None, start=None, end=None, step=None, access="proxy"
+        self, datasource_id=None, query=None, start=None, end=None, step=None, access="proxy", *, datasource_uid=None
     ):
         """
 
@@ -319,7 +320,9 @@ class Datasource(Base):
             post_query_range_path, data={"query": query, "start": start, "end": end, "step": step}
         )
 
-    async def series(self, datasource_id=None, datasource_uid=None, match=None, start=None, end=None, access="proxy"):
+    async def series(
+        self, datasource_id=None, match=None, start=None, end=None, access="proxy", *, datasource_uid=None
+    ):
         """
 
         :param datasource_id:
@@ -412,17 +415,17 @@ class Datasource(Base):
                 and request["data"]["queries"][0]["instant"]
             ):
                 return await self.query(
-                    datasource.get("id"),
-                    request["expr"],
-                    request["data"]["to"],
+                    datasource_id=datasource.get("id"),
+                    query=request["expr"],
+                    timestamp=["data"]["to"],
                 )
             else:
                 return await self.query_range(
-                    datasource.get("id"),
-                    request["expr"],
-                    request["data"]["from"],
-                    request["data"]["to"],
-                    request["data"]["step"],
+                    datasource_id=datasource.get("id"),
+                    query=request["expr"],
+                    start=request["data"]["from"],
+                    end=request["data"]["to"],
+                    step=request["data"]["step"],
                 )
 
         # For all others, use the generic data source communication endpoint.
