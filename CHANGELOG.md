@@ -2,7 +2,7 @@
 
 ## unreleased
 - Fixed health probe for InfluxDB v1.
-- CI: Verified on Grafana 12.4.0.
+- CI: Verified on Grafana 12.4.0 and 13.0.1.
 - Dashboard API: Updated function signature of `update_permissions_by_uid`
   Renamed `dashboard_id` to `dashboard_uid`
 - Dashboard and folder API: Improved convenience when updating permissions:
