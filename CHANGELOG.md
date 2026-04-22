@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## unreleased
+
+## 5.1.0 (2026-04-22)
 - Fixed health probe for InfluxDB v1.
 - CI: Verified on Grafana 12.4 and 13.0.
 - Dashboard API: Updated function signature of `update_permissions_by_uid`
