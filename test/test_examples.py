@@ -41,7 +41,10 @@ def test_datasource_health_probe(request, docker_grafana, database):
         pytest.skip("Health probes are supported by Grafana 10 and higher.")
 
     if database.type == "elasticsearch" and Version(grafana_version) < Version("11"):
-        pytest.skip("Health probes for Elasticsearch are supported by Grafana 11 and higher.")
+        pytest.skip("Health probes for Elasticsearch are only supported by Grafana 11 and higher.")
+
+    if database.type == "elasticsearch" and Version(grafana_version) >= Version("13"):
+        pytest.skip("Health probes for Elasticsearch are not yet supported by Grafana 13 and higher.")
 
     if database.type == "graphite" and Version(grafana_version) < Version("12"):
         pytest.skip("Health probes for Graphite are supported by Grafana 12 and higher.")
