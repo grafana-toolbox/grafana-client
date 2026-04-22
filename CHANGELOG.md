@@ -9,8 +9,8 @@
   The permission items can now be supplied either as a dictionary or as a list,
   both wrapped or unwrapped
 - Folder API: Add parameter `force_delete_rules` to remove non-empty folders
-- Datasources API: Fixed request payloads for `{enable,disable}-permissions` endpoints
-- Datasources API: Improved Elasticsearch error handling
+- Data source API: Fixed request payloads for `{enable,disable}-permissions` endpoints
+- Data source API: Improved Elasticsearch error handling
 - Organization API: `create_organization` now also accepts the organization name as string
 - Team API: `add_team` now also accepts the team name as string
 - Service account API: Added convenience methods `search_streaming` and `search_all`
