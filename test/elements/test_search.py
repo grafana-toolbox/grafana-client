@@ -46,8 +46,8 @@ class SearchTestCase(unittest.TestCase):
         self.assertEqual(self.dashboard_uid, result[0]["uid"])
 
     def test_search_dashboards_by_query_tags(self):
-        if self.grafana.get_version() < Version("12.4"):
-            pytest.skip("Dashboard tags are only indexed with Grafana 12.4 and higher.")
+        if not Version("12.4") <= self.grafana.get_version() < Version("13"):
+            pytest.skip("Dashboard tags are only fulltext-indexed with Grafana 12.4")
         result = self.grafana.search.search_dashboards(
             query="foobar",
         )
