@@ -71,9 +71,25 @@ class SearchTestCase(unittest.TestCase):
         else:
             self.assertEqual(2, len(result), "Wrong number of dashboards")
 
-    def test_search_dashboards_by_tag(self):
+    def test_search_dashboards_by_tag_single(self):
         result = self.grafana.search.search_dashboards(
-            tag="bazqux",
+            tag=["foobar"],
+        )
+        self.assertEqual(1, len(result), "Wrong number of dashboards")
+        self.assertEqual(self.dashboard_uid, result[0]["uid"])
+
+    def test_search_dashboards_by_tag_multiple(self):
+        result = self.grafana.search.search_dashboards(
+            tag=["foobar", "bazqux"],
+        )
+        self.assertEqual(1, len(result), "Wrong number of dashboards")
+        self.assertEqual(self.dashboard_uid, result[0]["uid"])
+
+    def test_search_dashboards_by_tag_wildcard(self):
+        if self.grafana.get_version() < Version("12.4"):
+            pytest.skip("Searching dashboards with wildcards in tags only supported with Grafana 12.4 and higher")
+        result = self.grafana.search.search_dashboards(
+            tag=["foo*", "baz*"],
         )
         self.assertEqual(1, len(result), "Wrong number of dashboards")
         self.assertEqual(self.dashboard_uid, result[0]["uid"])

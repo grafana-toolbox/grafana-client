@@ -1,5 +1,6 @@
 import logging
 import sys
+import typing as t
 
 
 def setup_logging(level=logging.INFO):
@@ -46,3 +47,19 @@ def format_param_value(maybe_list):
         return ",".join([str(x) for x in maybe_list])
     else:
         return maybe_list
+
+
+def to_list(x: t.Any, default: t.Optional[t.List[t.Any]] = None) -> t.List[t.Any]:
+    """Cast scalar to list."""
+    if default is None:
+        default = []
+    if not isinstance(default, list):
+        raise ValueError("Default value is not a list")
+    if x is None:
+        return default
+    if isinstance(x, str) or not isinstance(x, t.Iterable):
+        return [x]
+
+    if isinstance(x, list):
+        return x
+    return list(x)
