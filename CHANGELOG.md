@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## unreleased
+- Dashboard search: Improved handling of `tag` keywords argument to also
+  process lists, when searching for multiple tags.
 
 ## 5.1.0 (2026-04-22)
 - Fixed health probe for InfluxDB v1.

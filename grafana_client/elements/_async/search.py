@@ -1,4 +1,4 @@
-from grafana_client.util import as_bool, format_param_value
+from grafana_client.util import as_bool, format_param_value, to_list
 
 from ..base import Base
 
@@ -42,7 +42,7 @@ class Search(Base):
             params["query"] = query
 
         if tag is not None:
-            params["tag"] = format_param_value(tag)
+            params["tag"] = to_list(tag)
 
         if type_ is not None:
             params["type"] = type_
