@@ -67,7 +67,7 @@ services:
       - "9095:9095"
 
   mariadb:
-    image: docker.io/mariadb:10
+    image: docker.io/mariadb:12
     ports:
       - "3306:3306"
     environment:
