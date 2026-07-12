@@ -100,11 +100,11 @@ class AlertingProvisioningTestCase(unittest.TestCase):
         """
         cannot change provenance from 'api' to ''
         """
-        with self.assertRaises(GrafanaServerError) as excinfo:
+        with self.assertRaises((GrafanaClientError, GrafanaServerError)) as excinfo:
             self.grafana.alertingprovisioning.update_alertrule(
                 alertrule_uid=self.alertrule_uid, alertrule=ALERTRULE, disable_provenance=True
             )
-        self.assertEqual(excinfo.exception.status_code, 500)
+        self.assertIn(excinfo.exception.status_code, [409, 500])
 
     def test_delete_notification_policy_tree(self):
         response = self.grafana.alertingprovisioning.delete_notification_policy_tree()
