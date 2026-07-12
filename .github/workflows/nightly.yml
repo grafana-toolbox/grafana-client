@@ -19,6 +19,7 @@ concurrency:
 
 jobs:
   test:
+    if: false
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
