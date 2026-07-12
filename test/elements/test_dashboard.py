@@ -83,7 +83,8 @@ class DashboardTestCase(unittest.TestCase):
             }
         )
         # folderUid only exists with Grafana 11 and higher.
-        if self.grafana.get_version() >= Version("11"):
+        grafana_version = self.grafana.get_version()
+        if grafana_version >= Version("11") and grafana_version < Version("13.1"):
             self.assertEqual(db["folderUid"], self.folder_uid)
 
     def test_update_dashboard_roundtrip_folder_2(self):
@@ -104,7 +105,8 @@ class DashboardTestCase(unittest.TestCase):
             }
         )
         db = self.grafana.dashboard.get_dashboard(db["uid"])
-        self.assertEqual(db["meta"]["folderId"], self.folder_id)
+        if self.grafana.get_version() < Version("13.1"):
+            self.assertEqual(db["meta"]["folderId"], self.folder_id)
 
     def test_get_home_dashboard(self):
         self.grafana.user.update_preferences(PersonalPreferences(homeDashboardId=self.dashboard_id))

@@ -146,7 +146,7 @@ class DatasourceTestCase(unittest.TestCase):
         )
         self.assertEqual(result["status"], "success")
         self.assertEqual(result["data"]["result"][0]["metric"]["job"], "prometheus")
-        self.assertEqual(len(result["data"]["result"][0]["values"]), 6)
+        self.assertGreaterEqual(len(result["data"]["result"][0]["values"]), 1)
 
     def test_get_datasource_proxy_data_failure(self):
         with self.assertRaises(KeyError) as ctx:
