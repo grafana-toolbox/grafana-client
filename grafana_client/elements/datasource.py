@@ -411,7 +411,7 @@ class Datasource(Base):
                 return self.query(
                     datasource_id=datasource.get("id"),
                     query=request["expr"],
-                    timestamp=["data"]["to"],
+                    timestamp=request["data"]["to"],
                 )
             else:
                 return self.query_range(
