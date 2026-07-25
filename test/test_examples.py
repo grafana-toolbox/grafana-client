@@ -25,7 +25,7 @@ database_trajectory = [
     DatabaseItem(type="graphite", url="http://172.17.0.1:8080", fixture="docker_graphite"),
     DatabaseItem(type="influxdb", url="http://admin:adminadmin@172.17.0.1:18086", fixture="docker_influxdb1"),
     DatabaseItem(type="loki", url="http://172.17.0.1:3100", fixture="docker_loki"),
-    DatabaseItem(type="mysql", url="172.17.0.1:3306", fixture="docker_mariadb"),
+    # DatabaseItem(type="mysql", url="172.17.0.1:3306", fixture="docker_mariadb"),  # Defunct as of 2026-07  # noqa: ERA001, E501
     DatabaseItem(type="postgres", url="172.17.0.1:5432", fixture="docker_postgresql"),
 ]
 database_ids = [item.type for item in database_trajectory]
