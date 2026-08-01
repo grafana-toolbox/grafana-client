@@ -1,6 +1,9 @@
 # CHANGELOG
 
 ## unreleased
+- User API: URL-encode the `login_or_email` argument of `find_user`, and the
+  `query` argument of `search_users`, so values containing reserved characters
+  like `+` are no longer misinterpreted by the server.
 - Dashboard search: Improved handling of `tag` keywords argument to also
   process lists, when searching for multiple tags.
 
