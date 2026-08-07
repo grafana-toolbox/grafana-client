@@ -1,5 +1,6 @@
 import typing as t
 import warnings
+from urllib.parse import quote
 
 from ..model import PersonalPreferences
 from .base import Base
@@ -27,7 +28,7 @@ class Users(Base):
         params = []
 
         if query:
-            params.append("query=%s" % query)
+            params.append("query=%s" % quote(str(query), safe=""))
 
         if page:
             iterate = False
@@ -72,7 +73,7 @@ class Users(Base):
         :param login_or_email:
         :return:
         """
-        search_user_path = "/users/lookup?loginOrEmail=%s" % login_or_email
+        search_user_path = "/users/lookup?loginOrEmail=%s" % quote(str(login_or_email), safe="")
         return self.client.GET(search_user_path)
 
     def update_user(self, user_id, user):
