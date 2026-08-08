@@ -1,4 +1,7 @@
+import typing as t
 from copy import deepcopy
+
+Shape = t.Dict[str, t.Union[bool, int, str, t.Dict[str, t.Union[bool, int, str]]]]
 
 ELASTICSEARCH_DATASOURCE = {
     "id": 44,
@@ -121,7 +124,7 @@ SIMPOD_JSON_DATASOURCE = {
     "access": "proxy",
 }
 
-SUNANDMOON_DATASOURCE = {
+SUNANDMOON_DATASOURCE: Shape = {
     "id": 46,
     "uid": "239fasva4",
     "name": "SunAndMoon",
@@ -132,7 +135,7 @@ SUNANDMOON_DATASOURCE = {
         "longitude": 84.84,
     },
 }
-SUNANDMOON_DATASOURCE_INCOMPLETE = deepcopy(SUNANDMOON_DATASOURCE)
+SUNANDMOON_DATASOURCE_INCOMPLETE: Shape = deepcopy(SUNANDMOON_DATASOURCE)
 del SUNANDMOON_DATASOURCE_INCOMPLETE["jsonData"]["latitude"]
 
 TEMPO_DATASOURCE = {

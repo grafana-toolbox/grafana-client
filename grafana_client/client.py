@@ -3,6 +3,8 @@ import niquests.auth
 from niquests import HTTPError, Timeout
 from niquests.exceptions import JSONDecodeError
 
+from grafana_client import __appname__, __version__
+
 DEFAULT_TIMEOUT: float = 5.0
 DEFAULT_SESSION_POOL_SIZE: int = 10
 
@@ -97,6 +99,9 @@ class GrafanaClient:
         self.url_path_prefix = url_path_prefix
         self.url_protocol = protocol
         self.session_pool_size = session_pool_size
+        self.user_agent = user_agent or f"{__appname__}/{__version__}"
+        self.s = niquests.Session(pool_maxsize=session_pool_size)
+        self.s.headers["User-Agent"] = self.user_agent
 
         def construct_api_url():
             params = {
@@ -114,13 +119,6 @@ class GrafanaClient:
             return url_pattern.format(**params)
 
         self.url = construct_api_url()
-
-        from grafana_client import __appname__, __version__
-
-        self.user_agent = user_agent or f"{__appname__}/{__version__}"
-
-        self.s = niquests.Session(pool_maxsize=session_pool_size)
-        self.s.headers["User-Agent"] = self.user_agent
 
         self.organization_id = organization_id
         if self.organization_id:

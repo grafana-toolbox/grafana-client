@@ -108,6 +108,7 @@ format = [
 lint = [
   {cmd="script/generate_async.py check"},
   {cmd="ruff check"},
+  {cmd="ty check"},
 ]
 test = [
   {cmd="python -m unittest -vvv"},

@@ -26,11 +26,11 @@ class DatasourceModel:
 
     name: str
     type: str
-    url: str
-    access: str
+    url: Optional[str]
+    access: Optional[str]
     database: Optional[str] = None
     user: Optional[str] = None
-    jsonData: Optional[Dict] = None
+    jsonData: Dict = dataclasses.field(default_factory=dict)
     secureJsonData: Optional[Dict] = None
     secureJsonFields: Optional[Dict] = None
 

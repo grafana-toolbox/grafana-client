@@ -6,6 +6,7 @@ from urllib.parse import parse_qs, urlparse
 
 import niquests
 import niquests.auth
+import niquests.exceptions
 from urllib3.exceptions import InsecureRequestWarning
 from verlib2 import Version
 

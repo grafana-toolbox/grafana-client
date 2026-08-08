@@ -3,6 +3,7 @@ import unittest
 from unittest import mock
 
 import niquests
+import niquests.auth
 
 from grafana_client import GrafanaApi, HeaderAuth, TokenAuth
 
@@ -52,7 +53,7 @@ class TestGrafanaApiFactories(unittest.TestCase):
         self.assertEqual(grafana.client.auth.token, "VerySecretToken")
 
     def test_from_url_auth_invalid(self):
-        self.assertRaises(TypeError, lambda: GrafanaApi.from_url("http://foo:bar@localhost:3000", credential=42.42))
+        self.assertRaises(TypeError, lambda: GrafanaApi.from_url("http://foo:bar@localhost:3000", credential=42.42))  # ty: ignore[invalid-argument-type]
 
     def test_from_url_full_on(self):
         grafana = GrafanaApi.from_url("https://foo:bar@daq.example.org/grafana/?verify=false")
