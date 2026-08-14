@@ -29,6 +29,7 @@ class Users(Base):
         page = page or 1
 
         params = {}
+
         if query:
             params["query"] = query
         if page:

@@ -25,35 +25,28 @@ class Users(Base):
         list_of_users = []
         users_on_page = None
         show_users_path = "/users"
-        params = []
+        iterate = page is None
+        page = page or 1
+
+        params = {}
 
         if query:
-            params.append("query=%s" % quote(str(query), safe=""))
-
+            params["query"] = query
         if page:
-            iterate = False
-            params.append("page=%s" % page)
-        else:
-            iterate = True
-            params.append("page=%s")
-            page = 1
-
+            params["page"] = page
         if perpage:
-            params.append("perpage=%s" % perpage)
-
-        show_users_path += "?"
-        show_users_path += "&".join(params)
+            params["perpage"] = perpage
 
         if iterate:
             while True:
-                url = show_users_path % page
-                users_on_page = self.client.GET(url)
+                params["page"] = page
+                users_on_page = self.client.GET(show_users_path, params=params)
                 if not users_on_page:
                     break
                 list_of_users += users_on_page
                 page += 1
         else:
-            users_on_page = self.client.GET(show_users_path)
+            users_on_page = self.client.GET(show_users_path, params=params)
             list_of_users += users_on_page
 
         return list_of_users
