@@ -39,17 +39,18 @@ samples.
 from grafana_client import GrafanaApi
 
 # Connect to Grafana API endpoint using the `GrafanaApi` class
-grafana = GrafanaApi.from_url(
-    "https://username:password@daq.example.org/grafana/")
+grafana = GrafanaApi.from_url("https://username:password@daq.example.org/grafana/")
 
 # Create user
-user = grafana.admin.create_user({
-    "name": "User",
-    "email": "user@example.org",
-    "login": "user",
-    "password": "userpassword",
-    "OrgId": 1,
-})
+user = grafana.admin.create_user(
+    {
+        "name": "User",
+        "email": "user@example.org",
+        "login": "user",
+        "password": "userpassword",
+        "OrgId": 1,
+    }
+)
 
 # Change user password
 user = grafana.admin.change_user_password(2, "newpassword")
@@ -64,15 +65,13 @@ user = grafana.users.find_user("test@example.org")
 grafana.teams.add_team_member(2, user["id"])
 
 # Create or update a dashboard
-grafana.dashboard.update_dashboard(
-    dashboard={"dashboard": {...}, "folderId": 0, "overwrite": True})
+grafana.dashboard.update_dashboard(dashboard={"dashboard": {...}, "folderId": 0, "overwrite": True})
 
 # Delete a dashboard by UID
 grafana.dashboard.delete_dashboard(dashboard_uid="foobar")
 
 # Create organization
-grafana.organization.create_organization(
-    organization={"name": "new_organization"})
+grafana.organization.create_organization(organization={"name": "new_organization"})
 ```
 
 #### Asynchronous
@@ -84,21 +83,25 @@ need to properly handle coroutines (async/await).
 import asyncio
 from grafana_client import AsyncGrafanaApi
 
+
 async def main():
     # Connect to Grafana API endpoint using the `GrafanaApi` class
     grafana = AsyncGrafanaApi.from_url("https://username:password@daq.example.org/grafana/")
 
     # Create user
-    user = await grafana.admin.create_user({
-        "name": "User",
-        "email": "user@example.org",
-        "login": "user",
-        "password": "userpassword",
-        "OrgId": 1,
-    })
+    user = await grafana.admin.create_user(
+        {
+            "name": "User",
+            "email": "user@example.org",
+            "login": "user",
+            "password": "userpassword",
+            "OrgId": 1,
+        }
+    )
 
     # Change user password
     user = await grafana.admin.change_user_password(2, "newpassword")
+
 
 asyncio.run(main())
 ```
@@ -144,10 +147,7 @@ grafana = GrafanaApi.from_url(
 grafana = GrafanaApi.from_url(
     url="https://username:password@daq.example.org/grafana/",
 )
-grafana = GrafanaApi.from_url(
-    url="https://daq.example.org/grafana/",
-    credential=("username", "password")
-)
+grafana = GrafanaApi.from_url(url="https://daq.example.org/grafana/", credential=("username", "password"))
 
 # 4. Use HTTP Header authentication.
 grafana = GrafanaApi.from_url(
