@@ -114,7 +114,7 @@ class TestGrafanaClient(unittest.TestCase):
         grafana.users.find_user("test@example.org")
         grafana.client.s.request.assert_called_once_with(
             "get",
-            "https://localhost/api/users/lookup?loginOrEmail=test@example.org",
+            "https://localhost/api/users/lookup?loginOrEmail=test%40example.org",
             auth=basic_auth,
             headers=None,
             json=None,
