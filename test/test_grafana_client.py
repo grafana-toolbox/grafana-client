@@ -8,6 +8,7 @@ import pytest
 
 from grafana_client.api import GrafanaApi
 from grafana_client.client import (
+    AsyncGrafanaClient,
     GrafanaClientError,
     GrafanaServerError,
     GrafanaTimeoutError,
@@ -202,3 +203,17 @@ def test_grafana_client_timeout(docker_grafana):
     with pytest.raises(GrafanaTimeoutError) as excinfo:
         grafana.folder.get_all_folders()
     assert excinfo.match("timed out")
+
+
+class TestAsyncClientHeaders(unittest.TestCase):
+    def test_preserves_organization_and_custom_user_agent(self):
+        client = AsyncGrafanaClient(None, organization_id=42, user_agent="custom-agent")
+        self.assertEqual(client.s.headers["X-Grafana-Org-Id"], "42")
+        self.assertEqual(client.s.headers["User-Agent"], "custom-agent")
+
+    def test_preserves_default_user_agent_without_organization(self):
+        from grafana_client import __appname__, __version__
+
+        client = AsyncGrafanaClient(None)
+        self.assertEqual(client.s.headers["User-Agent"], f"{__appname__}/{__version__}")
+        self.assertNotIn("X-Grafana-Org-Id", client.s.headers)
