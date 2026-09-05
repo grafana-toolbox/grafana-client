@@ -245,7 +245,10 @@ class AsyncGrafanaClient(GrafanaClient):
             organization_id=organization_id,
             session_pool_size=session_pool_size,
         )
+        headers = self.s.headers.copy()
+        self.s.close()
         self.s = niquests.AsyncSession(pool_maxsize=session_pool_size)
+        self.s.headers.update(headers)
         self.s.headers.setdefault("Connection", "keep-alive")
 
     def __getattr__(self, item):
