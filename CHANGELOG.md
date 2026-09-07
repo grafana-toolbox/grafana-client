@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## unreleased
+
+## 5.1.2 (2026-09-07)
 - fix: preserve headers for async clients. Thanks, @Sanjays2402.
 
 ## 5.1.1 (2026-08-17)
