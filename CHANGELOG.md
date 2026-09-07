@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## unreleased
+- fix: preserve headers for async clients. Thanks, @Sanjays2402.
 
 ## 5.1.1 (2026-08-17)
 - User API: URL-encode the `login_or_email` argument of `find_user`, and the
