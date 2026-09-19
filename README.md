@@ -1,7 +1,6 @@
 # grafana-client
 
 [![Tests with Grafana stable](https://img.shields.io/github/actions/workflow/status/grafana-toolbox/grafana-client/stable.yml?branch=main&label=Grafana%20stable)](https://github.com/grafana-toolbox/grafana-client/actions/workflows/stable.yml)
-[![Tests with Grafana nightly](https://img.shields.io/github/actions/workflow/status/grafana-toolbox/grafana-client/nightly.yml?branch=main&label=Grafana%20nightly)](https://github.com/grafana-toolbox/grafana-client/actions/workflows/nightly.yml)
 [![Test coverage](https://img.shields.io/codecov/c/gh/grafana-toolbox/grafana-client.svg?style=flat-square)](https://codecov.io/gh/grafana-toolbox/grafana-client/)
 [![License](https://img.shields.io/github/license/grafana-toolbox/grafana-client.svg?style=flat-square)](https://github.com/grafana-toolbox/grafana-client/blob/main/LICENSE)
 
@@ -10,7 +9,7 @@
 
 [![Status](https://img.shields.io/pypi/status/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
 [![PyPI](https://img.shields.io/pypi/v/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
-[![Downloads](https://img.shields.io/pypi/dm/grafana-client.svg?style=flat-square)](https://pypi.org/project/grafana-client/)
+[![PyPI Downloads](https://static.pepy.tech/personalized-badge/grafana-client?period=monthly&left_color=GREY&right_color=GREEN&left_text=downloads%2Fmonth)](https://pepy.tech/projects/grafana-client)
 <!-- [![Conda](https://img.shields.io/conda/v/grafana-toolbox/grafana-client.svg?style=flat-square)](https://anaconda.org/grafana-toolbox/grafana-client) -->
 
 
