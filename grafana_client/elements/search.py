@@ -1,4 +1,4 @@
-from grafana_client.util import as_bool, format_param_value, to_list
+from grafana_client.util import as_bool, to_list
 
 from .base import Base
 
@@ -48,16 +48,16 @@ class Search(Base):
             params["type"] = type_
 
         if dashboard_ids is not None:
-            params["dashboardIds"] = format_param_value(dashboard_ids)
+            params["dashboardIds"] = to_list(dashboard_ids)
 
         if dashboard_uids is not None:
-            params["dashboardUIDs"] = format_param_value(dashboard_uids)
+            params["dashboardUIDs"] = to_list(dashboard_uids)
 
         if folder_ids is not None:
-            params["folderIds"] = format_param_value(folder_ids)
+            params["folderIds"] = to_list(folder_ids)
 
         if folder_uids is not None:
-            params["folderUIDs"] = format_param_value(folder_uids)
+            params["folderUIDs"] = to_list(folder_uids)
 
         if as_bool(starred):
             params["starred"] = "true"
