@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## unreleased
+- Fixed searching dashboards with multiple folders. Thanks, @vladchel.
 
 ## 5.1.2 (2026-09-07)
 - fix: preserve headers for async clients. Thanks, @Sanjays2402.
@@ -10,7 +11,7 @@
   `query` argument of `search_users`, so values containing reserved characters
   like `+` are no longer misinterpreted by the server.
 - Dashboard search: Improved handling of `tag` keywords argument to also
-  process lists, when searching for multiple tags.
+  process lists, when searching for multiple tags. Thanks, @vladchel.
 - Fixed missing URL encoding for user API parameters. Thanks, @MatthiasLohr
   and @Sanjays2402.
 
