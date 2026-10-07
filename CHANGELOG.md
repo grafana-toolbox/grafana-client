@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## unreleased
+
+## 5.1.3 (2026-10-07)
 - Fixed searching dashboards with multiple folders. Thanks, @vladchel.
 
 ## 5.1.2 (2026-09-07)
