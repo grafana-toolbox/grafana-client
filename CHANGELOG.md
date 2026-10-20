@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## unreleased
+- CI: Verified on Python 3.15.
+- CI: Verified on Grafana 13.1 and 13.2.
 
 ## 5.1.3 (2026-10-07)
 - Fixed searching dashboards with multiple folders. Thanks, @vladchel.
