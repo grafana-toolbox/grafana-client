@@ -297,11 +297,12 @@ class UserTestCase(unittest.TestCase):
     def test_patch_preferences_unknown_dashboard(self):
         grafana_7_lower = self.grafana.get_version() < Version("8")
         grafana_9_higher = self.grafana.get_version() >= Version("9")
+        grafana_132_higher = self.grafana.get_version() >= Version("13.2")
 
         def probe():
             return self.grafana.user.patch_preferences(PersonalPreferences(homeDashboardUID="unknown"))
 
-        if grafana_7_lower or grafana_9_higher:
+        if grafana_7_lower or grafana_9_higher and not grafana_132_higher:
             with self.assertRaises(GrafanaClientError) as context:
                 probe()
             self.assertEqual(404, context.exception.status_code)

@@ -91,8 +91,11 @@ class SearchTestCase(unittest.TestCase):
         result = self.grafana.search.search_dashboards(
             tag=["foo*", "baz*"],
         )
-        self.assertEqual(1, len(result), "Wrong number of dashboards")
-        self.assertEqual(self.dashboard_uid, result[0]["uid"])
+        if self.grafana.get_version() >= Version("13.2"):
+            self.assertEqual(0, len(result), "Wrong number of dashboards")
+        else:
+            self.assertEqual(1, len(result), "Wrong number of dashboards")
+            self.assertEqual(self.dashboard_uid, result[0]["uid"])
 
     def test_search_folder_by_id(self):
         result = self.grafana.search.search_dashboards(
