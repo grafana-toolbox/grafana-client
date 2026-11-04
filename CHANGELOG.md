@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## unreleased
+- CI: Verified on Grafana 13.3.
 
 ## 5.1.4 (2026-10-20)
 - CI: Verified on Python 3.15.
