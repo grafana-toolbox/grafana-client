@@ -256,7 +256,9 @@ class UserTestCase(unittest.TestCase):
         self.grafana.user.update_preferences({}, filter_none=False)
         prefs = self.grafana.user.get_preferences()
         prefs_keys = sorted(prefs.keys())
-        if self.grafana.get_version() >= Version("9"):
+        if self.grafana.get_version() >= Version("13.3"):
+            self.assertEqual(["language", "theme", "timezone", "weekStart"], prefs_keys)
+        elif self.grafana.get_version() >= Version("9"):
             self.assertIn(prefs_keys, [[], ["homeDashboardUID"]])
         elif self.grafana.get_version() >= Version("8"):
             self.assertEqual(["homeDashboardId", "navbar", "theme", "timezone", "weekStart"], prefs_keys)
