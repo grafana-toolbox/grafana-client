@@ -240,12 +240,11 @@ class LibraryElementTestCase(unittest.TestCase):
         if self.grafana.get_version() < Version("9"):
             pytest.skip("Testing support library elements only supported on Grafana 9 and higher.")
 
-        # FIXME: How to enable library use with Grafana 12 when `create_rbac_role` does not work on Grafana OSS?
-        #        Is there an environment variable that unlocks it, possibly similar like `GF_USERS_ALLOW_ORG_CREATE`?
-        #        ERROR: grafana_client.client.GrafanaClientError: Client Error 403: You'll need additional
-        #               permissions to perform this action. Permissions needed: library.panels:delete
-        if self.grafana.get_version() >= Version("12"):
-            pytest.skip("FIXME: Permissions needed for Grafana 12: library.panels:delete.")
+        # `delete_library_element` does not work on Grafana 12.3.
+        # ERROR: grafana_client.client.GrafanaClientError: Client Error 403: You'll need additional
+        #        permissions to perform this action. Permissions needed: library.panels:delete
+        if Version("12.3") <= self.grafana.get_version() < Version("12.4"):
+            pytest.skip("Grafana 12.3 croaks on `delete_library_element`")
 
         self.dashboard_id = dashboard_id
         self.dashboard_uid = dashboard_uid
