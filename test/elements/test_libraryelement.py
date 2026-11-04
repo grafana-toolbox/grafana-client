@@ -326,7 +326,7 @@ class LibraryElementTestCase(unittest.TestCase):
     def test_get_library_element_connections_notfound(self):
         with self.assertRaises(GrafanaClientError) as ex:
             self.grafana.libraryelement.get_library_element_connections(LibraryElementTestCase.MissingPanelUID)
-        if self.grafana.get_version() >= Version("12"):
+        if Version("12") <= self.grafana.get_version() < Version("12.4"):
             self.assertEqual(403, ex.exception.status_code)
             self.assertRegex(ex.exception.message, "Client Error 403:.*Permissions needed: library.panels:read")
         else:
