@@ -1,7 +1,7 @@
 try:
     from importlib.metadata import PackageNotFoundError, version
 except ModuleNotFoundError:  # pragma: no cover
-    from importlib_metadata import PackageNotFoundError, version  # ty: ignore[unresolved-import]
+    from importlib_metadata import PackageNotFoundError, version  # ty: ignore[import-not-found]
 
 __appname__ = "grafana-client"
 

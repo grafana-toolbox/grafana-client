@@ -1,4 +1,4 @@
-# ty: ignore[unresolved-import]
+# ty: ignore[import-not-found]
 """
 About
 =====
