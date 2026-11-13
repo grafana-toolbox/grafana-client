@@ -259,7 +259,7 @@ class AsyncGrafanaApi(GrafanaApi):
         return self._grafana_info
 
     @property
-    async def version(self):  # ty: ignore[invalid-property-type-override]
+    async def version(self):  # ty: ignore[incompatible-property-override]
         if not self._grafana_info:
             self._grafana_info = await self.health.check()
         version = self._grafana_info["version"]
