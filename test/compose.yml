@@ -74,7 +74,7 @@ services:
       MARIADB_ROOT_PASSWORD: root
 
   postgresql:
-    image: docker.io/postgres:18
+    image: docker.io/postgres:19
     ports:
       - "5432:5432"
     environment:
